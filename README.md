@@ -1,0 +1,2 @@
+# raktarProgram
+Blazor raktár program
