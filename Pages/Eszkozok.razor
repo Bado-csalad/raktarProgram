@@ -1,0 +1,39 @@
+﻿@page "/eszkozok"
+
+@using raktarProgram.Data
+@using raktarProgram.Data.Filters
+@using raktarProgram.Interfaces
+@using Blazorise.DataGrid
+
+@inject IEszkozRepository repo
+
+<h3>Eszközök</h3>
+<DataGrid TItem="Eszkoz"
+        Data="@lista"
+        ReadData="@OnReadData"
+        TotalItems="@count" ShowPager="true" PageSize="10" Editable="true">
+    <DataGridCommandColumn TItem="Eszkoz" />
+    <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Nev)" Caption="Név" Editable="true"/>
+    <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Leiras)" Caption="Leírás" Editable="true" />
+    <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Azonosito)" Caption="Azonosító" Editable="true" />
+    <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Aktiv)" Caption="Aktív" Editable="true" />
+</DataGrid>
+
+@code {
+    Eszkoz[] lista;
+    
+    int count;
+    
+    //https://blazorise.com/docs/extensions/datagrid/
+    async Task OnReadData( DataGridReadDataEventArgs<Eszkoz> e )
+    {
+        // this can be call to anything, in this case we're calling a fictional api
+        var response = await repo.ListEszkoz(null, e.PageSize, e.Page);
+
+        lista = response.Data; // an actual data for the current page
+        count = response.Total; // this is used to tell datagrid how many items are available so that pagination will work
+
+        // always call StateHasChanged!
+        StateHasChanged();
+    }
+}
