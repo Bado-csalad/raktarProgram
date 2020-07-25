@@ -2,6 +2,10 @@ dotnet add package Microsoft.EntityFrameworkCore.SqlServer
 dotnet add package Blazorise 
 dotnet add package Blazorise.DataGrid
 dotnet add package bootstrap 
-dotnet add package Blazorise.Bootstrap
 dotnet add package Blazorise.Icons
+dotnet add package Blazorise.Bootstrap
 dotnet add package Blazorise.Icons.FontAwesome
+
+dotnet add package Blazorise.Material
+dotnet add package Blazorise.Icons.Material
+
