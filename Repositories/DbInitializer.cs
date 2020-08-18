@@ -10,8 +10,8 @@ namespace raktarProgram.Repositories
         public static void Initialize(RaktarContext context)
         {
 
-            context.Database.EnsureDeleted();
-            context.Database.EnsureCreated();
+            //ontext.Database.EnsureDeleted();
+            //context.Database.EnsureCreated();
 
             if (!context.EszkozHelyTipus.Any())
             {

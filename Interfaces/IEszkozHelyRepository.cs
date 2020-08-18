@@ -1,6 +1,8 @@
 using System.Linq;
+using System.Threading.Tasks;
 using raktarProgram.Data;
 using raktarProgram.Data.Filters;
+using raktarProgram.Helpers;
 
 namespace raktarProgram.Interfaces
 {
@@ -9,11 +11,11 @@ namespace raktarProgram.Interfaces
         IQueryable<EszkozHely> EszkozHely { get; }
         IQueryable<EszkozHelyTipus> EszkozHelyTipus { get; }
 
-        void EszkozHelyFelvetel(EszkozHely eszkozHely);
-        void EszkozHelyTorles(int ID);
-        void EszkozHelyModositas(EszkozHely eszkozHely);
+        Task<EszkozHely> EszkozHelyFelvetel(EszkozHely eszkozHely);
+        Task<EszkozHely> EszkozHelyTorles(int ID);
+        Task<EszkozHely> EszkozHelyModositas(EszkozHely eszkozHely);
 
-        IQueryable<EszkozHely> ListEszkozHely(EszkozHelyFilter filter, int pageSize, int pageNum, out int totalCount);
+        Task<ListResult<EszkozHely>> ListEszkozHely(EszkozHelyFilter filter, int pageSize, int pageNum);
 
     }
 }

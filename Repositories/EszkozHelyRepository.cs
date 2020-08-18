@@ -4,6 +4,8 @@ using raktarProgram.Interfaces;
 using raktarProgram.Data;
 using Microsoft.EntityFrameworkCore;
 using raktarProgram.Data.Filters;
+using System.Threading.Tasks;
+using raktarProgram.Helpers;
 
 namespace raktarProgram.Repositories
 {
@@ -18,39 +20,35 @@ namespace raktarProgram.Repositories
         public IQueryable<EszkozHely> EszkozHely => context.EszkozHely.Include(x => x.Tipus);
         public IQueryable<EszkozHelyTipus> EszkozHelyTipus => context.EszkozHelyTipus;
 
-        public void EszkozHelyFelvetel(EszkozHely eszkozHely)
+        public async Task<EszkozHely> EszkozHelyFelvetel(EszkozHely eszkozHely)
         {
             eszkozHely.Tipus = this.context.EszkozHelyTipus.First(c => c.ID == eszkozHely.TipusID);
             context.Add(eszkozHely);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
+            return eszkozHely;
         }
 
-        public void EszkozHelyModositas(EszkozHely eszkozHely)
+        public async Task<EszkozHely> EszkozHelyModositas(EszkozHely eszkozHely)
         {
-            var e = context.EszkozHely.Where(c => c.ID == eszkozHely.ID).First();
+            // context.Entry(eszkozHely).State = EntityState.Modified;
+            context.Attach(eszkozHely);
 
-            e.Nev = eszkozHely.Nev;
-            e.Leiras = eszkozHely.Leiras;
-            e.Telefon = eszkozHely.Telefon;
-            e.Cim = eszkozHely.Cim;
-            e.Email = eszkozHely.Email;
-            e.Torolt = eszkozHely.Torolt;
-            e.aktiv = eszkozHely.aktiv;
-            e.Tipus = this.context.EszkozHelyTipus.First(c => c.ID == eszkozHely.TipusID);
+            context.Update(eszkozHely);
 
-            context.Update(e);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
+            return eszkozHely;
         }
 
-        public void EszkozHelyTorles(int ID)
+        public async Task<EszkozHely> EszkozHelyTorles(int ID)
         {
             var e = context.EszkozHely.Where(c => c.ID == ID).First();
             e.Torolt = true;
             context.Update(e);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
+            return e;
         }
 
-        public IQueryable<EszkozHely> ListEszkozHely(EszkozHelyFilter filter, int pageSize, int pageNum, out int totalCount)
+        public async Task<ListResult<EszkozHely>> ListEszkozHely(EszkozHelyFilter filter, int pageSize, int pageNum)
         {
             var lista = this.EszkozHely.Where(x => x.Torolt == false);
 
@@ -72,13 +70,16 @@ namespace raktarProgram.Repositories
                 }
             }
 
-            totalCount = lista.Count();
+            ListResult<EszkozHely> res = new ListResult<EszkozHely>();
 
-            lista = lista.OrderBy(x => x.Nev)
+            res.Total = await lista.CountAsync();
+
+            res.Data = await lista.OrderBy(x => x.Nev)
                         .Skip((pageNum - 1) * pageSize)
-                        .Take(pageSize);
+                        .Take(pageSize)
+                        .ToListAsync();
             
-            return lista;
+            return res;
         }
     }
 }

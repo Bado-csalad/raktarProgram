@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
+using raktarProgram.Services;
 
 namespace raktarProgram
 {
@@ -32,10 +33,10 @@ namespace raktarProgram
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddBlazorise( options =>
-                {
-                    options.ChangeTextOnKeyPress = true; // optional
-                } )
+                .AddBlazorise(options =>
+               {
+                   options.ChangeTextOnKeyPress = true; // optional
+                })
                 .AddBootstrapProviders()
                 .AddFontAwesomeIcons();
 
@@ -43,8 +44,9 @@ namespace raktarProgram
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
 
-             services.AddDbContext<RaktarContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddScoped<SearchService>();
+            services.AddDbContext<RaktarContext>(options =>
+               options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddTransient<IEszkozRepository, EszkozRepository>();
             services.AddTransient<IEszkozHelyRepository, EszkozHelyRepository>();

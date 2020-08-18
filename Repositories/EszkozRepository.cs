@@ -20,6 +20,8 @@ namespace raktarProgram.Repositories
 
         public async Task<Eszkoz> EszkozFelvetel(Eszkoz data)
         {
+            data.Aktiv = true;
+            data.Torolt = false;
             context.Add(data);
             await context.SaveChangesAsync();
             return data;
@@ -27,11 +29,13 @@ namespace raktarProgram.Repositories
 
         public async Task<Eszkoz> EszkozModositas(Eszkoz eszkoz)
         {
-            context.Entry(eszkoz).State = EntityState.Modified;
+            // context.Entry(eszkoz).State = EntityState.Modified;
+            context.Attach(eszkoz);
+            context.Update(eszkoz);
 
             await context.SaveChangesAsync();
             return eszkoz;
-        }      
+        }
 
         public async Task<Eszkoz> EszkozTorles(int ID)
         {
@@ -41,8 +45,8 @@ namespace raktarProgram.Repositories
             await context.SaveChangesAsync();
             return e;
         }
-        
-        public async Task<ListResult<Eszkoz>> ListEszkoz(EszkozFilter filter, int pageSize,  int pageNum)
+
+        public async Task<ListResult<Eszkoz>> ListEszkoz(EszkozFilter filter, int pageSize, int pageNum)
         {
             var lista = this.Eszkoz.Where(x => x.Torolt == false);
 
@@ -50,7 +54,7 @@ namespace raktarProgram.Repositories
             {
                 if (!string.IsNullOrEmpty(filter.Kereses))
                 {
-                    lista = lista.Where(x => x.Azonosito.Contains(filter.Kereses) 
+                    lista = lista.Where(x => x.Azonosito.Contains(filter.Kereses)
                             || x.Nev.Contains(filter.Kereses)
                             || x.Leiras.Contains(filter.Kereses));
                 }
@@ -62,13 +66,13 @@ namespace raktarProgram.Repositories
             }
 
             ListResult<Eszkoz> res = new ListResult<Eszkoz>();
-            
+
             res.Total = await lista.CountAsync();
 
             res.Data = await lista.OrderBy(x => x.Nev)
                         .Skip((pageNum - 1) * pageSize)
                         .Take(pageSize)
-                        .ToArrayAsync();
+                        .ToListAsync();
 
             return res;
         }

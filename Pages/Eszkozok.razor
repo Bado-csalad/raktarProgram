@@ -4,31 +4,37 @@
 @using raktarProgram.Data.Filters
 @using raktarProgram.Interfaces
 @using Blazorise.DataGrid
+@using System.Transactions
+
 
 @inject IEszkozRepository repo
+@inject SearchService searchService;
 
-<h3>Eszközök</h3>
+<h3>Eszközök</h3> <input @bind="searchService.eszkozFilter.Kereses" @bind:event="oninput" /> 
+<button class="btn btn-primary" @onclick="SearchEszkoz">
+    Keresés
+</button>
 <DataGrid TItem="Eszkoz"
-        Data="@lista"
-        ReadData="@OnReadData"
-        TotalItems="@count" ShowPager="true" PageSize="5" Editable="true" RowUpdating="@OnBeforeUpdate">
+          Data="@lista"
+          ReadData="@OnReadData"
+          TotalItems="@count" ShowPager="true" PageSize="searchService.PageSize" Editable="true" 
+          RowInserted="@OnAfterInsert" RowUpdated="@OnAfterUpdate" RowUpdating="@OnBeforeUpdate"
+          RowRemoved="@OnAfterREmove">
     <DataGridCommandColumn TItem="Eszkoz" />
-    <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Nev)" Caption="Név" Editable="true"/>
+    <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Nev)" Caption="Név" Editable="true" />
     <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Leiras)" Caption="Leírás" Editable="true" />
     <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Azonosito)" Caption="Azonosító" Editable="true" />
-    <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Aktiv)" Caption="Aktív" Editable="true" />
 </DataGrid>
 
 @code {
-    Eszkoz[] lista;
-    
+    List<Eszkoz> lista;
+
     int count;
-    
-    //https://blazorise.com/docs/extensions/datagrid/
-    async Task OnReadData( DataGridReadDataEventArgs<Eszkoz> e )
+
+    private async Task SearchEszkoz(MouseEventArgs e)
     {
         // this can be call to anything, in this case we're calling a fictional api
-        var response = await repo.ListEszkoz(null, e.PageSize, e.Page);
+        var response = await repo.ListEszkoz(searchService.eszkozFilter, searchService.PageSize, 1);
 
         lista = response.Data; // an actual data for the current page
         count = response.Total; // this is used to tell datagrid how many items are available so that pagination will work
@@ -36,10 +42,73 @@
         // always call StateHasChanged!
         StateHasChanged();
     }
-    
-    void OnBeforeUpdate(CancellableRowChange<Eszkoz> e )
+
+    //https://blazorise.com/docs/extensions/datagrid/
+    async Task OnReadData(DataGridReadDataEventArgs<Eszkoz> e)
+    {
+        // this can be call to anything, in this case we're calling a fictional api
+        var response = await repo.ListEszkoz(searchService.eszkozFilter, e.PageSize, e.Page);
+
+        lista = response.Data; // an actual data for the current page
+        count = response.Total; // this is used to tell datagrid how many items are available so that pagination will work
+
+        // always call StateHasChanged!
+        StateHasChanged();
+    }
+
+    async Task OnBeforeUpdate(CancellableRowChange<Eszkoz> e)
     {
         // todo validálni, meg menteni, ha hiba van, akkor e.cancel = true
+
+        //var mentettEszkoz = await repo.EszkozModositas(e.Item);
+
+        // ez nemtom kell-e ide...
+        // always call StateHasChanged!
+        StateHasChanged();
+    }
+
+
+    async Task OnAfterREmove(Eszkoz e)
+    {
+        // todo validálni, meg menteni, ha hiba van, akkor e.cancel = true
+
+        using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        {
+            e.Torolt = true;
+            var mentettEszkoz = await repo.EszkozModositas(e);
+            ts.Complete();
+        }
+
+        // ez nemtom kell-e ide...
+        // always call StateHasChanged!
+        StateHasChanged();
+    }
+
+
+    async Task OnAfterInsert(SavedRowItem<Eszkoz, Dictionary<string, object>> e)
+    {
+        // todo validálni, meg menteni, ha hiba van, akkor e.cancel = true
+
+        using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        {
+            var mentettEszkoz = await repo.EszkozFelvetel(e.Item);
+            ts.Complete();
+        }
+
+        // ez nemtom kell-e ide...
+        // always call StateHasChanged!
+        StateHasChanged();
+    }
+
+    async Task OnAfterUpdate(SavedRowItem<Eszkoz, Dictionary<string, object>> e)
+    {
+        // todo validálni, meg menteni, ha hiba van, akkor e.cancel = true
+
+        using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        {
+            var mentettEszkoz = await repo.EszkozModositas(e.Item);
+            ts.Complete();
+        }
 
         // ez nemtom kell-e ide...
         // always call StateHasChanged!

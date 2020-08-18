@@ -9,3 +9,10 @@ dotnet add package Blazorise.Icons.FontAwesome
 dotnet add package Blazorise.Material
 dotnet add package Blazorise.Icons.Material
 
+
+
+
+https://github.com/stsrki/Blazorise/tree/master/Demos/Blazorise.Demo/Pages/Tests
+
+https://bootstrapdemo.blazorise.com/
+https://blazorise.com/docs/
