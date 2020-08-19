@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace raktarProgram.Data
 {
@@ -42,7 +43,8 @@ namespace raktarProgram.Data
         public bool? aktiv { get; set; }
 
         public ICollection<Hely> Helyek { get; set; }
-
+        
+        [ForeignKey("TipusID")]
         public EszkozHelyTipus Tipus { get; set; }
     }
 }

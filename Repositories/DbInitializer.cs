@@ -10,13 +10,18 @@ namespace raktarProgram.Repositories
         public static void Initialize(RaktarContext context)
         {
 
-            //ontext.Database.EnsureDeleted();
-            //context.Database.EnsureCreated();
+            context.Database.EnsureDeleted();
+            context.Database.EnsureCreated();
 
             if (!context.EszkozHelyTipus.Any())
             {
                 using (TransactionScope ts = new TransactionScope())
                 {
+                    Params p = new Params();
+                    p.Kodegyutt  = 1;
+                    context.Params.Add(p);
+                    context.SaveChanges();
+
                     var eh1 = new EszkozHelyTipus { Nev = "raktar", Leiras = "raktarleiras", Torolt = false, Aktiv = true, LehetNegativ = false, NullaListabanLathato = true };
                     var eh2 = new EszkozHelyTipus { Nev = "ember", Leiras = "embernel van", Torolt = false, Aktiv = true, LehetNegativ = false, NullaListabanLathato = false };
                     var eh3 = new EszkozHelyTipus { Nev = "beszerzes", Leiras = "vasarlas", Torolt = false, Aktiv = false, LehetNegativ = true, NullaListabanLathato = false };
@@ -90,7 +95,6 @@ namespace raktarProgram.Repositories
 
                     var felh = context.Felhasznalo.First();
 
-                    int kegy = 1;
 
                     context.Hely.Add(                   
                         new Hely {
@@ -100,7 +104,7 @@ namespace raktarProgram.Repositories
                                 Mikortol = new DateTime(2020,01,23), // mindig kötelező
                                 Meddig = new DateTime(2020,01,23), 
                                 Mennyiseg = -1,
-                                Kodegyutt = kegy,
+                                Kodegyutt = p.Kodegyutt,
                                 Megjegyzes = "fekete balta beszerzés, raktár1-be  1 tétel",
                                 Irany = Hely.Ki
                                 });
@@ -113,7 +117,7 @@ namespace raktarProgram.Repositories
                                 Mikortol = new DateTime(2020,01,23),
                                 Meddig = null, // ha irany = BE --> nem szabad tölteni Meddig-et, de egy kapcsolódó későbbi kivét beállítja a kivét dátumára
                                 Mennyiseg = 1,
-                                Kodegyutt = kegy++,
+                                Kodegyutt = p.Kodegyutt++,
                                 Megjegyzes = "fekete balta beszerzés, raktár1-be 1 tétel",
                                 Irany = Hely.Be
                                 });
@@ -127,7 +131,7 @@ namespace raktarProgram.Repositories
                                 Mikortol = new DateTime(2020,01,23), 
                                 Meddig = new DateTime(2020,01,23), 
                                 Mennyiseg = -2,
-                                Kodegyutt = kegy,
+                                Kodegyutt = p.Kodegyutt,
                                 Megjegyzes = "piros balta beszerzés, raktár1-be 2 tétel",
                                 Irany = Hely.Ki
                                 });
@@ -140,7 +144,7 @@ namespace raktarProgram.Repositories
                                 Mikortol = new DateTime(2020,01,23),
                                 Meddig = new DateTime(2020,03,05), 
                                 Mennyiseg = 2,
-                                Kodegyutt = kegy++,
+                                Kodegyutt = p.Kodegyutt++,
                                 Megjegyzes = "piros balta beszerzés, raktár1-be 2 tétel",
                                 Irany = Hely.Be
                                 });
@@ -154,7 +158,7 @@ namespace raktarProgram.Repositories
                                 Mikortol = new DateTime(2020,01,23), 
                                 Meddig = new DateTime(2020,01,23), 
                                 Mennyiseg = -3,
-                                Kodegyutt = kegy,
+                                Kodegyutt = p.Kodegyutt,
                                 Megjegyzes = "fekete sátor beszerzés, raktár1-be 3 tétel",
                                 Irany = Hely.Ki
                                 });
@@ -167,7 +171,7 @@ namespace raktarProgram.Repositories
                                 Mikortol = new DateTime(2020,01,23),
                                 Meddig = new DateTime(2020,02,23), 
                                 Mennyiseg = 3,
-                                Kodegyutt = kegy++,
+                                Kodegyutt = p.Kodegyutt++,
                                 Megjegyzes = "fekete sátor beszerzés, raktár1-be  3 tétel",
                                 Irany = Hely.Be
                                 });
@@ -181,7 +185,7 @@ namespace raktarProgram.Repositories
                                 Mikortol = new DateTime(2020,02,23), 
                                 Meddig = new DateTime(2020,04,12), 
                                 Mennyiseg = 1,
-                                Kodegyutt = kegy,
+                                Kodegyutt = p.Kodegyutt,
                                 Megjegyzes = "pista elvitt a raktar1-ből 2 fekete sátrat",
                                 Irany = Hely.Ki
                                 });
@@ -194,7 +198,7 @@ namespace raktarProgram.Repositories
                                 Mikortol = new DateTime(2020,02,23),
                                 Meddig = new DateTime(2020,04,12), 
                                 Mennyiseg = 2,
-                                Kodegyutt = kegy++,
+                                Kodegyutt = p.Kodegyutt++,
                                 Megjegyzes = "pista elvitt a raktar1-ből 2 fekete sátrat",
                                 Irany = Hely.Be
                                 });
@@ -208,7 +212,7 @@ namespace raktarProgram.Repositories
                                 Mikortol = new DateTime(2020,03,05),
                                 Meddig = null,
                                 Mennyiseg = 1,
-                                Kodegyutt = kegy,
+                                Kodegyutt = p.Kodegyutt,
                                 Megjegyzes = "józsi elvitt a raktar1-ből 1 piros baltát",
                                 Irany = Hely.Ki
                                 });
@@ -221,7 +225,7 @@ namespace raktarProgram.Repositories
                                 Mikortol = new DateTime(2020,03,05),
                                 Meddig = null,
                                 Mennyiseg = 1,
-                                Kodegyutt = kegy++,
+                                Kodegyutt = p.Kodegyutt++,
                                 Megjegyzes = "józsi elvitt a raktar1-ből 1 piros baltát",
                                 Irany = Hely.Be
                                 });
@@ -235,7 +239,7 @@ namespace raktarProgram.Repositories
                                 Mikortol = new DateTime(2020,04,12),
                                 Meddig = null,
                                 Mennyiseg = 1,
-                                Kodegyutt = kegy,
+                                Kodegyutt = p.Kodegyutt,
                                 Megjegyzes = "pista visszahozott a raktar1-be 1 fekete sátrat",
                                 Irany = Hely.Ki
                                 });
@@ -248,7 +252,7 @@ namespace raktarProgram.Repositories
                                 Mikortol = new DateTime(2020,04,12),
                                 Meddig = null,
                                 Mennyiseg = 2,
-                                Kodegyutt = kegy++,
+                                Kodegyutt = p.Kodegyutt++,
                                 Megjegyzes = "pista visszahozott a raktar1-be 1 fekete sátrat",
                                 Irany = Hely.Be
                                 });

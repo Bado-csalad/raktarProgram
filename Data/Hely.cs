@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace raktarProgram.Data
 {
@@ -19,9 +20,17 @@ namespace raktarProgram.Data
         public string Megjegyzes { get; set; }
         public int EszkozHelyID { get; set; }
         public Felhasznalo Felhasznalo { get; set; }
+        [ForeignKey("EszkozID")]
         public Eszkoz Eszkoz { get; set; }
+        [ForeignKey("EszkozHelyID")]
         public EszkozHely EszkozHely { get; set; }
 
         public string Irany { get; set; }
+
+        public string EszkozhelyNev {
+            get{
+                return this.EszkozHely?.Nev;
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 @page "/eszkozhelyek"
 
+@using Blazorise.Components
 @using raktarProgram.Data
 @using raktarProgram.Data.Filters
 @using raktarProgram.Interfaces
@@ -7,44 +8,77 @@
 @using System.Transactions
 
 @inject IEszkozHelyRepository repo
+@inject IEszkozHelyTipusRepository tipusrepo
 
 <h3>EszközHelyek</h3>
 <DataGrid TItem="EszkozHely"
           Data="@lista"
           ReadData="@OnReadData"
-          TotalItems="@count" ShowPager="true" PageSize="5" Editable="true" RowUpdated="@OnAfterUpdate" RowUpdating="@OnBeforeUpdate">
+          TotalItems="@count" ShowPager="true" PageSize="5" Editable="true" 
+          RowUpdated="@OnAfterUpdate" RowUpdating="@OnBeforeUpdate" RowInserted="@OnAfterInsert">
     <DataGridCommandColumn TItem="EszkozHely" />
     <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Nev)" Caption="Név" Editable="true" />
     <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Leiras)" Caption="Leírás" Editable="true" />
     <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Telefon)" Caption="Azonosító" Editable="true" />
     <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Cim)" Caption="Cím" Editable="true" />   
-    <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Email)" Caption="Email" Editable="true" />   
+    <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Email)" Caption="Email" Editable="true" /> 
+    <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.TipusID)" Caption="Tipus" Editable="true">
+        <DisplayTemplate>
+                @((context as EszkozHely )?.Tipus.Nev)
+        </DisplayTemplate>
+        <EditTemplate>
+            <SelectList Data="@tipuslista"
+    TextField="@((item)=>item.Nev)"
+    ValueField="@((item)=>item.ID)"
+    SelectedValue="@((int)( ( (CellEditContext)context ).CellValue ))"
+    SelectedValueChanged="@(( v ) => ( (CellEditContext)context ).CellValue = int.Parse((string)v))"/>
+        </EditTemplate>
+        
+    </DataGridColumn>
 </DataGrid>
 
 @code {
     List<EszkozHely> lista;
+    List<EszkozHelyTipus> tipuslista;
 
     int count;
 
-    async Task OnReadData(DataGridReadDataEventArgs<EszkozHely> e)
-        {
-            var response = await repo.ListEszkozHely(null, e.PageSize, e.Page);
-
-            lista = response.Data;
-            count = response.Total;
-
-            StateHasChanged();
-        }
-
-    async Task OnBeforeUpdate(CancellableRowChange<EszkozHely> e)
+    async Task OnAfterInsert(SavedRowItem<EszkozHely, Dictionary<string, object>> e)
     {
         // todo validálni, meg menteni, ha hiba van, akkor e.cancel = true
+
+        using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        {
+            var mentettEszkoz = await repo.EszkozHelyFelvetel(e.Item);
+            ts.Complete();
+        }
 
         // ez nemtom kell-e ide...
         // always call StateHasChanged!
         StateHasChanged();
     }
-    
+
+    async Task OnReadData(DataGridReadDataEventArgs<EszkozHely> e)
+    {
+        var response = await repo.ListEszkozHely(null, e.PageSize, e.Page);
+
+        var tipusok = await tipusrepo.ListEszkozHelyTipus(null, 5, 1);
+        tipuslista = tipusok.Data;
+        lista = response.Data;
+        count = response.Total;
+
+        StateHasChanged();
+    }
+
+    void OnBeforeUpdate(CancellableRowChange<EszkozHely> e)
+    {
+        // todo validálni, meg menteni, ha hiba van, akkor e.cancel = true
+
+        // ez nemtom kell-e ide...
+        // always call StateHasChanged!
+         StateHasChanged();
+    }
+
     async Task OnAfterUpdate(SavedRowItem<EszkozHely, Dictionary<string, object>> e)
     {
         // todo validálni, meg menteni, ha hiba van, akkor e.cancel = true

@@ -56,7 +56,7 @@
         StateHasChanged();
     }
 
-    async Task OnBeforeUpdate(CancellableRowChange<Eszkoz> e)
+    void OnBeforeUpdate(CancellableRowChange<Eszkoz> e)
     {
         // todo validálni, meg menteni, ha hiba van, akkor e.cancel = true
 

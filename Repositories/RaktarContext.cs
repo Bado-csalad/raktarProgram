@@ -9,6 +9,7 @@ namespace raktarProgram.Repositories
         {
         }
 
+        public DbSet<Params> Params { get; set; }
         public DbSet<EszkozHely> EszkozHely { get; set; }
         public DbSet<EszkozHelyTipus> EszkozHelyTipus { get; set; }
         public DbSet<Eszkoz> Eszkoz { get; set; }
@@ -22,6 +23,7 @@ namespace raktarProgram.Repositories
             modelBuilder.Entity<Eszkoz>().ToTable("Eszkozok");
             modelBuilder.Entity<Felhasznalo>().ToTable("Felhasznalok");
             modelBuilder.Entity<Hely>().ToTable("Helyek");
+            modelBuilder.Entity<Params>().ToTable("Params");
         }
     }
 }

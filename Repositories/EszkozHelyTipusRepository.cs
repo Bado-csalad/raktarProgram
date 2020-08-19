@@ -4,6 +4,8 @@ using raktarProgram.Interfaces;
 using raktarProgram.Data;
 using Microsoft.EntityFrameworkCore;
 using raktarProgram.Data.Filters;
+using System.Threading.Tasks;
+using raktarProgram.Helpers;
 
 namespace raktarProgram.Repositories
 {
@@ -18,35 +20,33 @@ namespace raktarProgram.Repositories
 
         public IQueryable<EszkozHelyTipus> EszkozHelyTipus => context.EszkozHelyTipus;
 
-        public void EszkozHelyTipusFelvetel(EszkozHelyTipus data)
+        public async Task<EszkozHelyTipus> EszkozHelyTipusFelvetel(EszkozHelyTipus data)
         {
             context.Add(data);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
+            return data;
         }
 
-        public void EszkozHelyTipusModositas(EszkozHelyTipus eszkozHelyTipus)
+        public async Task<EszkozHelyTipus> EszkozHelyTipusModositas(EszkozHelyTipus eszkozHelyTipus)
         {
-            var e = context.EszkozHelyTipus.Where(c => c.ID == eszkozHelyTipus.ID).First();
+            context.Attach(eszkozHelyTipus);
+            context.Update(eszkozHelyTipus);
 
-            e.Nev = eszkozHelyTipus.Nev;
-            e.Leiras = eszkozHelyTipus.Leiras;
-            e.Torolt = eszkozHelyTipus.Torolt;
-            e.Aktiv = eszkozHelyTipus.Aktiv;
-
-            context.Update(e);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
+            return eszkozHelyTipus;
 
         }
 
-        public void EszkozHelyTipusTorles(int ID)
+        public async Task<EszkozHelyTipus> EszkozHelyTipusTorles(int ID)
         {
             var e = context.EszkozHelyTipus.Where(c => c.ID == ID).First();
             e.Torolt = true;
             context.Update(e);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
+            return e;
         }
 
-        public IQueryable<EszkozHelyTipus> ListEszkozHelyTipus(EszkozHelyTipusFilter filter, int pageSize, int pageNum, out int totalCount)
+        public async Task<ListResult<EszkozHelyTipus>> ListEszkozHelyTipus(EszkozHelyTipusFilter filter, int pageSize, int pageNum)
         {
             var lista = this.EszkozHelyTipus.Where(x => x.Torolt == false);
 
@@ -64,13 +64,17 @@ namespace raktarProgram.Repositories
                 }
             }
 
-            totalCount = lista.Count();
 
-            lista = lista.OrderBy(x => x.Nev)
+            ListResult<EszkozHelyTipus> res = new ListResult<EszkozHelyTipus>();
+
+            res.Total = await lista.CountAsync();
+
+            res.Data = await lista.OrderBy(x => x.Nev)
                         .Skip((pageNum - 1) * pageSize)
-                        .Take(pageSize);
+                        .Take(pageSize)
+                        .ToListAsync();
 
-            return lista;
+            return res;
         }
     }
 }

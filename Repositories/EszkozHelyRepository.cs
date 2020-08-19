@@ -23,6 +23,8 @@ namespace raktarProgram.Repositories
         public async Task<EszkozHely> EszkozHelyFelvetel(EszkozHely eszkozHely)
         {
             eszkozHely.Tipus = this.context.EszkozHelyTipus.First(c => c.ID == eszkozHely.TipusID);
+            eszkozHely.Torolt = false;
+            eszkozHely.aktiv = true;
             context.Add(eszkozHely);
             await context.SaveChangesAsync();
             return eszkozHely;
@@ -77,6 +79,7 @@ namespace raktarProgram.Repositories
             res.Data = await lista.OrderBy(x => x.Nev)
                         .Skip((pageNum - 1) * pageSize)
                         .Take(pageSize)
+                        .Include(t=> t.Tipus)
                         .ToListAsync();
             
             return res;
