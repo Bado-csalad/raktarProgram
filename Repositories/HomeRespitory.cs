@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using raktarProgram.Data.Filters;
 using System.Threading.Tasks;
 using raktarProgram.Helpers;
+using System;
 
 namespace raktarProgram.Repositories
 {
@@ -81,6 +82,19 @@ namespace raktarProgram.Repositories
                 .ToListAsync();
 
             return lista;
+        }
+
+        public async Task<List<Hely>> Xmentes(Eszkoz xmit, Hely xkitol, 
+                                              EszkozHely xhova, DateTime xmikor,
+                                              int xmennyiseg)
+        {
+            int kodegy = this.Param.Kodegyutt;
+            var kitol = this.Hely.Where(c => c.ID == xkitol.ID).First();
+            kitol.Meddig = xmikor;
+
+            context.Update(kitol);
+
+            int ujdarab = kitol.Mennyiseg - xmennyiseg
         }
 
         // cucc kiadása

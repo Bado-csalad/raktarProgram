@@ -28,12 +28,18 @@
         </Alert>
     </Column>
     <Column ColumnSize="ColumnSize.Is9">
-       <Autocomplete  Data="@xkitolList"
+        @* <div class="dropdown-menu">
+            <a class="dropdown-item" href="#">.Net</a>
+            <a class="dropdown-item" href="#">Python</a>
+            <a class="dropdown-item" href="#">Data Science</a>
+            <div class="dropdown-divider"></div>
+        </div> *@
+           @* <Autocomplete  Data="@xkitolList"
             TextField="@((item)=>item.EszkozhelyNev)"
             ValueField="@((item)=>item.ID)"
             SelectedValueChanged="@selectedHelyChangedHandler" 
             Placeholder="Search..." 
-            Filter="AutocompleteFilter.Contains"/>
+            Filter="AutocompleteFilter.Contains"/> *@
     </Column>
 </Row>
  <Row>
@@ -52,9 +58,23 @@
     </Column>
 </Row>
 
-
+@{ var list = new List<string>{ ".NET", "Python","Java" }; }
+<Dropdown TItem="string" OnSelected="@OnSelected" >
+    <InitialTip>This is a dropdown list</InitialTip>
+    <ChildContent>
+        <DropdownListItem Item="@list[0]">.NET</DropdownListItem>
+        <DropdownListItem Item="@list[1]">Python</DropdownListItem>
+        <div class="dropdown-divider"></div>
+        <DropdownListItem Item="@list[2]">Java</DropdownListItem>
+    </ChildContent>
+</Dropdown>
 
 @code {
+
+    private void OnSelected(string selection)
+    {
+        Console.WriteLine(selection);
+    }
     List<Eszkoz> xmitLista = null;
     List<Hely> xkitolList = null;
     List<EszkozHely> xhovaList = null;
