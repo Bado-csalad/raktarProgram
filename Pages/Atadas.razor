@@ -13,12 +13,10 @@
         </Alert>
     </Column>
     <Column ColumnSize="ColumnSize.Is9">
-       <Autocomplete Data="@xmitLista"
-            TextField="@((item)=>item.Nev)"
-            ValueField="@((item)=>item.ID)"
-            SelectedValueChanged="@selectedEszkozChangedHandler"
-            Placeholder="Search..." 
-            Filter="AutocompleteFilter.Contains" />
+        <SelectList Data="@xmitLista"
+                    TextField="@((item)=>item.Nev)"
+                    ValueField="@((item)=>item.ID)"
+                    SelectedValueChanged="@selectedEszkozChangedHandler" />
     </Column>
 </Row>
 <Row>
@@ -28,88 +26,67 @@
         </Alert>
     </Column>
     <Column ColumnSize="ColumnSize.Is9">
-        @* <div class="dropdown-menu">
-            <a class="dropdown-item" href="#">.Net</a>
-            <a class="dropdown-item" href="#">Python</a>
-            <a class="dropdown-item" href="#">Data Science</a>
-            <div class="dropdown-divider"></div>
-        </div> *@
-           @* <Autocomplete  Data="@xkitolList"
-            TextField="@((item)=>item.EszkozhelyNev)"
-            ValueField="@((item)=>item.ID)"
-            SelectedValueChanged="@selectedHelyChangedHandler" 
-            Placeholder="Search..." 
-            Filter="AutocompleteFilter.Contains"/> *@
+        <SelectList Data="@xkitolList"
+                    TextField="@((item)=>item.EszkozhelyNev)"
+                    ValueField="@((item)=>item.ID)"
+                    SelectedValueChanged="@selectedHelyChangedHandler" />
     </Column>
 </Row>
- <Row>
+<Row>
     <Column ColumnSize="ColumnSize.Is3">
         <Alert Color="Color.Primary" Visible="true">
             Hova:
         </Alert>
     </Column>
     <Column ColumnSize="ColumnSize.Is9">
-       <Autocomplete  Data="@xhovaList"
-            TextField="@((item)=>item.Nev)"
-            ValueField="@((item)=>item.ID)"
-            SelectedValueChanged="@selectedHovaChangedHandler" 
-            Placeholder="Search..." 
-            Filter="AutocompleteFilter.Contains"/>
+        <SelectList Data="@xhovaList"
+                    TextField="@((item)=>item.Nev)"
+                    ValueField="@((item)=>item.ID)"
+                    SelectedValueChanged="@selectedHovaChangedHandler" />
     </Column>
 </Row>
 
-@{ var list = new List<string>{ ".NET", "Python","Java" }; }
-<Dropdown TItem="string" OnSelected="@OnSelected" >
-    <InitialTip>This is a dropdown list</InitialTip>
-    <ChildContent>
-        <DropdownListItem Item="@list[0]">.NET</DropdownListItem>
-        <DropdownListItem Item="@list[1]">Python</DropdownListItem>
-        <div class="dropdown-divider"></div>
-        <DropdownListItem Item="@list[2]">Java</DropdownListItem>
-    </ChildContent>
-</Dropdown>
+
 
 @code {
-
-    private void OnSelected(string selection)
-    {
-        Console.WriteLine(selection);
-    }
     List<Eszkoz> xmitLista = null;
     List<Hely> xkitolList = null;
     List<EszkozHely> xhovaList = null;
     Eszkoz xmit;
     Hely xkitol;
     EszkozHely xhova;
-   
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             this.xmitLista = await this.repo.GetXMitList();
+            this.xmitLista.Insert(0, new Eszkoz());
             StateHasChanged();
         }
     }
 
     async Task selectedEszkozChangedHandler(object newEszkoz)
     {
-        xmit = this.xmitLista.First(c => c.ID == (int)newEszkoz);
+        xmit = this.xmitLista.First(c => c.ID == Convert.ToInt32(newEszkoz));
 
         this.xkitolList = await this.repo.GetXKitolList(xmit.ID);
+        this.xkitolList.Insert(0, new Hely());
         StateHasChanged();
     }
 
     async Task selectedHelyChangedHandler(object newHely)
     {
-        xkitol = this.xkitolList.First(c => c.ID == (int)newHely);
-        
-        this.xhovaList = await this.repo.GetXHovaList(xkitol.ID);
+        xkitol = this.xkitolList.First(c => c.ID == Convert.ToInt32(newHely));
+
+        this.xhovaList = await this.repo.GetXHovaList(xkitol.EszkozHelyID);
+        this.xhovaList.Insert(0, new EszkozHely());
         StateHasChanged();
     }
 
     async Task selectedHovaChangedHandler(object newHova)
     {
-        xhova = this.xhovaList.First(c => c.ID == (int)newHova);
+        xhova = this.xhovaList.First(c => c.ID == Convert.ToInt32(newHova));
         StateHasChanged();
     }
 }
