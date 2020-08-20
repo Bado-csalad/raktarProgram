@@ -14,6 +14,9 @@ namespace raktarProgram.Repositories
     {
         public const string nincsXmit = "Válaszd ki, hogy mit szeretnél átadni!";
         public const string nincsXKitol = "Válaszd ki, hogy ki adja át a tételt!";
+        public const string nincsXHova = "Válaszd ki, hogy hova szeretnéd átadni a tételt!";
+        public const string rosszMennyiseg = "Nincs ennyi tárgy a ratkárban";
+        public const string sikeresFelvetel = "Eszköz sikeresen átadva";
 
         private RaktarContext context;
         public HomeRespitory(RaktarContext ctx)
@@ -87,19 +90,24 @@ namespace raktarProgram.Repositories
             return lista;
         }
 
-        public async Task<(Hely hely, string hiba)> Xmentes(Eszkoz xmit, Hely xkitol, 
+        public async Task<string> Xmentes(Eszkoz xmit, Hely xkitol, 
                                               EszkozHely xhova, DateTime xmikor,
                                               int xmennyiseg, string xmegj)
         {
             
             if (xmit == null ||  xmit.ID == 0)
             {
-                return (null, nincsXmit);
+                return (nincsXmit);
             }
 
             if (xkitol == null || xkitol.ID == 0)
             {
-                return (null, nincsXKitol);
+                return (nincsXKitol);
+            }
+
+            if (xhova == null || xhova.ID == 0)
+            {
+                return (nincsXHova);
             }
 
             int kodegy = this.Param.Kodegyutt;
@@ -110,12 +118,11 @@ namespace raktarProgram.Repositories
 
             int ujdarab = kitol.Mennyiseg - xmennyiseg;
             if(ujdarab < 0)
-            {
-                string hiba = "nincs ennyi tárgy a raktárban";
-                return (null, hiba);
+            { 
+                return (rosszMennyiseg);
             }
-            
-            Hely ujhely = new Hely(){
+
+            Hely ujhely = new Hely() {
                 Mennyiseg = ujdarab,
                 Eszkoz = xmit,
                 Mikortol = xmikor,
@@ -123,12 +130,40 @@ namespace raktarProgram.Repositories
                 Megjegyzes = xmegj,
                 EszkozHely = xkitol.EszkozHely,
                 Irany = "KI",
-                Kodegyutt = this.Param.Kodegyutt
+                Kodegyutt = this.Param.Kodegyutt,
+                Felhasznalo = context.Felhasznalo.First()
             };
 
             context.Hely.Add(ujhely);
             await context.SaveChangesAsync();
-            return  (ujhely, null);
+            //return  (null, sikeresFelvetel);
+
+            var hova = await context.Hely.Where(c => c.EszkozHely.ID == xhova.ID && c.Eszkoz.ID == xmit.ID).FirstOrDefaultAsync();
+            int mennyi = xmennyiseg;
+
+            if ( hova != null)
+            {
+                mennyi += hova.Mennyiseg;
+            }
+
+            Hely ujHova = new Hely() {
+                Mennyiseg = mennyi,
+                Eszkoz = xmit,
+                Mikortol = xmikor,
+                Meddig = null,
+                Megjegyzes = xmegj,
+                EszkozHely = xhova,
+                Irany = "BE",
+                Kodegyutt = this.Param.Kodegyutt,
+                Felhasznalo = context.Felhasznalo.First()
+            };
+
+            context.Add(ujHova);
+            this.Param.Kodegyutt++;
+            context.SaveChanges();
+
+            return (sikeresFelvetel);
+
         }
 
         // cucc kiadása

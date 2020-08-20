@@ -1,6 +1,7 @@
 ﻿@page "/atadas"
 @using Blazorise.Components
 @inject IHomeRespitory repo
+@inject NavigationManager NavigationManager
 
 <h1>Átadás</h1>
 
@@ -45,8 +46,49 @@
                     SelectedValueChanged="@selectedHovaChangedHandler" />
     </Column>
 </Row>
+<Row>
+    <Column ColumnSize="ColumnSize.Is3">
+        <Alert Color="Color.Primary" Visible="true">
+            Mennyit:
+        </Alert>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is9">
+        <input @bind="mennyit" @bind:event="oninput" />
+    </Column>
+</Row>
+<Row>
+    <Column ColumnSize="ColumnSize.Is3">
+        <Alert Color="Color.Primary" Visible="true">
+            Mikor:
+        </Alert>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is9">
+        <DateEdit @bind-Date="xmikor" />
+    </Column>
+</Row>
+<Row>
+    <Column ColumnSize="ColumnSize.Is3">
+        <Alert Color="Color.Primary" Visible="true">
+            Megjegyzés:
+        </Alert>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is9">
+        <input @bind="megjegyzes" @bind:event="oninput" />
+    </Column>
+</Row>
+<button class="btn btn-primary" @onclick="Mentes">
+    Átadás
+</button>
 
-
+<Alert @ref="myAlert" Color="Color.Warning" Dismisable="true">
+    <AlertDescription>
+        Figyelem!
+    </AlertDescription>
+    <AlertMessage>
+        @hibauzenet
+    </AlertMessage>
+    <CloseButton Clicked="@(()=>myAlert.Hide())" />
+</Alert>
 
 @code {
     List<Eszkoz> xmitLista = null;
@@ -55,6 +97,11 @@
     Eszkoz xmit;
     Hely xkitol;
     EszkozHely xhova;
+    int mennyit;
+    string megjegyzes;
+    DateTime xmikor = DateTime.Now;
+    Alert myAlert;
+    string hibauzenet;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -87,6 +134,30 @@
     async Task selectedHovaChangedHandler(object newHova)
     {
         xhova = this.xhovaList.First(c => c.ID == Convert.ToInt32(newHova));
+        StateHasChanged();
+    }
+
+    private async Task Mentes(MouseEventArgs e)
+    {
+        // this can be call to anything, in this case we're calling a fictional api
+
+        using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        {
+
+            var eredmeny = await repo.Xmentes(xmit, xkitol, xhova, xmikor, mennyit, megjegyzes);
+            if (eredmeny != raktarProgram.Repositories.HomeRespitory.sikeresFelvetel)
+            {
+                hibauzenet = eredmeny;
+                myAlert.Show();
+            }
+            else
+            {
+                ts.Complete();
+                NavigationManager.NavigateTo("/");
+            }
+        }
+
+        // always call StateHasChanged!
         StateHasChanged();
     }
 }
