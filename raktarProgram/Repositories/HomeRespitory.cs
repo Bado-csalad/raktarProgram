@@ -12,6 +12,9 @@ namespace raktarProgram.Repositories
 {
     public class HomeRespitory : IHomeRespitory
     {
+        public const string nincsXmit = "Válaszd ki, hogy mit szeretnél átadni!";
+        public const string nincsXKitol = "Válaszd ki, hogy ki adja át a tételt!";
+
         private RaktarContext context;
         public HomeRespitory(RaktarContext ctx)
         {
@@ -84,10 +87,21 @@ namespace raktarProgram.Repositories
             return lista;
         }
 
-        public async Task<(Hely, string hiba)> Xmentes(Eszkoz xmit, Hely xkitol, 
+        public async Task<(Hely hely, string hiba)> Xmentes(Eszkoz xmit, Hely xkitol, 
                                               EszkozHely xhova, DateTime xmikor,
                                               int xmennyiseg, string xmegj)
         {
+            
+            if (xmit == null ||  xmit.ID == 0)
+            {
+                return (null, nincsXmit);
+            }
+
+            if (xkitol == null || xkitol.ID == 0)
+            {
+                return (null, nincsXKitol);
+            }
+
             int kodegy = this.Param.Kodegyutt;
             var kitol = this.Hely.Where(c => c.ID == xkitol.ID).First();
             kitol.Meddig = xmikor;
