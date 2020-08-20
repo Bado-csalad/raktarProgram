@@ -84,9 +84,9 @@ namespace raktarProgram.Repositories
             return lista;
         }
 
-        public async Task<List<Hely>> Xmentes(Eszkoz xmit, Hely xkitol, 
+        public async Task<(Hely, string hiba)> Xmentes(Eszkoz xmit, Hely xkitol, 
                                               EszkozHely xhova, DateTime xmikor,
-                                              int xmennyiseg)
+                                              int xmennyiseg, string xmegj)
         {
             int kodegy = this.Param.Kodegyutt;
             var kitol = this.Hely.Where(c => c.ID == xkitol.ID).First();
@@ -94,7 +94,27 @@ namespace raktarProgram.Repositories
 
             context.Update(kitol);
 
-            int ujdarab = kitol.Mennyiseg - xmennyiseg
+            int ujdarab = kitol.Mennyiseg - xmennyiseg;
+            if(ujdarab < 0)
+            {
+                string hiba = "nincs ennyi tárgy a raktárban";
+                return (null, hiba);
+            }
+            
+            Hely ujhely = new Hely(){
+                Mennyiseg = ujdarab,
+                Eszkoz = xmit,
+                Mikortol = xmikor,
+                Meddig = null,
+                Megjegyzes = xmegj,
+                EszkozHely = xkitol.EszkozHely,
+                Irany = "KI",
+                Kodegyutt = this.Param.Kodegyutt
+            };
+
+            context.Hely.Add(ujhely);
+            await context.SaveChangesAsync();
+            return  (ujhely, null);
         }
 
         // cucc kiadása
