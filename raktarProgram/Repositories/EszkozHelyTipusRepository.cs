@@ -48,7 +48,7 @@ namespace raktarProgram.Repositories
 
         public async Task<ListResult<EszkozHelyTipus>> ListEszkozHelyTipus(EszkozHelyTipusFilter filter, int pageSize, int pageNum)
         {
-            var lista = this.EszkozHelyTipus.Where(x => x.Torolt == false);
+            var lista = this.EszkozHelyTipus.Where(x => x.Torolt == false && x.LehetNegativ == false);
 
             if (filter != null)
             {

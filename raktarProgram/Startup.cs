@@ -42,7 +42,6 @@ namespace raktarProgram
 
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
 
             services.AddScoped<SearchService>();
             services.AddDbContext<RaktarContext>(options =>

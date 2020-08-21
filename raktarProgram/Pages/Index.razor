@@ -1,48 +1,82 @@
 ﻿@page "/"
 
 @inject IHomeRespitory repo
+@inject SearchService searchService
 
 <h3>Raktár</h3>
 <Link To="atadas">
     Átadás
 </Link>
+<Link To="beszerzes">
+    Beszerzés
+</Link>
+
+
+<Collapse Visible="@collapse1Visible">
+    <CollapseHeader>
+        <Heading Size="HeadingSize.Is5">
+            <input @bind="searchService.homeFilter.Kereses" @bind:event="oninput" @onfocusin="@(()=>collapse1Visible=true)" />
+            <button class="btn btn-primary" @onclick="SearchHely">
+                Keresés
+            </button>
+        </Heading>
+    </CollapseHeader>
+    <CollapseBody>
+        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+    <CloseButton Clicked="@(()=>collapse1Visible=false)" />
+    </CollapseBody>
+</Collapse>
+
 <DataGrid TItem="Hely"
           Data="@lista"
           ReadData="@OnReadData"
-          TotalItems="@count" ShowPager="true" PageSize="100" Editable="false">
+          TotalItems="@count" ShowPager="true" PageSize="searchService.PageSize" Editable="false">
     <DataGridColumn TItem="Hely" Field="@nameof(Hely.EszkozID)" Caption="Micsoda">
-         <DisplayTemplate>
-                @((context as Hely )?.Eszkoz.Nev)
+        <DisplayTemplate>
+            @((context as Hely )?.Eszkoz.Nev)
         </DisplayTemplate>
-        </DataGridColumn>
+    </DataGridColumn>
     <DataGridColumn TItem="Hely" Field="@nameof(Hely.EszkozHelyID)" Caption="Hol">
-         <DisplayTemplate>
-                @((context as Hely )?.EszkozHely.Nev)
+        <DisplayTemplate>
+            @((context as Hely )?.EszkozHely.Nev)
         </DisplayTemplate>
-        </DataGridColumn>
+    </DataGridColumn>
 
     <DataGridColumn TItem="Hely" Field="@nameof(Hely.Mennyiseg)" Caption="Mennyit" />
-    <DataGridColumn TItem="Hely" Field="@nameof(Hely.Mikortol)" Caption="Mikoról" />
-    <DataGridColumn TItem="Hely" Field="@nameof(Hely.Meddig)" Caption="Meddig" />
-    <DataGridColumn TItem="Hely" Field="@nameof(Hely.Kodegyutt)" Caption="Kodegyutt" />
-    <DataGridColumn TItem="Hely" Field="@nameof(Hely.Irany)" Caption="Irany" />
+    <DataGridColumn TItem="Hely" Field="@nameof(Hely.Mikortol)" Caption="Mikortól" />
+
 </DataGrid>
 
 @code{
+
+    bool collapse1Visible = false;
+    int pageSize = 10;
     List<Hely> lista;
 
     int count;
 
+    private async Task SearchHely(MouseEventArgs e)
+    {
+        // this can be call to anything, in this case we're calling a fictional api
+        var response = await repo.ListHome(searchService.homeFilter, searchService.PageSize, 1);
+
+        lista = response.Data; // an actual data for the current page
+        count = response.Total; // this is used to tell datagrid how many items are available so that pagination will work
+
+        // always call StateHasChanged!
+        StateHasChanged();
+    }
+
     async Task OnReadData(DataGridReadDataEventArgs<Hely> e)
-        {
-            var response = await repo.ListHome(null, 100, 1);
+    {
+        var response = await repo.ListHome(searchService.homeFilter, searchService.PageSize, e.Page);
 
-            lista = response.Data;
-            count = response.Total;
+        lista = response.Data;
+        count = response.Total;
 
-            StateHasChanged();
-        }
-    
+        StateHasChanged();
+    }
+
     void OnBeforeUpdate(CancellableRowChange<Eszkoz> e)
     {
         // todo validálni, meg menteni, ha hiba van, akkor e.cancel = true
@@ -55,4 +89,3 @@
     }
 }
 
-          

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NuGet.Frameworks;
 using raktarProgram.Data;
 using raktarProgram.Repositories;
 using System;
@@ -26,6 +27,24 @@ namespace raktarProgramTests
             HomeRespitory hr = new HomeRespitory(rc);
 
             var xx = await hr.GetXMitList();
+        }
+
+        [TestMethod]
+        public async Task listBeszerzesTest()
+        {
+            var dbb = new DbContextOptionsBuilder<RaktarContext>();
+            dbb.UseSqlServer(connstrin);
+
+
+            RaktarContext rc = new RaktarContext(dbb.Options);
+            HomeRespitory hr = new HomeRespitory(rc);
+
+            var xx = await hr.ListBeszerzesek(null, 100, 1);
+
+            Assert.IsNotNull(xx);
+            Assert.IsTrue(xx.Total > 0);
+            Assert.IsTrue(xx.Data.Count() > 0);
+            Assert.IsTrue(xx.Data[0].Mennyiseg > 0);
         }
 
         [TestMethod]

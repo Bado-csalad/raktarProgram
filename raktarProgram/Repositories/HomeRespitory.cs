@@ -7,6 +7,13 @@ using raktarProgram.Data.Filters;
 using System.Threading.Tasks;
 using raktarProgram.Helpers;
 using System;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
+using System.Reflection.Metadata.Ecma335;
+using Microsoft.EntityFrameworkCore.Internal;
+using System.Runtime.InteropServices;
+using Blazorise;
+using Microsoft.EntityFrameworkCore.Query;
+using System.Diagnostics;
 
 namespace raktarProgram.Repositories
 {
@@ -34,7 +41,7 @@ namespace raktarProgram.Repositories
 
         public async Task<ListResult<Hely>> ListHome(HomeFilter filter, int pageSize, int pageNum)
         {
-            var lista = this.Hely; //.Where(x => x.Meddig == null && x.EszkozHely.Tipus.LehetNegativ == false);
+            var lista = this.Hely.Where(x => x.Meddig == null && x.EszkozHely.Tipus.LehetNegativ == false);
             if (filter != null)
             {
                 if (!string.IsNullOrEmpty(filter.Kereses))
@@ -53,6 +60,56 @@ namespace raktarProgram.Repositories
                         .Take(pageSize)
                         .Include(t => t.Eszkoz)
                         .Include(t => t.EszkozHely)
+                        .ToListAsync();
+
+            return res;
+        }
+
+        public async Task<ListResult<Hely>> ListBeszerzesek(HomeFilter filter, int pageSize, int pageNum)
+        {
+            var lista = this.Hely
+                .Join(this.Hely,
+                p => p.Kodegyutt,
+                o => o.Kodegyutt,
+                (p, e) => new { beszerzes = p, raktar = e })
+                   .Where(c => c.beszerzes.EszkozHely.Tipus.LehetNegativ == true
+                    && c.raktar.EszkozHely.Tipus.NullaListabanLathato == true)
+                   .Select(c => c.raktar);
+
+            if (filter != null)
+            {
+                if (!string.IsNullOrEmpty(filter.Kereses))
+                {
+                    lista = lista.Where(x => x.Eszkoz.Nev.Contains(filter.Kereses)
+                            || x.EszkozHely.Nev.Contains(filter.Kereses));
+                }
+            }
+
+            /* 
+             select * from hely as beszerzes
+             inner join hely as raktar 
+                ON raktar.kodefggyutt = beszerzes.kodeggyutt
+              inner join ezskozheky ehb on ehb.id = berszerhes.ezskozhelyID
+              inner join eszkozhelytipus etb on etb.id = ehb.tipusid and etb.lehetnegativ = true
+            
+            inner join ezskozheky ehr on ehr.id = raktar.ezskozhelyID
+              inner join eszkozhelytipus etr on etr.id = ehr.tipusid and etr.NullaListabanLathato = true
+            
+            WHERE 
+              ..... 
+             */
+
+            ListResult<Hely> res = new ListResult<Hely>();
+
+            res.Total = await lista.CountAsync();
+
+            lista = lista.OrderBy(x => x.Mikortol)
+                        .Skip((pageNum - 1) * pageSize)
+                        .Take(pageSize)
+                        .Include(t => t.Eszkoz)
+                        .Include(t => t.EszkozHely);
+
+            res.Data = await lista
                         .ToListAsync();
 
             return res;
@@ -90,6 +147,22 @@ namespace raktarProgram.Repositories
             return lista;
         }
 
+        public async Task<List<EszkozHely>> GetXHovaBeszerzesList()
+        {
+            var lista = await this.EszkozHely
+                .Where(c => c.Tipus.NullaListabanLathato == true && c.Torolt == false)
+                .OrderBy(c => c.Nev)
+                .ToListAsync();
+            return lista;
+        }
+
+        public async Task<string> Xbeszerzes(Eszkoz xmit,
+                                              EszkozHely xhova, DateTime xmikor,
+                                              int xmennyiseg, string xmegj)
+        {
+            return await this.Xmentes(xmit, this.Hely.First(c => c.EszkozHely.Tipus.LehetNegativ == true), xhova, xmikor, xmennyiseg, xmegj);
+        }
+
         public async Task<string> Xmentes(Eszkoz xmit, Hely xkitol, 
                                               EszkozHely xhova, DateTime xmikor,
                                               int xmennyiseg, string xmegj)
@@ -111,13 +184,11 @@ namespace raktarProgram.Repositories
             }
 
             int kodegy = this.Param.Kodegyutt;
-            var kitol = this.Hely.Where(c => c.ID == xkitol.ID).First();
+            var kitol = await this.Hely.Where(c => c.ID == xkitol.ID).SingleAsync();
             kitol.Meddig = xmikor;
 
-            context.Update(kitol);
-
             int ujdarab = kitol.Mennyiseg - xmennyiseg;
-            if(ujdarab < 0)
+            if (ujdarab < 0 && kitol.EszkozHely.Tipus != null)
             { 
                 return (rosszMennyiseg);
             }
@@ -136,14 +207,15 @@ namespace raktarProgram.Repositories
 
             context.Hely.Add(ujhely);
             await context.SaveChangesAsync();
-            //return  (null, sikeresFelvetel);
 
-            var hova = await context.Hely.Where(c => c.EszkozHely.ID == xhova.ID && c.Eszkoz.ID == xmit.ID).FirstOrDefaultAsync();
+            var hova = await context.Hely.Where(c => c.EszkozHely.ID == xhova.ID && c.Eszkoz.ID == xmit.ID && c.Meddig == null).SingleOrDefaultAsync();
             int mennyi = xmennyiseg;
 
             if ( hova != null)
             {
                 mennyi += hova.Mennyiseg;
+                hova.Meddig = xmikor;
+                await context.SaveChangesAsync();
             }
 
             Hely ujHova = new Hely() {
@@ -160,7 +232,7 @@ namespace raktarProgram.Repositories
 
             context.Add(ujHova);
             this.Param.Kodegyutt++;
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             return (sikeresFelvetel);
 
