@@ -7,13 +7,7 @@ using raktarProgram.Data.Filters;
 using System.Threading.Tasks;
 using raktarProgram.Helpers;
 using System;
-using Microsoft.EntityFrameworkCore.ValueGeneration;
-using System.Reflection.Metadata.Ecma335;
 using Microsoft.EntityFrameworkCore.Internal;
-using System.Runtime.InteropServices;
-using Blazorise;
-using Microsoft.EntityFrameworkCore.Query;
-using System.Diagnostics;
 
 namespace raktarProgram.Repositories
 {
@@ -38,6 +32,15 @@ namespace raktarProgram.Repositories
         public IQueryable<Hely> Hely => context.Hely.Include(x => x.Eszkoz).Include(x => x.EszkozHely).Include(x => x.Felhasznalo);
 
         private Params Param => context.Params.First();
+
+        public async Task<Hely> HelyModositas(Hely hely)
+        {
+            context.Attach(hely);
+            context.Update(hely);
+
+            await context.SaveChangesAsync();
+            return hely;
+        }
 
         public async Task<ListResult<Hely>> ListHome(HomeFilter filter, int pageSize, int pageNum)
         {

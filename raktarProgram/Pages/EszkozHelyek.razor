@@ -28,10 +28,10 @@
         </DisplayTemplate>
         <EditTemplate>
             <SelectList Data="@tipuslista"
-    TextField="@((item)=>item.Nev)"
-    ValueField="@((item)=>item.ID)"
-    SelectedValue="@((int)( ( (CellEditContext)context ).CellValue ))"
-    SelectedValueChanged="@(( v ) => ( (CellEditContext)context ).CellValue = int.Parse((string)v))"/>
+                TextField="@((item)=>item.Nev)"
+                ValueField="@((item)=>item.ID)"
+                SelectedValue="@((int)( ( (CellEditContext)context ).CellValue ))"
+                SelectedValueChanged="@(( v ) => ( (CellEditContext)context ).CellValue = int.Parse((string)v))"/>
         </EditTemplate>
         
     </DataGridColumn>

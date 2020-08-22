@@ -19,7 +19,7 @@
           ReadData="@OnReadData"
           TotalItems="@count" ShowPager="true" PageSize="searchService.PageSize" Editable="true" 
           RowInserted="@OnAfterInsert" RowUpdated="@OnAfterUpdate" RowUpdating="@OnBeforeUpdate"
-          RowRemoved="@OnAfterREmove">
+          RowRemoved="@OnAfterRemove">
     <DataGridCommandColumn TItem="Eszkoz" />
     <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Nev)" Caption="Név" Editable="true" />
     <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Leiras)" Caption="Leírás" Editable="true" />
@@ -68,7 +68,7 @@
     }
 
 
-    async Task OnAfterREmove(Eszkoz e)
+    async Task OnAfterRemove(Eszkoz e)
     {
         // todo validálni, meg menteni, ha hiba van, akkor e.cancel = true
 

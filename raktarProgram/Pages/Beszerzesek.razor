@@ -1,0 +1,90 @@
+﻿@page "/beszerzesek"
+
+@using Blazorise.Components
+@using raktarProgram.Data
+@using raktarProgram.Data.Filters
+@using raktarProgram.Interfaces
+@using Blazorise.DataGrid
+@using System.Transactions
+
+@inject IHomeRespitory repo
+@inject SearchService searchService
+
+<h3>Beszerzesek</h3>
+
+<DataGrid TItem="Hely"
+          Data="@lista"
+          ReadData="@OnReadData"
+          TotalItems="@count" ShowPager="true" PageSize="searchService.PageSize" Editable="true"
+          RowUpdated="@OnAfterUpdate">
+    <DataGridCommandColumn TItem="Hely">
+        <NewCommandTemplate>
+            <Button hidden />
+        </NewCommandTemplate>
+    </DataGridCommandColumn>
+
+    <DataGridColumn TItem="Hely" Field="@nameof(Hely.EszkozID)" Caption="Micsoda" Editable="true">
+        <DisplayTemplate>
+            @((context as Hely )?.Eszkoz.Nev)
+        </DisplayTemplate>
+    </DataGridColumn>
+
+    <DataGridColumn TItem="Hely" Field="@nameof(Hely.EszkozHelyID)" Caption="Hol" Editable="true">
+        <DisplayTemplate>
+            @((context as Hely )?.EszkozHely.Nev)
+        </DisplayTemplate>
+        <EditTemplate>
+            <SelectList Data="@eszkozhelylista"
+                        TextField="@((item)=>item.Nev)"
+                        ValueField="@((item)=>item.ID)"
+                        SelectedValue="@((int)( ( (CellEditContext)context ).CellValue ))"
+                        SelectedValueChanged="@(( v ) => ( (CellEditContext)context ).CellValue = int.Parse((string)v))" />
+        </EditTemplate>
+    </DataGridColumn>
+
+    <DataGridColumn TItem="Hely" Field="@nameof(Hely.Mennyiseg)" Caption="Mennyit" Editable="true" />
+
+    <DataGridColumn TItem="Hely" Field="@nameof(Hely.Mikortol)" Caption="Mikortól" Editable="true" />
+</DataGrid>
+@code {
+    List<Hely> lista;
+    List<EszkozHely> eszkozhelylista;
+
+    int count;
+
+    private async Task SearchHely(MouseEventArgs e)
+    {
+        var response = await repo.ListBeszerzesek(searchService.homeFilter, searchService.PageSize, 1);
+
+        lista = response.Data;
+        count = response.Total;
+
+        StateHasChanged();
+    }
+
+    async Task OnReadData(DataGridReadDataEventArgs<Hely> e)
+    {
+        var response = await repo.ListBeszerzesek(searchService.homeFilter, searchService.PageSize, e.Page);
+
+        lista = response.Data;
+        count = response.Total;
+
+        StateHasChanged();
+    }
+
+    async Task OnAfterUpdate(SavedRowItem<Hely, Dictionary<string, object>> e)
+    {
+        // todo validálni, meg menteni, ha hiba van, akkor e.cancel = true
+
+        using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        {
+            var mentettBeszerzes = await repo.HelyModositas(e.Item);
+            ts.Complete();
+        }
+
+        // ez nemtom kell-e ide...
+        // always call StateHasChanged!
+        StateHasChanged();
+    }
+
+}

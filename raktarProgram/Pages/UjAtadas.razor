@@ -1,0 +1,163 @@
+﻿@page "/ujatadas"
+@using Blazorise.Components
+@inject IHomeRespitory repo
+@inject NavigationManager NavigationManager
+
+<h1>Átadás</h1>
+
+
+
+<Row>
+    <Column ColumnSize="ColumnSize.Is3">
+        <Alert Color="Color.Primary" Visible="true">
+            Mit:
+        </Alert>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is9">
+        <SelectList Data="@xmitLista"
+                    TextField="@((item)=>item.Nev)"
+                    ValueField="@((item)=>item.ID)"
+                    SelectedValueChanged="@selectedEszkozChangedHandler" />
+    </Column>
+</Row>
+<Row>
+    <Column ColumnSize="ColumnSize.Is3">
+        <Alert Color="Color.Primary" Visible="true">
+            Honnan:
+        </Alert>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is9">
+        <SelectList Data="@xkitolList"
+                    TextField="@((item)=>item.EszkozhelyNev)"
+                    ValueField="@((item)=>item.ID)"
+                    SelectedValueChanged="@selectedHelyChangedHandler" />
+    </Column>
+</Row>
+<Row>
+    <Column ColumnSize="ColumnSize.Is3">
+        <Alert Color="Color.Primary" Visible="true">
+            Hova:
+        </Alert>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is9">
+        <SelectList Data="@xhovaList"
+                    TextField="@((item)=>item.Nev)"
+                    ValueField="@((item)=>item.ID)"
+                    SelectedValueChanged="@selectedHovaChangedHandler" />
+    </Column>
+</Row>
+<Row>
+    <Column ColumnSize="ColumnSize.Is3">
+        <Alert Color="Color.Primary" Visible="true">
+            Mennyit:
+        </Alert>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is9">
+        <input @bind="mennyit" @bind:event="oninput" />
+    </Column>
+</Row>
+<Row>
+    <Column ColumnSize="ColumnSize.Is3">
+        <Alert Color="Color.Primary" Visible="true">
+            Mikor:
+        </Alert>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is9">
+        <DateEdit @bind-Date="xmikor" />
+    </Column>
+</Row>
+<Row>
+    <Column ColumnSize="ColumnSize.Is3">
+        <Alert Color="Color.Primary" Visible="true">
+            Megjegyzés:
+        </Alert>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is9">
+        <input @bind="megjegyzes" @bind:event="oninput" />
+    </Column>
+</Row>
+<button class="btn btn-primary" @onclick="Mentes">
+    Átadás
+</button>
+
+<Alert @ref="myAlert" Color="Color.Warning" Dismisable="true">
+    <AlertDescription>
+        Figyelem!
+    </AlertDescription>
+    <AlertMessage>
+        @hibauzenet
+    </AlertMessage>
+    <CloseButton Clicked="@(()=>myAlert.Hide())" />
+</Alert>
+
+@code {
+    List<Eszkoz> xmitLista = null;
+    List<Hely> xkitolList = null;
+    List<EszkozHely> xhovaList = null;
+    Eszkoz xmit;
+    Hely xkitol;
+    EszkozHely xhova;
+    int mennyit;
+    string megjegyzes;
+    DateTime xmikor = DateTime.Now;
+    Alert myAlert;
+    string hibauzenet;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            this.xmitLista = await this.repo.GetXMitList();
+            this.xmitLista.Insert(0, new Eszkoz());
+            StateHasChanged();
+        }
+    }
+
+    async Task selectedEszkozChangedHandler(object newEszkoz)
+    {
+        xmit = this.xmitLista.First(c => c.ID == Convert.ToInt32(newEszkoz));
+
+        this.xkitolList = await this.repo.GetXKitolList(xmit.ID);
+        this.xkitolList.Insert(0, new Hely());
+        StateHasChanged();
+    }
+
+    async Task selectedHelyChangedHandler(object newHely)
+    {
+        xkitol = this.xkitolList.First(c => c.ID == Convert.ToInt32(newHely));
+
+        this.xhovaList = await this.repo.GetXHovaList(xkitol.EszkozHelyID);
+        this.xhovaList.Insert(0, new EszkozHely());
+        StateHasChanged();
+    }
+
+    async Task selectedHovaChangedHandler(object newHova)
+    {
+        xhova = this.xhovaList.First(c => c.ID == Convert.ToInt32(newHova));
+        StateHasChanged();
+    }
+
+    private async Task Mentes(MouseEventArgs e)
+    {
+        // this can be call to anything, in this case we're calling a fictional api
+
+        using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        {
+
+            var eredmeny = await repo.Xmentes(xmit, xkitol, xhova, xmikor, mennyit, megjegyzes);
+            if (eredmeny != raktarProgram.Repositories.HomeRespitory.sikeresFelvetel)
+            {
+                hibauzenet = eredmeny;
+                myAlert.Show();
+            }
+            else
+            {
+                ts.Complete();
+                NavigationManager.NavigateTo("/");
+            }
+        }
+
+        // always call StateHasChanged!
+        StateHasChanged();
+    }
+}
