@@ -18,6 +18,7 @@ namespace raktarProgram.Repositories
         public const string nincsXHova = "Válaszd ki, hogy hova szeretnéd átadni a tételt!";
         public const string rosszMennyiseg = "Nincs ennyi tárgy a ratkárban";
         public const string sikeresFelvetel = "Eszköz sikeresen átadva";
+        public const string kevesMennyiseg = "Túl kevés mennyiséget adtál meg";
 
         private RaktarContext context;
         public HomeRespitory(RaktarContext ctx)
@@ -33,13 +34,26 @@ namespace raktarProgram.Repositories
 
         private Params Param => context.Params.First();
 
-        public async Task<Hely> HelyModositas(Hely hely)
+        public async Task<string> HelyModositas(Hely hely)
         {
-            context.Attach(hely);
+            var tarsHely = await this.Hely.Where(c => c.Kodegyutt == hely.Kodegyutt && c.ID != hely.ID).SingleAsync();
+            var regiHely = await this.Hely.Where(c => c.ID == hely.ID).SingleAsync();
+
+            if (hely.Mennyiseg <= 0)
+            {
+                return (kevesMennyiseg);
+            }
+
+            tarsHely.Mennyiseg = -hely.Mennyiseg;
+            tarsHely.Eszkoz = hely.Eszkoz;
+            tarsHely.Mikortol = hely.Mikortol;
+            tarsHely.Meddig = hely.Mikortol;
+
+            context.Update(tarsHely);
             context.Update(hely);
 
             await context.SaveChangesAsync();
-            return hely;
+            return null;
         }
 
         public async Task<ListResult<Hely>> ListHome(HomeFilter filter, int pageSize, int pageNum)
@@ -166,12 +180,15 @@ namespace raktarProgram.Repositories
             return await this.Xmentes(xmit, this.Hely.First(c => c.EszkozHely.Tipus.LehetNegativ == true), xhova, xmikor, xmennyiseg, xmegj);
         }
 
-        public async Task<string> Xmentes(Eszkoz xmit, Hely xkitol, 
+        public async Task<string> Xmentes(Eszkoz xmit, Hely xkitol,
                                               EszkozHely xhova, DateTime xmikor,
                                               int xmennyiseg, string xmegj)
         {
-            
-            if (xmit == null ||  xmit.ID == 0)
+            if (xmennyiseg <= 0)
+            {
+                return (kevesMennyiseg);
+            }
+            if (xmit == null || xmit.ID == 0)
             {
                 return (nincsXmit);
             }
@@ -192,11 +209,12 @@ namespace raktarProgram.Repositories
 
             int ujdarab = kitol.Mennyiseg - xmennyiseg;
             if (ujdarab < 0 && kitol.EszkozHely.Tipus != null)
-            { 
+            {
                 return (rosszMennyiseg);
             }
 
-            Hely ujhely = new Hely() {
+            Hely ujhely = new Hely()
+            {
                 Mennyiseg = ujdarab,
                 Eszkoz = xmit,
                 Mikortol = xmikor,
@@ -214,14 +232,15 @@ namespace raktarProgram.Repositories
             var hova = await context.Hely.Where(c => c.EszkozHely.ID == xhova.ID && c.Eszkoz.ID == xmit.ID && c.Meddig == null).SingleOrDefaultAsync();
             int mennyi = xmennyiseg;
 
-            if ( hova != null)
+            if (hova != null)
             {
                 mennyi += hova.Mennyiseg;
                 hova.Meddig = xmikor;
                 await context.SaveChangesAsync();
             }
 
-            Hely ujHova = new Hely() {
+            Hely ujHova = new Hely()
+            {
                 Mennyiseg = mennyi,
                 Eszkoz = xmit,
                 Mikortol = xmikor,
@@ -291,5 +310,12 @@ namespace raktarProgram.Repositories
         */
 
         // beszerzés
+
+        /*
+         
+         uj lap kinél mennyi ideig volt 
+         keresés idő intervallum, mire kinél hol mikor stb...
+         
+         */
     }
 }
