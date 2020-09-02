@@ -14,7 +14,27 @@
           TotalItems="@count" ShowPager="true" PageSize="searchService.PageSize" Editable="true" 
           RowInserted="@OnAfterInsert" RowUpdated="@OnAfterUpdate" RowUpdating="@OnBeforeUpdate"
           RowRemoved="@OnAfterREmove">
-    <DataGridCommandColumn TItem="EszkozHelyTipus" />
+    <DataGridCommandColumn TItem="EszkozHelyTipus">
+        <NewCommandTemplate>
+            <Button Color="Color.Primary" Clicked="@context.Clicked" >
+                Új felvétele
+            </Button>
+        </NewCommandTemplate>
+        <EditCommandTemplate>
+
+            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
+                Módosítás
+            </Blazorise.Button>
+            
+        </EditCommandTemplate>
+        <DeleteCommandTemplate>
+
+            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
+                Törlés
+            </Blazorise.Button>
+
+        </DeleteCommandTemplate>
+    </DataGridCommandColumn>
     <DataGridColumn TItem="EszkozHelyTipus" Field="@nameof(EszkozHelyTipus.Nev)" Caption="Név" Editable="true" />
     <DataGridColumn TItem="EszkozHelyTipus" Field="@nameof(EszkozHelyTipus.Leiras)" Caption="Leírás" Editable="true" />
 </DataGrid>

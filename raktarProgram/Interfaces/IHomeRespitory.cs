@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,5 +22,10 @@ namespace raktarProgram.Interfaces
         Task<List<Hely>> GetXKitolList(int eszkozID);
 
         Task<List<EszkozHely>> GetXHovaList(int eszkohelyID);
+        Task<string> Xmentes(Eszkoz xmit, Hely xkitol, EszkozHely xhova, DateTime xmikor, int xmennyiseg, string xmegj);
+        Task<string> Xbeszerzes(Eszkoz xmit, EszkozHely xhova, DateTime xmikor, int xmennyiseg, string xmegj);
+        Task<List<EszkozHely>> GetXHovaBeszerzesList();
+        Task<ListResult<Hely>> ListBeszerzesek(HomeFilter filter, int pageSize, int pageNum);
+        Task<string> HelyModositas(Hely hely);
     }
 }

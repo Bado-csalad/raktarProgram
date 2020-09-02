@@ -1,0 +1,8 @@
+/obj
+/raktarProgram/TestResults
+/raktarProgramTests/bin
+/raktarProgramTests/obj
+/bin
+/raktarProgram/*.user
+/.vs
+/raktarProgram/.vs

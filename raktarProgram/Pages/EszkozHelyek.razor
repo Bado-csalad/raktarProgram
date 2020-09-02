@@ -16,7 +16,28 @@
           ReadData="@OnReadData"
           TotalItems="@count" ShowPager="true" PageSize="5" Editable="true" 
           RowUpdated="@OnAfterUpdate" RowUpdating="@OnBeforeUpdate" RowInserted="@OnAfterInsert">
-    <DataGridCommandColumn TItem="EszkozHely" />
+    <DataGridCommandColumn TItem="EszkozHely">
+        <NewCommandTemplate>
+            <Button Color="Color.Primary" Clicked="@context.Clicked">
+                Új felvétele
+            </Button>
+        </NewCommandTemplate>
+        <EditCommandTemplate>
+
+            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
+                Módosítás
+            </Blazorise.Button>
+
+        </EditCommandTemplate>
+        <DeleteCommandTemplate>
+
+            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
+                Törlés
+            </Blazorise.Button>
+
+        </DeleteCommandTemplate>
+    </DataGridCommandColumn>
+
     <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Nev)" Caption="Név" Editable="true" />
     <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Leiras)" Caption="Leírás" Editable="true" />
     <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Telefon)" Caption="Azonosító" Editable="true" />
@@ -28,10 +49,10 @@
         </DisplayTemplate>
         <EditTemplate>
             <SelectList Data="@tipuslista"
-    TextField="@((item)=>item.Nev)"
-    ValueField="@((item)=>item.ID)"
-    SelectedValue="@((int)( ( (CellEditContext)context ).CellValue ))"
-    SelectedValueChanged="@(( v ) => ( (CellEditContext)context ).CellValue = int.Parse((string)v))"/>
+                TextField="@((item)=>item.Nev)"
+                ValueField="@((item)=>item.ID)"
+                SelectedValue="@((int)( ( (CellEditContext)context ).CellValue ))"
+                SelectedValueChanged="@(( v ) => ( (CellEditContext)context ).CellValue = int.Parse((string)v))"/>
         </EditTemplate>
         
     </DataGridColumn>

@@ -19,8 +19,28 @@
           ReadData="@OnReadData"
           TotalItems="@count" ShowPager="true" PageSize="searchService.PageSize" Editable="true" 
           RowInserted="@OnAfterInsert" RowUpdated="@OnAfterUpdate" RowUpdating="@OnBeforeUpdate"
-          RowRemoved="@OnAfterREmove">
-    <DataGridCommandColumn TItem="Eszkoz" />
+          RowRemoved="@OnAfterRemove">
+    <DataGridCommandColumn TItem="Eszkoz">
+        <NewCommandTemplate>
+            <Button Color="Color.Primary" Clicked="@context.Clicked">
+                Új felvétele
+            </Button>
+        </NewCommandTemplate>
+        <EditCommandTemplate>
+
+            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
+                Módosítás
+            </Blazorise.Button>
+
+        </EditCommandTemplate>
+        <DeleteCommandTemplate>
+
+            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
+                Törlés
+            </Blazorise.Button>
+
+        </DeleteCommandTemplate>
+    </DataGridCommandColumn>
     <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Nev)" Caption="Név" Editable="true" />
     <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Leiras)" Caption="Leírás" Editable="true" />
     <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Azonosito)" Caption="Azonosító" Editable="true" />
@@ -68,7 +88,7 @@
     }
 
 
-    async Task OnAfterREmove(Eszkoz e)
+    async Task OnAfterRemove(Eszkoz e)
     {
         // todo validálni, meg menteni, ha hiba van, akkor e.cancel = true
 

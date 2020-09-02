@@ -10,8 +10,8 @@ namespace raktarProgram.Repositories
         public static void Initialize(RaktarContext context)
         {
 
-            // context.Database.EnsureDeleted();
-            // context.Database.EnsureCreated();
+            //context.Database.EnsureDeleted();
+            //context.Database.EnsureCreated();
 
             if (!context.EszkozHelyTipus.Any())
             {
@@ -33,7 +33,7 @@ namespace raktarProgram.Repositories
                     context.SaveChanges();
 
                     var besz1 = new EszkozHely { Nev = "beszerzes1", Leiras = "ezbeszerzes1", Tipus = eh3, Torolt = false, aktiv = true };
-                    var besz2 = new EszkozHely { Nev = "beszerzes2", Leiras = "ezbeszerzes2", Tipus = eh3, Torolt = false, aktiv = true };
+                   
                     var rak1 = new EszkozHely { Nev = "raktar1", Leiras = "ezraktar1", Tipus = eh1, Torolt = false, aktiv = true };
                     var rak2 = new EszkozHely { Nev = "raktar2", Leiras = "ezraktar2", Tipus = eh1, Torolt = false, aktiv = true };
                     var jozsi = new EszkozHely { Nev = "jozsieszh", Leiras = "ezjozsieszh", Tipus = eh2, Torolt = false, aktiv = true };
@@ -47,9 +47,7 @@ namespace raktarProgram.Repositories
                     new EszkozHely{ Nev = "belaeszh", Leiras = "ezbelaeszh", Tipus = eh2, Torolt = false, aktiv = true},
                     jozsi,
                     pista,
-                    besz1,
-                    besz2,
-                    new EszkozHely{ Nev = "beszerzes3", Leiras = "ezbeszerzes3", Tipus = eh3, Torolt = false, aktiv = false}
+                    besz1
                     };
 
                     context.EszkozHely.AddRange(eszkozhely);

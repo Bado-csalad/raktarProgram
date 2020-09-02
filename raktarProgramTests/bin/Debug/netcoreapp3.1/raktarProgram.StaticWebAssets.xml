@@ -1,6 +1,0 @@
-﻿<StaticWebAssets Version="1.0">
-  <ContentRoot BasePath="_content/Blazorise" Path="C:\Users\bado.miklos\.nuget\packages\blazorise\0.9.1.2\build\..\staticwebassets\" />
-  <ContentRoot BasePath="_content/Blazorise.Bootstrap" Path="C:\Users\bado.miklos\.nuget\packages\blazorise.bootstrap\0.9.1.2\build\..\staticwebassets\" />
-  <ContentRoot BasePath="_content/Blazorise.Material" Path="C:\Users\bado.miklos\.nuget\packages\blazorise.material\0.9.1.2\build\..\staticwebassets\" />
-  <ContentRoot BasePath="_content/MatBlazor" Path="C:\Users\bado.miklos\.nuget\packages\matblazor\2.6.2\build\..\staticwebassets\" />
-</StaticWebAssets>

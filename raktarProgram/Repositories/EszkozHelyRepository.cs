@@ -52,7 +52,7 @@ namespace raktarProgram.Repositories
 
         public async Task<ListResult<EszkozHely>> ListEszkozHely(EszkozHelyFilter filter, int pageSize, int pageNum)
         {
-            var lista = this.EszkozHely.Where(x => x.Torolt == false);
+            var lista = this.EszkozHely.Where(x => x.Torolt == false && x.Tipus.LehetNegativ == false);
 
             if(filter != null)
             {

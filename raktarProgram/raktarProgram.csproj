@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Pages\Component.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Blazorise" Version="0.9.1.2" />
     <PackageReference Include="Blazorise.Bootstrap" Version="0.9.1.2" />
     <PackageReference Include="Blazorise.Components" Version="0.9.1.2" />
