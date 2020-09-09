@@ -17,7 +17,7 @@
 <DataGrid TItem="Eszkoz"
           Data="@lista"
           ReadData="@OnReadData"
-          TotalItems="@count" ShowPager="true" PageSize="searchService.PageSize" Editable="true" 
+          TotalItems="@count" ShowPager="true" PageSize="searchService.PageSize" Editable="true" Bordered="true" Hoverable="true" Striped="true"
           RowInserted="@OnAfterInsert" RowUpdated="@OnAfterUpdate" RowUpdating="@OnBeforeUpdate"
           RowRemoved="@OnAfterRemove">
     <DataGridCommandColumn TItem="Eszkoz">
@@ -40,6 +40,12 @@
             </Blazorise.Button>
 
         </DeleteCommandTemplate>
+        <SaveCommandTemplate>
+            <Button Color="Color.Primary" Clicked="@context.Clicked">Mentés</Button>
+        </SaveCommandTemplate>
+        <CancelCommandTemplate>
+            <Button Color="Color.Secondary" Clicked="@context.Clicked">Mégse</Button>
+        </CancelCommandTemplate>
     </DataGridCommandColumn>
     <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Nev)" Caption="Név" Editable="true" />
     <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Leiras)" Caption="Leírás" Editable="true" />

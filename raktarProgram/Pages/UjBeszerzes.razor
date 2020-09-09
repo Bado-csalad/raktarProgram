@@ -60,11 +60,11 @@
         </Alert>
     </Column>
     <Column ColumnSize="ColumnSize.Is9">
-        <input @bind="megjegyzes" @bind:event="oninput" />
+        <input @bind="megjegyzes" @bind:event="oninput" size="100"/>
     </Column>
 </Row>
 <button class="btn btn-primary" @onclick="Mentes">
-    Hozzá adás
+    Hozzáadás
 </button>
 
 <Alert @ref="myAlert" Color="Color.Warning" Dismisable="true">

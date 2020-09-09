@@ -14,8 +14,8 @@
 <DataGrid TItem="EszkozHely"
           Data="@lista"
           ReadData="@OnReadData"
-          TotalItems="@count" ShowPager="true" PageSize="5" Editable="true" 
-          RowUpdated="@OnAfterUpdate" RowUpdating="@OnBeforeUpdate" RowInserted="@OnAfterInsert">
+          TotalItems="@count" ShowPager="true" PageSize="5" Editable="true" Bordered="true" Hoverable="true" Striped="true" Sortable="true"
+          RowUpdated="@OnAfterUpdate" RowUpdating="@OnBeforeUpdate" RowInserted="@OnAfterInsert" >
     <DataGridCommandColumn TItem="EszkozHely">
         <NewCommandTemplate>
             <Button Color="Color.Primary" Clicked="@context.Clicked">
@@ -36,14 +36,20 @@
             </Blazorise.Button>
 
         </DeleteCommandTemplate>
+        <SaveCommandTemplate>
+            <Button Color="Color.Primary" Clicked="@context.Clicked">Mentés</Button>
+        </SaveCommandTemplate>
+        <CancelCommandTemplate>
+            <Button Color="Color.Secondary" Clicked="@context.Clicked">Mégse</Button>
+        </CancelCommandTemplate>
     </DataGridCommandColumn>
 
-    <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Nev)" Caption="Név" Editable="true" />
-    <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Leiras)" Caption="Leírás" Editable="true" />
-    <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Telefon)" Caption="Azonosító" Editable="true" />
-    <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Cim)" Caption="Cím" Editable="true" />   
-    <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Email)" Caption="Email" Editable="true" /> 
-    <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.TipusID)" Caption="Tipus" Editable="true">
+    <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Nev)" Caption="Név" Editable="true" Sortable="true" />
+    <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Leiras)" Caption="Leírás" Editable="true" Sortable="true" />
+    <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Telefon)" Caption="Azonosító" Editable="true" Sortable="true" />
+    <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Cim)" Caption="Cím" Editable="true" Sortable="true" />   
+    <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Email)" Caption="Email" Editable="true" Sortable="true" /> 
+    <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.TipusID)" Caption="Tipus" Editable="true" Sortable="true" >
         <DisplayTemplate>
                 @((context as EszkozHely )?.Tipus.Nev)
         </DisplayTemplate>
@@ -61,7 +67,7 @@
 @code {
     List<EszkozHely> lista;
     List<EszkozHelyTipus> tipuslista;
-
+    
     int count;
 
     async Task OnAfterInsert(SavedRowItem<EszkozHely, Dictionary<string, object>> e)

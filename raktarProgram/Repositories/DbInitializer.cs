@@ -185,7 +185,9 @@ namespace raktarProgram.Repositories
                                 Mennyiseg = 1,
                                 Kodegyutt = p.Kodegyutt,
                                 Megjegyzes = "pista elvitt a raktar1-ből 2 fekete sátrat",
-                                Irany = Hely.Ki
+                                Irany = Hely.Ki,
+                                Hova = pista,
+                                HovaMennyiseg = 2
                                 });
                     context.SaveChanges();
                     context.Hely.Add(
@@ -212,7 +214,9 @@ namespace raktarProgram.Repositories
                                 Mennyiseg = 1,
                                 Kodegyutt = p.Kodegyutt,
                                 Megjegyzes = "józsi elvitt a raktar1-ből 1 piros baltát",
-                                Irany = Hely.Ki
+                                Irany = Hely.Ki,
+                                Hova = jozsi,
+                                HovaMennyiseg = 1
                                 });
                     context.SaveChanges();
                     context.Hely.Add(                   
@@ -239,7 +243,9 @@ namespace raktarProgram.Repositories
                                 Mennyiseg = 1,
                                 Kodegyutt = p.Kodegyutt,
                                 Megjegyzes = "pista visszahozott a raktar1-be 1 fekete sátrat",
-                                Irany = Hely.Ki
+                                Irany = Hely.Ki,
+                                Hova = rak1,
+                                HovaMennyiseg = 1
                                 });
                     context.SaveChanges();
                     context.Hely.Add(                   

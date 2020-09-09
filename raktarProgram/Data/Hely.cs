@@ -19,11 +19,17 @@ namespace raktarProgram.Data
         public DateTime? Meddig { get; set; }
         public string Megjegyzes { get; set; }
         public int EszkozHelyID { get; set; }
+        public int? HovaID { get; set; }
         public Felhasznalo Felhasznalo { get; set; }
         [ForeignKey("EszkozID")]
         public Eszkoz Eszkoz { get; set; }
         [ForeignKey("EszkozHelyID")]
+        [InverseProperty("Helyek")]
         public EszkozHely EszkozHely { get; set; }
+        [ForeignKey("HovaID")]
+        [InverseProperty("HelyekHova")]
+        public EszkozHely? Hova { get; set; }
+        public int? HovaMennyiseg { get; set; }
 
         public string Irany { get; set; }
 

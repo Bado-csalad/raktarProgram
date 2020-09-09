@@ -1,4 +1,4 @@
-﻿@page "/beszerzesek"
+﻿@page "/atadasok"
 
 @using Blazorise.Components
 @using raktarProgram.Data
@@ -10,8 +10,7 @@
 @inject IHomeRespitory repo
 @inject SearchService searchService
 
-<h3>Beszerzesek</h3>
-
+<h3>Elmúlt tranzakciók</h3>
 <DataGrid TItem="Hely"
           Data="@lista"
           ReadData="@OnReadData"
@@ -39,6 +38,19 @@
         </DeleteCommandTemplate>
     </DataGridCommandColumn>
 
+    <DataGridColumn TItem="Hely" Field="@nameof(Hely.EszkozHelyID)" Caption="Honnan/kitől" Editable="true">
+        <DisplayTemplate>
+            @((context as Hely )?.EszkozHely.Nev)
+        </DisplayTemplate>
+        <EditTemplate>
+            <SelectList Data="@eszkozHelyLista"
+                        TextField="@((item)=>item.Nev)"
+                        ValueField="@((item)=>item.ID)"
+                        SelectedValue="@((int)( ( (CellEditContext)context ).CellValue ))"
+                        SelectedValueChanged="@(( v ) => ( (CellEditContext)context ).CellValue = int.Parse((string)v))" />
+        </EditTemplate>
+    </DataGridColumn>
+
     <DataGridColumn TItem="Hely" Field="@nameof(Hely.EszkozID)" Caption="Micsoda" Editable="true">
         <DisplayTemplate>
             @((context as Hely )?.Eszkoz.Nev)
@@ -52,9 +64,9 @@
         </EditTemplate>
     </DataGridColumn>
 
-    <DataGridColumn TItem="Hely" Field="@nameof(Hely.EszkozHelyID)" Caption="Hol" Editable="true">
+    <DataGridColumn TItem="Hely" Field="@nameof(Hely.HovaID)" Caption="Hova" Editable="true">
         <DisplayTemplate>
-            @((context as Hely )?.EszkozHely.Nev)
+            @((context as Hely)?.Hova.Nev)
         </DisplayTemplate>
         <EditTemplate>
             <SelectList Data="@eszkozHelyLista"
@@ -65,10 +77,13 @@
         </EditTemplate>
     </DataGridColumn>
 
-    <DataGridColumn TItem="Hely" Field="@nameof(Hely.Mennyiseg)" Caption="Mennyit" Editable="true" />
+    <DataGridColumn TItem="Hely" Field="@nameof(Hely.HovaMennyiseg)" Caption="Mennyit" Editable="true" />
 
     <DataGridColumn TItem="Hely" Field="@nameof(Hely.Mikortol)" Caption="Mikortól" Editable="true" />
+
+    <DataGridColumn TItem="Hely" Field="@nameof(Hely.Meddig)" Caption="Meddig" Editable="true" />
 </DataGrid>
+
 @code {
     List<Hely> lista;
     List<EszkozHely> eszkozHelyLista;
@@ -78,7 +93,7 @@
 
     private async Task SearchHely(MouseEventArgs e)
     {
-        var response = await repo.ListBeszerzesek(searchService.homeFilter, searchService.PageSize, 1);
+        var response = await repo.ListAtadasok(searchService.homeFilter, searchService.PageSize, 1);
 
         lista = response.Data;
         count = response.Total;
@@ -88,8 +103,8 @@
 
     async Task OnReadData(DataGridReadDataEventArgs<Hely> e)
     {
-        var response = await repo.ListBeszerzesek(searchService.homeFilter, searchService.PageSize, e.Page);
-        eszkozHelyLista = await repo.GetXHovaBeszerzesList();
+        var response = await repo.ListAtadasok(searchService.homeFilter, searchService.PageSize, e.Page);
+        eszkozHelyLista = await repo.GetXHovaAtadasokList();
         eszkozLista = await repo.GetXMitList();
         lista = response.Data;
         count = response.Total;
@@ -111,5 +126,4 @@
         // always call StateHasChanged!
         StateHasChanged();
     }
-
 }

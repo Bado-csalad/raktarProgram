@@ -11,12 +11,12 @@
 <DataGrid TItem="EszkozHelyTipus"
           Data="@lista"
           ReadData="@OnReadData"
-          TotalItems="@count" ShowPager="true" PageSize="searchService.PageSize" Editable="true" 
+          TotalItems="@count" ShowPager="true" PageSize="searchService.PageSize" Editable="true" Bordered="true" Hoverable="true" Striped="true"
           RowInserted="@OnAfterInsert" RowUpdated="@OnAfterUpdate" RowUpdating="@OnBeforeUpdate"
           RowRemoved="@OnAfterREmove">
     <DataGridCommandColumn TItem="EszkozHelyTipus">
         <NewCommandTemplate>
-            <Button Color="Color.Primary" Clicked="@context.Clicked" >
+            <Button Color="Color.Primary" Clicked="@context.Clicked">
                 Új felvétele
             </Button>
         </NewCommandTemplate>
@@ -25,7 +25,7 @@
             <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
                 Módosítás
             </Blazorise.Button>
-            
+
         </EditCommandTemplate>
         <DeleteCommandTemplate>
 
@@ -34,6 +34,12 @@
             </Blazorise.Button>
 
         </DeleteCommandTemplate>
+        <SaveCommandTemplate>
+            <Button Color="Color.Primary" Clicked="@context.Clicked">Mentés</Button>
+        </SaveCommandTemplate>
+        <CancelCommandTemplate>
+            <Button Color="Color.Secondary" Clicked="@context.Clicked">Mégse</Button>
+        </CancelCommandTemplate>
     </DataGridCommandColumn>
     <DataGridColumn TItem="EszkozHelyTipus" Field="@nameof(EszkozHelyTipus.Nev)" Caption="Név" Editable="true" />
     <DataGridColumn TItem="EszkozHelyTipus" Field="@nameof(EszkozHelyTipus.Leiras)" Caption="Leírás" Editable="true" />

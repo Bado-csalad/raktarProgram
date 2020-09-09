@@ -27,5 +27,7 @@ namespace raktarProgram.Interfaces
         Task<List<EszkozHely>> GetXHovaBeszerzesList();
         Task<ListResult<Hely>> ListBeszerzesek(HomeFilter filter, int pageSize, int pageNum);
         Task<string> HelyModositas(Hely hely);
+        Task<ListResult<Hely>> ListAtadasok(HomeFilter filter, int pageSize, int pageNum);
+        Task<List<EszkozHely>> GetXHovaAtadasokList();
     }
 }
