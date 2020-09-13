@@ -5,21 +5,28 @@
 @using raktarProgram.Interfaces
 @using Blazorise.DataGrid
 @using System.Transactions
+@using raktarProgram.Pages.Templates
 
 
 @inject IEszkozRepository repo
 @inject SearchService searchService;
 
-<h3>Eszközök</h3> <input @bind="searchService.eszkozFilter.Kereses" @bind:event="oninput" /> 
-<button class="btn btn-primary" @onclick="SearchEszkoz">
-    Keresés
-</button>
+<h3>Eszközök</h3>
+@*<input @bind="searchService.eszkozFilter.Kereses" @bind:event="oninput" />
+    <button class="btn btn-primary" @onclick="SearchEszkoz">
+        Keresés
+    </button>*@
+
+<Kereses FilterChanged=@KeresesChanged />
+
+<h3>@(Kereses) a kereses</h3>
 <DataGrid TItem="Eszkoz"
           Data="@lista"
           ReadData="@OnReadData"
           TotalItems="@count" ShowPager="true" PageSize="searchService.PageSize" Editable="true" Bordered="true" Hoverable="true" Striped="true"
           RowInserted="@OnAfterInsert" RowUpdated="@OnAfterUpdate" RowUpdating="@OnBeforeUpdate"
-          RowRemoved="@OnAfterRemove">
+          RowRemoved="@OnAfterRemove"
+          Sortable="true">
     <DataGridCommandColumn TItem="Eszkoz">
         <NewCommandTemplate>
             <Button Color="Color.Primary" Clicked="@context.Clicked">
@@ -54,7 +61,8 @@
 
 @code {
     List<Eszkoz> lista;
-
+    string Kereses = null;
+    EszkozFilter.MibenKeres = 
     int count;
 
     private async Task SearchEszkoz(MouseEventArgs e)
@@ -69,9 +77,17 @@
         StateHasChanged();
     }
 
-    //https://blazorise.com/docs/extensions/datagrid/
     async Task OnReadData(DataGridReadDataEventArgs<Eszkoz> e)
     {
+        var request = new
+        {
+            Sort = e.Columns
+                .Where(_ => _.Direction != SortDirection.None)
+                .Select(_ => new { mezo = _.Field, order = _.Direction == SortDirection.Ascending ? "A" : "D" })  // *** Need a property to OrderBy here ***
+        };
+
+        searchService.eszkozFilter.Sorrend = request.Sort.Select(c => new Tuple<string, string>(c.mezo, c.order)).ToList();
+
         // this can be call to anything, in this case we're calling a fictional api
         var response = await repo.ListEszkoz(searchService.eszkozFilter, e.PageSize, e.Page);
 
@@ -79,6 +95,12 @@
         count = response.Total; // this is used to tell datagrid how many items are available so that pagination will work
 
         // always call StateHasChanged!
+        StateHasChanged();
+    }
+
+    private async Task KeresesChanged(string kereses)
+    {
+        Kereses = kereses;
         StateHasChanged();
     }
 

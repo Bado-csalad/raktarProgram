@@ -6,35 +6,27 @@
 @using raktarProgram.Interfaces
 @using Blazorise.DataGrid
 @using System.Transactions
+@using raktarProgram.Pages.Templates
 
 @inject IHomeRespitory repo
 @inject SearchService searchService
 
 <h3>Elmúlt tranzakciók</h3>
+<Kereses />
 <DataGrid TItem="Hely"
           Data="@lista"
           ReadData="@OnReadData"
-          TotalItems="@count" ShowPager="true" PageSize="searchService.PageSize" Editable="true" Bordered="true" Hoverable="true" Striped="true"
+          TotalItems="@count" ShowPager="true" PageSize="searchService.PageSize"  Bordered="true" Hoverable="true" Striped="true"
           RowUpdated="@OnAfterUpdate">
     <DataGridCommandColumn TItem="Hely">
         <NewCommandTemplate>
             <Button hidden />
         </NewCommandTemplate>
         <EditCommandTemplate>
-            @if ((context.Item as Hely).Meddig == null)
-            {
-                <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
-                    Módosítás
-                </Blazorise.Button>
-            }
+           <Button hidden />
         </EditCommandTemplate>
         <DeleteCommandTemplate>
-            @if ((context.Item as Hely).Meddig == null)
-            {
-                <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
-                    Törlés
-                </Blazorise.Button>
-            }
+            <Button hidden />
         </DeleteCommandTemplate>
     </DataGridCommandColumn>
 
