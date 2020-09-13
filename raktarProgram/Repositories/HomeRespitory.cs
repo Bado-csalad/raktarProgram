@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using raktarProgram.Helpers;
 using System;
 using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.AspNetCore.Razor.TagHelpers;
+using System.Security.Cryptography;
 
 namespace raktarProgram.Repositories
 {
@@ -19,6 +21,7 @@ namespace raktarProgram.Repositories
         public const string rosszMennyiseg = "Nincs ennyi tárgy a ratkárban";
         public const string sikeresFelvetel = "Eszköz sikeresen átadva";
         public const string kevesMennyiseg = "Túl kevés mennyiséget adtál meg";
+        public const string nincsXmitBesz = "Válaszd ki, hogy mit szeretnél beszerezni!";
 
         private RaktarContext context;
         public HomeRespitory(RaktarContext ctx)
@@ -58,7 +61,7 @@ namespace raktarProgram.Repositories
 
         public async Task<ListResult<Hely>> ListHome(HomeFilter filter, int pageSize, int pageNum)
         {
-            var lista = this.Hely.Where(x => x.Meddig == null && x.EszkozHely.Tipus.LehetNegativ == false);
+            var lista = this.Hely.Where(x => x.Meddig == null && x.EszkozHely.Tipus.LehetNegativ == false && x.Mennyiseg > 0);
             if (filter != null)
             {
                 if (!string.IsNullOrEmpty(filter.Kereses))
@@ -77,6 +80,47 @@ namespace raktarProgram.Repositories
                         .Take(pageSize)
                         .Include(t => t.Eszkoz)
                         .Include(t => t.EszkozHely)
+                        .ToListAsync();
+
+            return res;
+        }
+
+        public async Task<ListResult<Hely>> ListAtadasok(HomeFilter filter, int pageSize, int pageNum)
+        {
+
+            var lista = this.Hely
+                .Join(this.Hely,
+                p => p.Kodegyutt,
+                o => o.Kodegyutt,
+                (p, e) => new { honnan = p, hova = e })
+                   .Where(c => c.honnan.Irany == "KI"
+                    && c.honnan.ID != c.hova.ID)
+                   .Select(c => c.honnan);
+
+            lista = lista.Where(c => c.EszkozHely.Tipus.LehetNegativ == false);
+
+
+            if (filter != null)
+            {
+                if (!string.IsNullOrEmpty(filter.Kereses))
+                {
+                    lista = lista.Where(x => x.Eszkoz.Nev.Contains(filter.Kereses)
+                            || x.EszkozHely.Nev.Contains(filter.Kereses));
+                }
+            }
+
+            ListResult<Hely> res = new ListResult<Hely>();
+
+            res.Total = await lista.CountAsync();
+
+            lista = lista.OrderBy(x => x.EszkozHely.Nev)
+                        .OrderBy(x => x.Eszkoz.Nev)
+                        .Skip((pageNum - 1) * pageSize)
+                        .Take(pageSize)
+                        .Include(t => t.Eszkoz)
+                        .Include(t => t.EszkozHely);
+
+            res.Data = await lista
                         .ToListAsync();
 
             return res;
@@ -173,6 +217,15 @@ namespace raktarProgram.Repositories
             return lista;
         }
 
+        public async Task<List<EszkozHely>> GetXHovaAtadasokList()
+        {
+            var lista = await this.EszkozHely
+                .Where(c => c.Tipus.LehetNegativ == false && c.Tipus.Torolt == false)
+                .OrderBy(c => c.Nev)
+                .ToListAsync();
+            return lista;
+        }
+
         public async Task<string> Xbeszerzes(Eszkoz xmit,
                                               EszkozHely xhova, DateTime xmikor,
                                               int xmennyiseg, string xmegj)
@@ -184,13 +237,16 @@ namespace raktarProgram.Repositories
                                               EszkozHely xhova, DateTime xmikor,
                                               int xmennyiseg, string xmegj)
         {
-            if (xmennyiseg <= 0)
-            {
-                return (kevesMennyiseg);
-            }
             if (xmit == null || xmit.ID == 0)
             {
+                if(xkitol != null)
+                {
+                    return (nincsXmitBesz);
+                }
+                else
+                {
                 return (nincsXmit);
+                }
             }
 
             if (xkitol == null || xkitol.ID == 0)
@@ -203,11 +259,17 @@ namespace raktarProgram.Repositories
                 return (nincsXHova);
             }
 
+            if (xmennyiseg <= 0)
+            {
+                return (kevesMennyiseg);
+            }
+
             int kodegy = this.Param.Kodegyutt;
             var kitol = await this.Hely.Where(c => c.ID == xkitol.ID).SingleAsync();
             kitol.Meddig = xmikor;
 
             int ujdarab = kitol.Mennyiseg - xmennyiseg;
+
             if (ujdarab < 0 && kitol.EszkozHely.Tipus != null)
             {
                 return (rosszMennyiseg);
@@ -223,7 +285,9 @@ namespace raktarProgram.Repositories
                 EszkozHely = xkitol.EszkozHely,
                 Irany = "KI",
                 Kodegyutt = this.Param.Kodegyutt,
-                Felhasznalo = context.Felhasznalo.First()
+                Felhasznalo = context.Felhasznalo.First(),
+                Hova = xhova,
+                HovaMennyiseg = xmennyiseg
             };
 
             context.Hely.Add(ujhely);
@@ -306,7 +370,7 @@ namespace raktarProgram.Repositories
         Params mentése
 
 
-
+ 
         */
 
         // beszerzés
@@ -316,6 +380,6 @@ namespace raktarProgram.Repositories
          uj lap kinél mennyi ideig volt 
          keresés idő intervallum, mire kinél hol mikor stb...
          
-         */
+         */ 
     }
 }

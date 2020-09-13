@@ -1,10 +1,11 @@
 ﻿@page "/ujatadas"
 @using Blazorise.Components
+@using System.Threading.Tasks
 @inject IHomeRespitory repo
 @inject NavigationManager NavigationManager
 
-<h1>Átadás</h1>
 
+<h1>Átadás</h1>
 
 
 <Row>
@@ -13,13 +14,15 @@
             Mit:
         </Alert>
     </Column>
+
     <Column ColumnSize="ColumnSize.Is9">
         <SelectList Data="@xmitLista"
-                    TextField="@((item)=>item.Nev)"
-                    ValueField="@((item)=>item.ID)"
-                    SelectedValueChanged="@selectedEszkozChangedHandler" />
+                      TextField="@((item)=>item.Nev)"
+                      ValueField="@((item)=>item.ID)"
+                      SelectedValueChanged="@selectedEszkozChangedHandler" />
     </Column>
 </Row>
+
 <Row>
     <Column ColumnSize="ColumnSize.Is3">
         <Alert Color="Color.Primary" Visible="true">
@@ -73,7 +76,7 @@
         </Alert>
     </Column>
     <Column ColumnSize="ColumnSize.Is9">
-        <input @bind="megjegyzes" @bind:event="oninput" />
+        <input @bind="megjegyzes" @bind:event="oninput" size="100"/>
     </Column>
 </Row>
 <button class="btn btn-primary" @onclick="Mentes">
@@ -107,7 +110,7 @@
     {
         if (firstRender)
         {
-            this.xmitLista = await this.repo.GetXMitList();
+            this.xmitLista =  await this.repo.GetXMitList();
             this.xmitLista.Insert(0, new Eszkoz());
             StateHasChanged();
         }

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using raktarProgram.Data;
+using System.Linq;
 
 namespace raktarProgram.Repositories
 {
@@ -18,6 +19,11 @@ namespace raktarProgram.Repositories
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            {
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+            }
+
             modelBuilder.Entity<EszkozHely>().ToTable("EszkozHelyek");
             modelBuilder.Entity<EszkozHelyTipus>().ToTable("EszkozHelyTipusok");
             modelBuilder.Entity<Eszkoz>().ToTable("Eszkozok");
