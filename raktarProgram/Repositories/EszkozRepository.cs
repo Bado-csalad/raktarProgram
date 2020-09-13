@@ -63,13 +63,55 @@ namespace raktarProgram.Repositories
                 {
                     lista = lista.Where(c => c.Aktiv == filter.Aktive.Value);
                 }
+
+                if (filter.Sorrend != null && filter.Sorrend.Count > 0)
+                {
+                    foreach(var c in filter.Sorrend)
+                    {
+                        if (c.Item1 == "Nev")
+                        {
+                            if (c.Item2 == "A")
+                            {
+                                lista = lista.OrderBy(c => c.Nev);
+                            }
+                            else 
+                            {
+                                lista = lista.OrderByDescending(c => c.Nev);
+                            }
+                        }
+
+                        if (c.Item1 == "Azonosito")
+                        {
+                            if (c.Item2 == "A")
+                            {
+                                lista = lista.OrderBy(c => c.Azonosito);
+                            }
+                            else
+                            {
+                                lista = lista.OrderByDescending(c => c.Azonosito);
+                            }
+                        }
+
+                        if (c.Item1 == "Leiras")
+                        {
+                            if (c.Item2 == "A")
+                            {
+                                lista = lista.OrderBy(c => c.Leiras);
+                            }
+                            else
+                            {
+                                lista = lista.OrderByDescending(c => c.Leiras);
+                            }
+                        }
+                    }
+                }
             }
 
             ListResult<Eszkoz> res = new ListResult<Eszkoz>();
 
             res.Total = await lista.CountAsync();
 
-            res.Data = await lista.OrderBy(x => x.Nev)
+            res.Data = await lista
                         .Skip((pageNum - 1) * pageSize)
                         .Take(pageSize)
                         .ToListAsync();
