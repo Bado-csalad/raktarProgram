@@ -1,0 +1,27 @@
+﻿@*@using raktarProgram.Services 
+@using Blazorise.Components
+@using Blazorise.DataGrid  
+<TextEdit @bind-Text="Filter" Placeholder="Írd be mire szeretnél keresni"></TextEdit>
+<Text>Melyik oszlopokban szeretnél keresni?</Text>
+@foreach (var names in OszlopTipus.Item1)
+{
+    <h3>@(names.)</h3>
+}
+<InputCheckbox />
+<button @onclick="@UpdateFilter">Keresés</button>
+@code {
+    [Parameter]
+    public string Filter { get; set; }
+
+    [Parameter]
+    public List<Tuple<string, bool>>() OszlopTipus { get; set; }
+
+    [Parameter]
+    public EventCallback<string> FilterChanged { get; set; }
+
+    async Task UpdateFilter()
+    {
+        await FilterChanged.InvokeAsync(Filter);
+    }
+
+}*@

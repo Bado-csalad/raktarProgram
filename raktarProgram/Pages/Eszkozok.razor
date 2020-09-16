@@ -12,12 +12,12 @@
 @inject SearchService searchService;
 
 <h3>Eszközök</h3>
-@*<input @bind="searchService.eszkozFilter.Kereses" @bind:event="oninput" />
+<input @bind="searchService.eszkozFilter.Kereses" @bind:event="oninput" />
     <button class="btn btn-primary" @onclick="SearchEszkoz">
         Keresés
-    </button>*@
+    </button>
 
-<Kereses FilterChanged=@KeresesChanged />
+@*<Kereses FilterChanged=@KeresesChanged />*@
 
 <h3>@(Kereses) a kereses</h3>
 <DataGrid TItem="Eszkoz"
@@ -61,8 +61,13 @@
 
 @code {
     List<Eszkoz> lista;
+    List<Tuple<string, bool>> MibeKeres = new List<Tuple<string, bool>>()
+    {
+        new Tuple<string, bool>( {"Nev", false},
+
+    }
     string Kereses = null;
-    EszkozFilter.MibenKeres = 
+
     int count;
 
     private async Task SearchEszkoz(MouseEventArgs e)
@@ -75,6 +80,7 @@
 
         // always call StateHasChanged!
         StateHasChanged();
+
     }
 
     async Task OnReadData(DataGridReadDataEventArgs<Eszkoz> e)
