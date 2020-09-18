@@ -11,6 +11,10 @@
 @inject SearchService searchService
 
 <h3>Beszerzesek</h3>
+<input @bind="searchService.beszerezesFilter.Kereses" @bind:event="oninput" />
+<button class="btn btn-primary" @onclick="SearchHely">
+    Keresés
+</button>
 
 <DataGrid TItem="Hely"
           Data="@lista"
@@ -78,7 +82,7 @@
 
     private async Task SearchHely(MouseEventArgs e)
     {
-        var response = await repo.ListBeszerzesek(searchService.homeFilter, searchService.PageSize, 1);
+        var response = await repo.ListBeszerzesek(searchService.beszerezesFilter, searchService.PageSize, 1);
 
         lista = response.Data;
         count = response.Total;
@@ -88,7 +92,7 @@
 
     async Task OnReadData(DataGridReadDataEventArgs<Hely> e)
     {
-        var response = await repo.ListBeszerzesek(searchService.homeFilter, searchService.PageSize, e.Page);
+        var response = await repo.ListBeszerzesek(searchService.beszerezesFilter, searchService.PageSize, e.Page);
         eszkozHelyLista = await repo.GetXHovaBeszerzesList();
         eszkozLista = await repo.GetXMitList();
         lista = response.Data;

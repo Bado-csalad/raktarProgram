@@ -5,7 +5,6 @@
 @using raktarProgram.Interfaces
 @using Blazorise.DataGrid
 @using System.Transactions
-@using raktarProgram.Pages.Templates
 
 
 @inject IEszkozRepository repo
@@ -17,9 +16,7 @@
         Keresés
     </button>
 
-@*<Kereses FilterChanged=@KeresesChanged />*@
 
-<h3>@(Kereses) a kereses</h3>
 <DataGrid TItem="Eszkoz"
           Data="@lista"
           ReadData="@OnReadData"
@@ -61,11 +58,8 @@
 
 @code {
     List<Eszkoz> lista;
-    List<Tuple<string, bool>> MibeKeres = new List<Tuple<string, bool>>()
-    {
-        new Tuple<string, bool>( {"Nev", false},
 
-    }
+
     string Kereses = null;
 
     int count;
@@ -74,6 +68,7 @@
     {
         // this can be call to anything, in this case we're calling a fictional api
         var response = await repo.ListEszkoz(searchService.eszkozFilter, searchService.PageSize, 1);
+
 
         lista = response.Data; // an actual data for the current page
         count = response.Total; // this is used to tell datagrid how many items are available so that pagination will work
@@ -91,7 +86,6 @@
                 .Where(_ => _.Direction != SortDirection.None)
                 .Select(_ => new { mezo = _.Field, order = _.Direction == SortDirection.Ascending ? "A" : "D" })  // *** Need a property to OrderBy here ***
         };
-
         searchService.eszkozFilter.Sorrend = request.Sort.Select(c => new Tuple<string, string>(c.mezo, c.order)).ToList();
 
         // this can be call to anything, in this case we're calling a fictional api

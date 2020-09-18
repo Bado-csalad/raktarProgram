@@ -25,9 +25,9 @@ namespace raktarProgram.Interfaces
         Task<string> Xmentes(Eszkoz xmit, Hely xkitol, EszkozHely xhova, DateTime xmikor, int xmennyiseg, string xmegj);
         Task<string> Xbeszerzes(Eszkoz xmit, EszkozHely xhova, DateTime xmikor, int xmennyiseg, string xmegj);
         Task<List<EszkozHely>> GetXHovaBeszerzesList();
-        Task<ListResult<Hely>> ListBeszerzesek(HomeFilter filter, int pageSize, int pageNum);
+        Task<ListResult<Hely>> ListBeszerzesek(BeszerzesFilter filter, int pageSize, int pageNum);
         Task<string> HelyModositas(Hely hely);
-        Task<ListResult<Hely>> ListAtadasok(HomeFilter filter, int pageSize, int pageNum);
+        Task<ListResult<Hely>> ListAtadasok(AtadasFilter filter, int pageSize, int pageNum);
         Task<List<EszkozHely>> GetXHovaAtadasokList();
     }
 }
