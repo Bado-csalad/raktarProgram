@@ -1,4 +1,5 @@
 using raktarProgram.Data.Filters;
+using System;
 
 namespace raktarProgram.Services
 {
@@ -8,5 +9,8 @@ namespace raktarProgram.Services
         public EszkozFilter eszkozFilter { get; private set; } = new EszkozFilter();
         public EszkozHelyTipusFilter eszkozHelyTipusFilter { get; private set; } = new EszkozHelyTipusFilter();
         public HomeFilter homeFilter { get; private set; } = new HomeFilter();
+        public EszkozHelyFilter eszkozHelyFilter { get; private set; } = new EszkozHelyFilter();
+        public BeszerzesFilter beszerezesFilter { get; private set; } = new BeszerzesFilter();
+        public AtadasFilter atadasFilter { get; private set; } = new AtadasFilter();
     }
 }

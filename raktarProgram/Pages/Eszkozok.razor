@@ -5,21 +5,18 @@
 @using raktarProgram.Interfaces
 @using Blazorise.DataGrid
 @using System.Transactions
-@using raktarProgram.Pages.Templates
 
 
 @inject IEszkozRepository repo
 @inject SearchService searchService;
 
 <h3>Eszközök</h3>
-@*<input @bind="searchService.eszkozFilter.Kereses" @bind:event="oninput" />
+<input @bind="searchService.eszkozFilter.Kereses" @bind:event="oninput" />
     <button class="btn btn-primary" @onclick="SearchEszkoz">
         Keresés
-    </button>*@
+    </button>
 
-<Kereses FilterChanged=@KeresesChanged />
 
-<h3>@(Kereses) a kereses</h3>
 <DataGrid TItem="Eszkoz"
           Data="@lista"
           ReadData="@OnReadData"
@@ -61,8 +58,10 @@
 
 @code {
     List<Eszkoz> lista;
+
+
     string Kereses = null;
-    EszkozFilter.MibenKeres = 
+
     int count;
 
     private async Task SearchEszkoz(MouseEventArgs e)
@@ -70,11 +69,13 @@
         // this can be call to anything, in this case we're calling a fictional api
         var response = await repo.ListEszkoz(searchService.eszkozFilter, searchService.PageSize, 1);
 
+
         lista = response.Data; // an actual data for the current page
         count = response.Total; // this is used to tell datagrid how many items are available so that pagination will work
 
         // always call StateHasChanged!
         StateHasChanged();
+
     }
 
     async Task OnReadData(DataGridReadDataEventArgs<Eszkoz> e)
@@ -85,7 +86,6 @@
                 .Where(_ => _.Direction != SortDirection.None)
                 .Select(_ => new { mezo = _.Field, order = _.Direction == SortDirection.Ascending ? "A" : "D" })  // *** Need a property to OrderBy here ***
         };
-
         searchService.eszkozFilter.Sorrend = request.Sort.Select(c => new Tuple<string, string>(c.mezo, c.order)).ToList();
 
         // this can be call to anything, in this case we're calling a fictional api

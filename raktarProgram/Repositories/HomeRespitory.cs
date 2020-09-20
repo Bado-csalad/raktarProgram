@@ -85,7 +85,7 @@ namespace raktarProgram.Repositories
             return res;
         }
 
-        public async Task<ListResult<Hely>> ListAtadasok(HomeFilter filter, int pageSize, int pageNum)
+        public async Task<ListResult<Hely>> ListAtadasok(AtadasFilter filter, int pageSize, int pageNum)
         {
 
             var lista = this.Hely
@@ -99,13 +99,35 @@ namespace raktarProgram.Repositories
 
             lista = lista.Where(c => c.EszkozHely.Tipus.LehetNegativ == false);
 
-
             if (filter != null)
             {
                 if (!string.IsNullOrEmpty(filter.Kereses))
                 {
                     lista = lista.Where(x => x.Eszkoz.Nev.Contains(filter.Kereses)
-                            || x.EszkozHely.Nev.Contains(filter.Kereses));
+                            || x.EszkozHely.Nev.Contains(filter.Kereses)
+                            || x.Hova.Nev.Contains(filter.Kereses));
+                }
+                if (filter.Meddig != null)
+                {
+                    if (filter.Mettol != filter.Meddig)
+                    {
+
+                        lista = lista.Where(x => x.Meddig <= filter.Meddig
+                                && x.Mikortol <= filter.Meddig);
+                    }
+                }
+                if (filter.Mettol != null)
+                {
+                    if(filter.Mettol == filter.Meddig)
+                    {
+                        lista = lista.Where(x => x.Meddig == null
+                            && x.Mikortol >= filter.Mettol);
+                    }
+                    else
+                    {
+                    lista = lista.Where(x => x.Mikortol >= filter.Mettol);
+                    }
+                    
                 }
             }
 
@@ -126,7 +148,7 @@ namespace raktarProgram.Repositories
             return res;
         }
 
-        public async Task<ListResult<Hely>> ListBeszerzesek(HomeFilter filter, int pageSize, int pageNum)
+        public async Task<ListResult<Hely>> ListBeszerzesek(BeszerzesFilter filter, int pageSize, int pageNum)
         {
             var lista = this.Hely
                 .Join(this.Hely,
