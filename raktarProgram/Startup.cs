@@ -13,9 +13,9 @@ using raktarProgram.Interfaces;
 using raktarProgram.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Blazorise;
-using Blazorise.Bootstrap;
-using Blazorise.Icons.FontAwesome;
 using raktarProgram.Services;
+using Blazorise.Material;
+using Blazorise.Icons.Material;
 
 namespace raktarProgram
 {
@@ -37,8 +37,8 @@ namespace raktarProgram
                {
                    options.ChangeTextOnKeyPress = true; // optional
                 })
-                .AddBootstrapProviders()
-                .AddFontAwesomeIcons();
+                .AddMaterialProviders()
+                .AddMaterialIcons();
 
             services.AddRazorPages();
             services.AddServerSideBlazor();
@@ -70,8 +70,8 @@ namespace raktarProgram
             app.UseRouting();
 
             app.ApplicationServices
-                .UseBootstrapProviders()
-                .UseFontAwesomeIcons();
+                .UseMaterialProviders()
+                .UseMaterialIcons();
 
             app.UseEndpoints(endpoints =>
             {
