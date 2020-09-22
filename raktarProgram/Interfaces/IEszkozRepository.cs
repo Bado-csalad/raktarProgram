@@ -14,6 +14,6 @@ namespace raktarProgram.Interfaces
         Task<Eszkoz> EszkozTorles(int ID);
         Task<Eszkoz> EszkozModositas(Eszkoz eszkoz);
         Task<ListResult<Eszkoz>> ListEszkoz(EszkozFilter filter, int pageSize, int pageNum);
-    
+        Task<int> GetHelyCount(Eszkoz eszkoz);
     }
 }

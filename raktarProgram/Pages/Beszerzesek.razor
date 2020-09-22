@@ -20,7 +20,8 @@
           Data="@lista"
           ReadData="@OnReadData"
           TotalItems="@count" ShowPager="true" PageSize="searchService.PageSize" Editable="true" Bordered="true" Hoverable="true" Striped="true"
-          RowUpdated="@OnAfterUpdate">
+          RowUpdated="@OnAfterUpdate"
+          RowRemoved="@OnAfterDeleted">
     <DataGridCommandColumn TItem="Hely">
         <NewCommandTemplate>
             <Button hidden />
@@ -116,4 +117,15 @@
         StateHasChanged();
     }
 
+    async Task OnAfterDeleted(Hely e)
+    {
+        using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        {
+            e.Mennyiseg = 0;
+            var removedBeszerzes = await repo.HelyModositas(e);
+            ts.Complete();
+        }
+
+        StateHasChanged();
+    }
 }

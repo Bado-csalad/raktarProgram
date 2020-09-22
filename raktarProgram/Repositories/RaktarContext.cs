@@ -16,6 +16,7 @@ namespace raktarProgram.Repositories
         public DbSet<Eszkoz> Eszkoz { get; set; }
         public DbSet<Felhasznalo> Felhasznalo { get; set; }
         public DbSet<Hely> Hely { get; set; }
+        public DbSet<EszkozTipus> EszkozTipus { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,6 +31,7 @@ namespace raktarProgram.Repositories
             modelBuilder.Entity<Felhasznalo>().ToTable("Felhasznalok");
             modelBuilder.Entity<Hely>().ToTable("Helyek");
             modelBuilder.Entity<Params>().ToTable("Params");
+            modelBuilder.Entity<EszkozTipus>().ToTable("EszkozTipusok");
         }
     }
 }

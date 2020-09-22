@@ -1,5 +1,6 @@
 ﻿@page "/eszkozok"
 
+@using Blazorise.Components
 @using raktarProgram.Data
 @using raktarProgram.Data.Filters
 @using raktarProgram.Interfaces
@@ -8,13 +9,14 @@
 
 
 @inject IEszkozRepository repo
-@inject SearchService searchService;
+@inject IEszkozTipusRepository tipusrepo
+@inject SearchService searchService
 
 <h3>Eszközök</h3>
 <input @bind="searchService.eszkozFilter.Kereses" @bind:event="oninput" />
-    <button class="btn btn-primary" @onclick="SearchEszkoz">
-        Keresés
-    </button>
+<button class="btn btn-primary" @onclick="SearchEszkoz">
+    Keresés
+</button>
 
 
 <DataGrid TItem="Eszkoz"
@@ -38,11 +40,11 @@
 
         </EditCommandTemplate>
         <DeleteCommandTemplate>
-
-            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
+            @if (context.Item.HelyDarab == 0)
+            {<Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
                 Törlés
             </Blazorise.Button>
-
+            }
         </DeleteCommandTemplate>
         <SaveCommandTemplate>
             <Button Color="Color.Primary" Clicked="@context.Clicked">Mentés</Button>
@@ -54,11 +56,25 @@
     <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Nev)" Caption="Név" Editable="true" />
     <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Leiras)" Caption="Leírás" Editable="true" />
     <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Azonosito)" Caption="Azonosító" Editable="true" />
+    <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.EszkozTipusID)" Caption="Tipus" Editable="true" Sortable="true">
+        <DisplayTemplate>
+            @((context as Eszkoz)?.Tipus.Nev)
+        </DisplayTemplate>
+        <EditTemplate>
+            <SelectList Data="@tipuslista"
+                        TextField="@((item)=>item.Nev)"
+                        ValueField="@((item)=>item.ID)"
+                        SelectedValue="@((int)( ( (CellEditContext)context ).CellValue ))"
+                        SelectedValueChanged="@(( v ) => ( (CellEditContext)context ).CellValue = int.Parse((string)v))" />
+        </EditTemplate>
+
+    </DataGridColumn>
 </DataGrid>
 
 @code {
     List<Eszkoz> lista;
 
+    List<EszkozTipus> tipuslista;
 
     string Kereses = null;
 
@@ -91,6 +107,9 @@
         // this can be call to anything, in this case we're calling a fictional api
         var response = await repo.ListEszkoz(searchService.eszkozFilter, e.PageSize, e.Page);
 
+        var tipusok = await tipusrepo.ListEszkozTipus(null, 5, 1);
+        tipuslista = tipusok.Data;
+
         lista = response.Data; // an actual data for the current page
         count = response.Total; // this is used to tell datagrid how many items are available so that pagination will work
 
@@ -122,9 +141,16 @@
 
         using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
         {
-            e.Torolt = true;
-            var mentettEszkoz = await repo.EszkozModositas(e);
-            ts.Complete();
+
+            var helydarab = await repo.GetHelyCount(e);
+
+            if (helydarab == 0)
+            {
+                e.Torolt = true;
+                var mentettEszkoz = await repo.EszkozModositas(e);
+
+                ts.Complete();
+            }
         }
 
         // ez nemtom kell-e ide...

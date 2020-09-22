@@ -16,7 +16,8 @@ namespace raktarProgram.Repositories
         {
             context = ctx;
         }
-        public IQueryable<Eszkoz> Eszkoz => context.Eszkoz;
+        public IQueryable<Eszkoz> Eszkoz => context.Eszkoz.Include(x => x.Tipus);
+        public IQueryable<EszkozTipus> EszkozTipus => context.EszkozTipus;
 
         public async Task<Eszkoz> EszkozFelvetel(Eszkoz data)
         {
@@ -46,6 +47,11 @@ namespace raktarProgram.Repositories
             return e;
         }
 
+        public async Task<int> GetHelyCount(Eszkoz eszkoz)
+        {
+            return await this.context.Hely.CountAsync(c => c.EszkozID == eszkoz.ID);
+        }
+
         public async Task<ListResult<Eszkoz>> ListEszkoz(EszkozFilter filter, int pageSize, int pageNum)
         {
             var lista = this.Eszkoz.Where(x => x.Torolt == false);
@@ -66,7 +72,7 @@ namespace raktarProgram.Repositories
 
                 if (filter.Sorrend != null && filter.Sorrend.Count > 0)
                 {
-                    foreach(var c in filter.Sorrend)
+                    foreach (var c in filter.Sorrend)
                     {
                         if (c.Item1 == "Nev")
                         {
@@ -74,7 +80,7 @@ namespace raktarProgram.Repositories
                             {
                                 lista = lista.OrderBy(c => c.Nev);
                             }
-                            else 
+                            else
                             {
                                 lista = lista.OrderByDescending(c => c.Nev);
                             }
@@ -115,6 +121,11 @@ namespace raktarProgram.Repositories
                         .Skip((pageNum - 1) * pageSize)
                         .Take(pageSize)
                         .ToListAsync();
+
+            res.Data.ForEach(c =>
+            {
+                c.HelyDarab = this.context.Hely.Count(d => d.EszkozID == c.ID);
+            });
 
             return res;
         }

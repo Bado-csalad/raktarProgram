@@ -130,6 +130,7 @@
     bool csakMa = false;
     string Ma = DateTime.Now.ToString();
     bool collapse1Visible;
+    bool firstRender;
 
     int count;
 
@@ -161,6 +162,11 @@
 
     async Task OnReadData(DataGridReadDataEventArgs<Hely> e)
     {
+        if(firstRender)
+        {
+            searchService.atadasFilter.Meddig = null;
+            firstRender = false;
+        }
         var response = await repo.ListAtadasok(searchService.atadasFilter, searchService.PageSize, e.Page);
         eszkozHelyLista = await repo.GetXHovaAtadasokList();
         eszkozLista = await repo.GetXMitList();

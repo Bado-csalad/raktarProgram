@@ -183,7 +183,7 @@ namespace raktarProgram.Repositories
              */
 
             ListResult<Hely> res = new ListResult<Hely>();
-
+            lista = lista.Where(x => x.Mennyiseg > 0);
             res.Total = await lista.CountAsync();
 
             lista = lista.OrderBy(x => x.Mikortol)

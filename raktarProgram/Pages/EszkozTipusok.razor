@@ -1,0 +1,141 @@
+﻿@page "/eszkoztipusok"
+
+@using raktarProgram.Data
+@using raktarProgram.Data.Filters
+@using raktarProgram.Interfaces
+@using Blazorise.DataGrid
+@using System.Transactions
+
+@inject IEszkozTipusRepository repo
+@inject SearchService searchService
+
+
+<h3>EszközökTipusok</h3>
+<input @bind="searchService.eszkozTipusFilter.Kereses" @bind:event="oninput" />
+<button class="btn btn-primary" @onclick="SearchEszkozTipus" >
+    Keresés
+</button>
+
+<DataGrid TItem="EszkozTipus"
+          Data="@lista"
+          ReadData="@OnReadData"
+          TotalItems="@count" ShowPager="true" PageSize="searchService.PageSize" Editable="true" Bordered="true" Hoverable="true" Striped="true"
+          RowInserted="@OnAfterInsert" RowUpdated="@OnAfterUpdate" RowUpdating="@OnBeforeUpdate"
+          RowRemoved="@OnAfterRemove"
+          Sortable="true">
+    <DataGridCommandColumn TItem="EszkozTipus">
+        <NewCommandTemplate>
+            <Button Color="Color.Primary" Clicked="@context.Clicked">
+                Új felvétele
+            </Button>
+        </NewCommandTemplate>
+        <EditCommandTemplate>
+
+            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
+                Módosítás
+            </Blazorise.Button>
+
+        </EditCommandTemplate>
+        <DeleteCommandTemplate>
+
+            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
+                Törlés
+            </Blazorise.Button>
+
+        </DeleteCommandTemplate>
+        <SaveCommandTemplate>
+            <Button Color="Color.Primary" Clicked="@context.Clicked">Mentés</Button>
+        </SaveCommandTemplate>
+        <CancelCommandTemplate>
+            <Button Color="Color.Secondary" Clicked="@context.Clicked">Mégse</Button>
+        </CancelCommandTemplate>
+    </DataGridCommandColumn>
+    <DataGridColumn TItem="EszkozTipus" Field="@nameof(EszkozTipus.Nev)" Caption="Név" Editable="true" />
+    <DataGridColumn TItem="EszkozTipus" Field="@nameof(EszkozTipus.Leiras)" Caption="Leírás" Editable="true" />
+</DataGrid>
+
+@code {
+    List<EszkozTipus> lista;
+
+
+    string Kereses = null;
+
+    int count;
+
+    private async Task SearchEszkozTipus(MouseEventArgs e)
+    {
+        var response = await repo.ListEszkozTipus(searchService.eszkozTipusFilter, searchService.PageSize, 1);
+
+
+        lista = response.Data; 
+
+    }
+
+    async Task OnReadData(DataGridReadDataEventArgs<EszkozTipus> e)
+    {
+        var request = new
+        {
+            Sort = e.Columns
+                .Where(_ => _.Direction != SortDirection.None)
+                .Select(_ => new { mezo = _.Field, order = _.Direction == SortDirection.Ascending ? "A" : "D" })
+        };
+        searchService.eszkozTipusFilter.Sorrend = request.Sort.Select(c => new Tuple<string, string>(c.mezo, c.order)).ToList();
+
+        var response = await repo.ListEszkozTipus(searchService.eszkozTipusFilter, e.PageSize, e.Page);
+
+        lista = response.Data; 
+        count = response.Total; 
+
+        StateHasChanged();
+    }
+
+    private async Task KeresesChanged(string kereses)
+    {
+        Kereses = kereses;
+        StateHasChanged();
+    }
+
+    void OnBeforeUpdate(CancellableRowChange<EszkozTipus> e)
+    {
+        StateHasChanged();
+    }
+
+
+    async Task OnAfterRemove(EszkozTipus e)
+    {
+
+        using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        {
+            e.Torolt = true;
+            var mentettEszkozTipus = await repo.EszkozTipusModositas(e);
+            ts.Complete();
+        }
+
+        StateHasChanged();
+    }
+
+
+    async Task OnAfterInsert(SavedRowItem<EszkozTipus, Dictionary<string, object>> e)
+    {
+
+        using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        {
+            var mentettEszkozTipus = await repo.EszkozTipusFelvetel(e.Item);
+            ts.Complete();
+        }
+
+        StateHasChanged();
+    }
+
+    async Task OnAfterUpdate(SavedRowItem<EszkozTipus, Dictionary<string, object>> e)
+    {
+
+        using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        {
+            var mentettEszkozTipus = await repo.EszkozTipusModositas(e.Item);
+            ts.Complete();
+        }
+
+        StateHasChanged();
+    }
+}
