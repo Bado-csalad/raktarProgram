@@ -166,6 +166,58 @@ namespace raktarProgram.Repositories
                     lista = lista.Where(x => x.Eszkoz.Nev.Contains(filter.Kereses)
                             || x.EszkozHely.Nev.Contains(filter.Kereses));
                 }
+                if (filter.Sorrend != null && filter.Sorrend.Count > 0)
+                {
+                    foreach (var c in filter.Sorrend)
+                    {
+                        if (c.Item1 == "EszkozID")
+                        {
+                            if (c.Item2 == "A")
+                            {
+                                lista = lista.OrderBy(c => c.Eszkoz.Nev);
+                            }
+                            else
+                            {
+                                lista = lista.OrderByDescending(c => c.Eszkoz.Nev);
+                            }
+                        }
+
+                        if (c.Item1 == "EszkozHelyID")
+                        {
+                            if (c.Item2 == "A")
+                            {
+                                lista = lista.OrderBy(c => c.EszkozHely.Nev);
+                            }
+                            else
+                            {
+                                lista = lista.OrderByDescending(c => c.EszkozHely.Nev);
+                            }
+                        }
+
+                        if (c.Item1 == "Mennyiseg")
+                        {
+                            if (c.Item2 == "A")
+                            {
+                                lista = lista.OrderBy(c => c.Mennyiseg);
+                            }
+                            else
+                            {
+                                lista = lista.OrderByDescending(c => c.Mennyiseg);
+                            }
+                        }
+                        if (c.Item1 == "Mikortol")
+                        {
+                            if (c.Item2 == "A")
+                            {
+                                lista = lista.OrderBy(c => c.Mikortol);
+                            }
+                            else
+                            {
+                                lista = lista.OrderByDescending(c => c.Mikortol);
+                            }
+                        }
+                    }
+                }
             }
 
             /* 

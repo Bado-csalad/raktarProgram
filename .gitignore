@@ -6,3 +6,5 @@
 /raktarProgram/*.user
 /.vs
 /raktarProgram/.vs
+/raktarProgram/Pages/Templates
+/raktarProgram/Pages/Templates/Kereses.razor

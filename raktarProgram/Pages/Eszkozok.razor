@@ -139,7 +139,7 @@
     {
         // todo validálni, meg menteni, ha hiba van, akkor e.cancel = true
 
-        using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled)) 
         {
 
             var helydarab = await repo.GetHelyCount(e);
