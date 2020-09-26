@@ -109,6 +109,18 @@ namespace raktarProgram.Repositories
                                 lista = lista.OrderByDescending(c => c.Leiras);
                             }
                         }
+
+                        if(c.Item1 == "EszkozTipusID")
+                        {
+                            if (c.Item2 == "A")
+                            {
+                                lista = lista.OrderBy(c => c.Tipus.Nev);
+                            }
+                            else
+                            {
+                                lista = lista.OrderByDescending(c => c.Tipus.Nev);
+                            }
+                        }
                     }
                 }
             }

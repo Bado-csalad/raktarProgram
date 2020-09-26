@@ -22,28 +22,60 @@
         </Heading>
     </CollapseHeader>
     <CollapseBody>
-            <Text>Időbeli szűrés: </Text>
-            <Text>Mettől: </Text>
-            <DateEdit Placeholder="" @bind-Date="searchService.atadasFilter.Mettol"></DateEdit>
-            <Text>Meddig: </Text>
-            <DateEdit Placeholder="@(Ma)" @bind-Date="searchService.atadasFilter.Meddig"></DateEdit>
-            @if (!csakMa)
+        
+        <Text>Időbeli szűrés: </Text>
+
+        <Row>
+            <Column ColumnSize="ColumnSize.Is1">
+                <Text>Mettől: </Text>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is11">
+                <DateEdit Placeholder="@(legregebbi)" @bind-Date="searchService.atadasFilter.Mettol"></DateEdit>
+            </Column>
+        </Row>
+
+        <Row>
+            <Column ColumnSize="ColumnSize.Is1">
+                <Text>Meddig: </Text>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is11">
+                <DateEdit Placeholder="@(ma)" @bind-Date="searchService.atadasFilter.Meddig"></DateEdit>
+            </Column>
+        </Row>
+
+        <Row>
+            @if (!searchService.atadasFilter.CsakMa)
             {
-                <Check TValue="bool" @bind-Checked="@maIs">Azok is legyenek benne akik még nem adták tovább</Check>
+                <Check TValue="bool" @bind-Checked="searchService.atadasFilter.MaIs">Csak azok legyenek benne akik tovább adták</Check>
             }
             else
             {
-                <Check Disabled="true" TValue="bool" @bind-Checked="@maIs">Azok is legyenek benne akik még nem adták tovább</Check>
+        <Check Disabled="true" TValue="bool" @bind-Checked="searchService.atadasFilter.MaIs">Csak azok legyenek benne akik tovább adták</Check>
             }
-            @if (!maIs)
+        </Row>
+
+        <Row>
+            @if (!searchService.atadasFilter.MaIs)
             {
-                <Check TValue="bool" @bind-Checked="@csakMa">Csak azok legyenek benne akik nem adták tovább</Check>
+                <Check TValue="bool" @bind-Checked="searchService.atadasFilter.CsakMa">Csak azok legyenek benne akik nem adták tovább</Check>
             }
             else
             {
-                <Check Disabled="true" TValue="bool" @bind-Checked="@csakMa">Csak azok legyenek benne akik nem adták tovább</Check>
+                <Check Disabled="true" TValue="bool" @bind-Checked="searchService.atadasFilter.CsakMa">Csak azok legyenek benne akik nem adták tovább</Check>
             }
-            <CloseButton Clicked="@(()=>collapse1Visible=false)" />
+        </Row>
+
+        <Row>
+            <Column ColumnSize="ColumnSize.Is2">
+                <Text>Mennyiségre keresés: </Text>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is10">
+                <NumericEdit @bind-Value="searchService.atadasFilter.Mennyiseg"></NumericEdit>
+            </Column>
+        </Row>
+
+        <CloseButton Clicked="@(()=>collapse1Visible=false)" />
+
     </CollapseBody>
 </Collapse>
 
@@ -112,7 +144,7 @@
         <DisplayTemplate>
             @if ((context as Hely).Meddig == null)
             {
-                   @("Még mindig nála van")
+                @("Még mindig nála van")
             }
             else
             {
@@ -126,35 +158,37 @@
     List<Hely> lista;
     List<EszkozHely> eszkozHelyLista;
     List<Eszkoz> eszkozLista;
-    bool maIs = true;
-    bool csakMa = false;
-    string Ma = DateTime.Now.ToString();
+
+    string ma = DateTime.Now.ToString();
+    string legregebbi;
     bool collapse1Visible;
     bool firstRender;
-
     int count;
+
 
     private async Task SearchHely(MouseEventArgs e)
     {
-        if (maIs)
+        searchService.atadasFilter.Sorrend.Clear();
+
+        if (searchService.atadasFilter.MaIs)
         {
-            searchService.atadasFilter.Meddig = null;
+            searchService.atadasFilter.CsakMa = false;
             Task.WaitAll();
         }
-        else if(csakMa)
+        else if (searchService.atadasFilter.CsakMa)
         {
-            searchService.atadasFilter.Meddig = searchService.atadasFilter.Mettol;
+            searchService.atadasFilter.MaIs = false;
             Task.WaitAll();
         }
         else
         {
-            searchService.atadasFilter.Meddig = DateTime.Now;
+            searchService.atadasFilter.CsakMa = false;
+            searchService.atadasFilter.MaIs = false;
             Task.WaitAll();
         }
 
         var response = await repo.ListAtadasok(searchService.atadasFilter, searchService.PageSize, 1);
         Task.WaitAll();
-
         lista = response.Data;
         count = response.Total;
         StateHasChanged();
@@ -162,18 +196,31 @@
 
     async Task OnReadData(DataGridReadDataEventArgs<Hely> e)
     {
-        if(firstRender)
+        var request = new
         {
-            searchService.atadasFilter.Meddig = null;
-            firstRender = false;
-        }
+            Sort = e.Columns
+                .Where(_ => _.Direction != SortDirection.None)
+                .Select(_ => new { mezo = _.Field, order = _.Direction == SortDirection.Ascending ? "A" : "D" })  // *** Need a property to OrderBy here ***
+        };
+
+        searchService.atadasFilter.Sorrend = request.Sort.Select(c => new Tuple<string, string>(c.mezo, c.order)).ToList();
+
         var response = await repo.ListAtadasok(searchService.atadasFilter, searchService.PageSize, e.Page);
         eszkozHelyLista = await repo.GetXHovaAtadasokList();
         eszkozLista = await repo.GetXMitList();
+
         lista = response.Data;
         count = response.Total;
+
+        Task.WaitAll();
+
+        legregebbi = response.Data.Where(x => x.Meddig != null).OrderBy(x => x.Meddig).First().Mikortol.ToString();
+        if (searchService.atadasFilter.Mettol == null)
+        {
+            searchService.atadasFilter.Mettol = response.Data.Where(x => x.Meddig != null).OrderBy(x => x.Meddig).First().Mikortol;
+        }
+        searchService.atadasFilter.RegiSorrend = searchService.atadasFilter.Sorrend;
         searchService.atadasFilter.Meddig = DateTime.Now;
-        searchService.atadasFilter.Mettol = response.Data.Where(x => x.Meddig != null).OrderBy(x => x.Meddig).First().Mikortol;
 
         StateHasChanged();
     }

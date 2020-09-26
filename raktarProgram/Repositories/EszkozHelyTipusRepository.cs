@@ -62,6 +62,37 @@ namespace raktarProgram.Repositories
                 {
                     lista = lista.Where(x => x.Aktiv == filter.Aktive.Value);
                 }
+
+                if (filter.Sorrend != null && filter.Sorrend.Count > 0)
+                {
+                    foreach (var c in filter.Sorrend)
+                    {
+                        if (c.Item1 == "Nev")
+                        {
+                            if (c.Item2 == "A")
+                            {
+                                lista = lista.OrderBy(c => c.Nev);
+                            }
+                            else
+                            {
+                                lista = lista.OrderByDescending(c => c.Nev);
+                            }
+                        }
+
+                        if (c.Item1 == "Leiras")
+                        {
+                            if (c.Item2 == "A")
+                            {
+                                lista = lista.OrderBy(c => c.Leiras);
+                            }
+                            else
+                            {
+                                lista = lista.OrderByDescending(c => c.Leiras);
+                            }
+                        }
+
+                    }
+                }
             }
 
 
@@ -69,8 +100,7 @@ namespace raktarProgram.Repositories
 
             res.Total = await lista.CountAsync();
 
-            res.Data = await lista.OrderBy(x => x.Nev)
-                        .Skip((pageNum - 1) * pageSize)
+            res.Data = await lista.Skip((pageNum - 1) * pageSize)
                         .Take(pageSize)
                         .ToListAsync();
 

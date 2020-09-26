@@ -13,5 +13,6 @@ namespace raktarProgram.Services
         public BeszerzesFilter beszerezesFilter { get; private set; } = new BeszerzesFilter();
         public AtadasFilter atadasFilter { get; private set; } = new AtadasFilter();
         public EszkozTipusFilter eszkozTipusFilter { get; private set; } = new EszkozTipusFilter();
+
     }
 }

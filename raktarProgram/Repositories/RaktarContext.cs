@@ -1,6 +1,9 @@
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using raktarProgram.Data;
+using System.Data.Common;
 using System.Linq;
+using System;
 
 namespace raktarProgram.Repositories
 {
@@ -34,4 +37,5 @@ namespace raktarProgram.Repositories
             modelBuilder.Entity<EszkozTipus>().ToTable("EszkozTipusok");
         }
     }
+
 }

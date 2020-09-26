@@ -15,6 +15,7 @@ namespace raktarProgram.Repositories
 {
     public class HomeRespitory : IHomeRespitory
     {
+        #region Hibauzenetek
         public const string nincsXmit = "Válaszd ki, hogy mit szeretnél átadni!";
         public const string nincsXKitol = "Válaszd ki, hogy ki adja át a tételt!";
         public const string nincsXHova = "Válaszd ki, hogy hova szeretnéd átadni a tételt!";
@@ -22,6 +23,7 @@ namespace raktarProgram.Repositories
         public const string sikeresFelvetel = "Eszköz sikeresen átadva";
         public const string kevesMennyiseg = "Túl kevés mennyiséget adtál meg";
         public const string nincsXmitBesz = "Válaszd ki, hogy mit szeretnél beszerezni!";
+        #endregion
 
         private RaktarContext context;
         public HomeRespitory(RaktarContext ctx)
@@ -29,11 +31,13 @@ namespace raktarProgram.Repositories
             context = ctx;
         }
 
+        #region Data
         public IQueryable<EszkozHely> EszkozHely => context.EszkozHely.Include(x => x.Tipus);
         public IQueryable<EszkozHelyTipus> EszkozHelyTipus => context.EszkozHelyTipus;
         public IQueryable<Eszkoz> Eszkoz => context.Eszkoz;
         public IQueryable<Felhasznalo> Felhasznalo => context.Felhasznalo;
         public IQueryable<Hely> Hely => context.Hely.Include(x => x.Eszkoz).Include(x => x.EszkozHely).Include(x => x.Felhasznalo);
+        #endregion
 
         private Params Param => context.Params.First();
 
@@ -69,13 +73,66 @@ namespace raktarProgram.Repositories
                     lista = lista.Where(x => x.Eszkoz.Nev.Contains(filter.Kereses)
                             || x.EszkozHely.Nev.Contains(filter.Kereses));
                 }
+
+                if (filter.Sorrend != null && filter.Sorrend.Count > 0)
+                {
+                    foreach (var c in filter.Sorrend)
+                    {
+                        if (c.Item1 == "EszkozID")
+                        {
+                            if (c.Item2 == "A")
+                            {
+                                lista = lista.OrderBy(c => c.Eszkoz.Nev);
+                            }
+                            else
+                            {
+                                lista = lista.OrderByDescending(c => c.Eszkoz.Nev);
+                            }
+                        }
+
+                        if (c.Item1 == "EszkozHelyID")
+                        {
+                            if (c.Item2 == "A")
+                            {
+                                lista = lista.OrderBy(c => c.EszkozHely.Nev);
+                            }
+                            else
+                            {
+                                lista = lista.OrderByDescending(c => c.EszkozHely.Nev);
+                            }
+                        }
+
+                        if (c.Item1 == "Mennyiseg")
+                        {
+                            if (c.Item2 == "A")
+                            {
+                                lista = lista.OrderBy(c => c.Mennyiseg);
+                            }
+                            else
+                            {
+                                lista = lista.OrderByDescending(c => c.Mennyiseg);
+                            }
+                        }
+                        if (c.Item1 == "Mikortol")
+                        {
+                            if (c.Item2 == "A")
+                            {
+                                lista = lista.OrderBy(c => c.Mikortol);
+                            }
+                            else
+                            {
+                                lista = lista.OrderByDescending(c => c.Mikortol);
+                            }
+                        }
+                    }
+                }
             }
 
             ListResult<Hely> res = new ListResult<Hely>();
 
             res.Total = await lista.CountAsync();
 
-            res.Data = await lista.OrderBy(x => x.Mikortol)
+            res.Data = await lista
                         .Skip((pageNum - 1) * pageSize)
                         .Take(pageSize)
                         .Include(t => t.Eszkoz)
@@ -98,7 +155,7 @@ namespace raktarProgram.Repositories
                    .Select(c => c.honnan);
 
             lista = lista.Where(c => c.EszkozHely.Tipus.LehetNegativ == false);
-
+            
             if (filter != null)
             {
                 if (!string.IsNullOrEmpty(filter.Kereses))
@@ -109,7 +166,7 @@ namespace raktarProgram.Repositories
                 }
                 if (filter.Meddig != null)
                 {
-                    if (filter.Mettol != filter.Meddig)
+                    if (filter.MaIs)
                     {
 
                         lista = lista.Where(x => x.Meddig <= filter.Meddig
@@ -118,16 +175,73 @@ namespace raktarProgram.Repositories
                 }
                 if (filter.Mettol != null)
                 {
-                    if(filter.Mettol == filter.Meddig)
+                    if(filter.CsakMa)
                     {
                         lista = lista.Where(x => x.Meddig == null
                             && x.Mikortol >= filter.Mettol);
                     }
                     else
                     {
-                    lista = lista.Where(x => x.Mikortol >= filter.Mettol);
+                        lista = lista.Where(x => x.Mikortol >= filter.Mettol);
                     }
                     
+                }
+
+                if (filter.Sorrend != null && filter.Sorrend.Count > 0)
+                {
+                    foreach (var c in filter.Sorrend)
+                    {
+                        if (c.Item1 == "EszkozID")
+                        {
+                            if (c.Item2 == "A")
+                            {
+                                lista = lista.OrderBy(c => c.Eszkoz.Nev);
+                            }
+                            else
+                            {
+                                lista = lista.OrderByDescending(c => c.Eszkoz.Nev);
+                            }
+                        }
+
+                        if (c.Item1 == "EszkozHelyID")
+                        {
+                            if (c.Item2 == "A")
+                            {
+                                lista = lista.OrderBy(c => c.EszkozHely.Nev);
+                            }
+                            else
+                            {
+                                lista = lista.OrderByDescending(c => c.EszkozHely.Nev);
+                            }
+                        }
+
+                        if (c.Item1 == "Mennyiseg")
+                        {
+                            if (c.Item2 == "A")
+                            {
+                                lista = lista.OrderBy(c => c.Mennyiseg);
+                            }
+                            else
+                            {
+                                lista = lista.OrderByDescending(c => c.Mennyiseg);
+                            }
+                        }
+                        if (c.Item1 == "Mikortol")
+                        {
+                            if (c.Item2 == "A")
+                            {
+                                lista = lista.OrderBy(c => c.Mikortol);
+                            }
+                            else
+                            {
+                                lista = lista.OrderByDescending(c => c.Mikortol);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    lista = lista.OrderBy(x => x.Mikortol);
                 }
             }
 
@@ -135,8 +249,7 @@ namespace raktarProgram.Repositories
 
             res.Total = await lista.CountAsync();
 
-            lista = lista.OrderBy(x => x.EszkozHely.Nev)
-                        .OrderBy(x => x.Eszkoz.Nev)
+            lista = lista
                         .Skip((pageNum - 1) * pageSize)
                         .Take(pageSize)
                         .Include(t => t.Eszkoz)
@@ -238,7 +351,7 @@ namespace raktarProgram.Repositories
             lista = lista.Where(x => x.Mennyiseg > 0);
             res.Total = await lista.CountAsync();
 
-            lista = lista.OrderBy(x => x.Mikortol)
+            lista = lista
                         .Skip((pageNum - 1) * pageSize)
                         .Take(pageSize)
                         .Include(t => t.Eszkoz)

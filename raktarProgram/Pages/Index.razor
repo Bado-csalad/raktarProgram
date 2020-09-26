@@ -92,6 +92,14 @@
 
     async Task OnReadData(DataGridReadDataEventArgs<Hely> e)
     {
+        var request = new
+        {
+            Sort = e.Columns
+               .Where(_ => _.Direction != SortDirection.None)
+               .Select(_ => new { mezo = _.Field, order = _.Direction == SortDirection.Ascending ? "A" : "D" })  // *** Need a property to OrderBy here ***
+        };
+        searchService.homeFilter.Sorrend = request.Sort.Select(c => new Tuple<string, string>(c.mezo, c.order)).ToList();
+
         var response = await repo.ListHome(searchService.homeFilter, searchService.PageSize, e.Page);
 
         lista = response.Data;
