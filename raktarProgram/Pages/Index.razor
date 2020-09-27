@@ -14,18 +14,53 @@
 
 
 <Collapse Visible="@collapse1Visible">
+
     <CollapseHeader>
-        <Heading Size="HeadingSize.Is5"  >
-            <input @bind="searchService.homeFilter.Kereses" @bind:event="oninput" @onfocusin="@(()=>collapse1Visible=true)" />
-            <Button Color="Color.Primary" @onclick="SearchHely">
-                Keresés
-            </Button>
-        </Heading>
+
+        <input @bind="searchService.homeFilter.Kereses" @bind:event="oninput" @onfocusin="@(()=>collapse1Visible=true)" />
+
+        <Button Color="Color.Primary" @onclick="SearchHely">
+            Keresés
+        </Button>
+
     </CollapseHeader>
+
     <CollapseBody>
-        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-        <CloseButton Clicked="@(()=>collapse1Visible=false)" />
+
+        <Row>
+
+            <Column ColumnSize="ColumnSize.Is2">
+                <Text>Időre szűrés: </Text>
+            </Column>
+
+            <Column ColumnSize="ColumnSize.Is10">
+                <DateEdit Placeholder="@ma" @bind-Date="searchService.homeFilter.Mikor"></DateEdit>
+            </Column>
+
+        </Row>
+
+        <Row>
+
+            <Check TValue="bool" @bind-Checked="searchService.homeFilter.Elotte">A megadott időpont elöttieket listázza ki</Check>
+
+        </Row>
+
+        <Row>
+
+            <Column ColumnSize="ColumnSize.Is2">
+                <Text>Mennyiségre keresés</Text>
+            </Column>
+
+            <Column ColumnSize="ColumnSize.Is10">
+                <NumericEdit @bind-Value="searchService.homeFilter.Mennyiseg"></NumericEdit>
+            </Column>
+
+        </Row>
+
+        <CloseButton Clicked="@(()=>collapse1Visible = false)" />
+
     </CollapseBody>
+
 </Collapse>
 
 <DataGrid TItem="Hely"
@@ -75,6 +110,7 @@
 
     bool collapse1Visible = false;
     List<Hely> lista;
+    string ma = DateTime.Now.ToString();
 
     int count;
 

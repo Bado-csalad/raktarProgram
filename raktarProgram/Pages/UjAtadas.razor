@@ -16,6 +16,15 @@
     </Column>
 
     <Column ColumnSize="ColumnSize.Is9">
+        @*
+        <Autocomplete Data="@xmitLista"
+                      TextField="@((item)=>item.Nev)"
+                      ValueField="@((item)=>item.Nev)"
+                      Placeholder="Kezdj el gépelni..."
+                      SelectedValue="@selectedEszkoz"
+                      SelectedValueChanged="@selectedEszkozChangedHandler"
+                      Filter="AutocompleteFilter.StartsWith" />*@
+
         <SelectList Data="@xmitLista"
                       TextField="@((item)=>item.Nev)"
                       ValueField="@((item)=>item.ID)"
@@ -105,6 +114,8 @@
     DateTime xmikor = DateTime.Now;
     Alert myAlert;
     string hibauzenet;
+    Eszkoz selectedEszkoz;
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -112,6 +123,7 @@
         {
             this.xmitLista =  await this.repo.GetXMitList();
             this.xmitLista.Insert(0, new Eszkoz());
+            Task.WaitAll();
             StateHasChanged();
         }
     }
@@ -119,7 +131,7 @@
     async Task selectedEszkozChangedHandler(object newEszkoz)
     {
         xmit = this.xmitLista.First(c => c.ID == Convert.ToInt32(newEszkoz));
-
+        selectedEszkoz = xmit;
         this.xkitolList = await this.repo.GetXKitolList(xmit.ID);
         this.xkitolList.Insert(0, new Hely());
         StateHasChanged();

@@ -279,6 +279,25 @@ namespace raktarProgram.Repositories
                     lista = lista.Where(x => x.Eszkoz.Nev.Contains(filter.Kereses)
                             || x.EszkozHely.Nev.Contains(filter.Kereses));
                 }
+
+                if(filter.Mikor != null)
+                {
+                    if(filter.Elotte)
+                    {
+                        lista = lista.Where(x => x.Mikortol <= filter.Mikor);
+                    }
+
+                    else
+                    {
+                        lista = lista.Where(x => x.Mikortol >= filter.Mikor);
+                    }
+                }
+
+                if(filter.Mennyiseg > 0)
+                {
+                    lista = lista.Where(x => x.Mennyiseg == filter.Mennyiseg);
+                }
+
                 if (filter.Sorrend != null && filter.Sorrend.Count > 0)
                 {
                     foreach (var c in filter.Sorrend)

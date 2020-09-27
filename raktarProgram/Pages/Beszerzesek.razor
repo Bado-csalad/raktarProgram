@@ -11,10 +11,44 @@
 @inject SearchService searchService
 
 <h3>Beszerzesek</h3>
-<input @bind="searchService.beszerezesFilter.Kereses" @bind:event="oninput" />
-<button class="btn btn-primary" @onclick="SearchHely">
-    Keresés
-</button>
+<Collapse Visible="@collapse1Visible">
+    <CollapseHeader>
+
+        <input @bind="searchService.atadasFilter.Kereses" @bind:event="oninput" @onfocusin="@(()=>collapse1Visible=true)" />
+
+        <Button Color="Color.Primary" @onclick="SearchHely">
+            Keresés
+        </Button>
+
+    </CollapseHeader>
+    <CollapseBody>
+
+        <Row>
+            <Column ColumnSize="ColumnSize.Is2">
+                <Text>Időre szűrés: </Text>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is10">
+                <DateEdit Placeholder="@ma" @bind-Date="searchService.beszerezesFilter.Mikor"></DateEdit>
+            </Column>
+        </Row>
+
+        <Row>
+            <Check TValue="bool" @bind-Checked="searchService.beszerezesFilter.Elotte">A megadott időpont elöttieket listázza ki</Check>
+        </Row>
+
+        <Row>
+            <Column ColumnSize="ColumnSize.Is2">
+                <Text>Mennyiségre keresés</Text>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is10">
+                <NumericEdit @bind-Value="searchService.beszerezesFilter.Mennyiseg"></NumericEdit>
+            </Column>
+        </Row>
+
+        <CloseButton Clicked="@(()=>collapse1Visible = false)" />
+
+    </CollapseBody>
+</Collapse>
 
 <DataGrid TItem="Hely"
           Data="@lista"
@@ -78,6 +112,8 @@
     List<Hely> lista;
     List<EszkozHely> eszkozHelyLista;
     List<Eszkoz> eszkozLista;
+    public bool collapse1Visible;
+    public string ma = DateTime.Now.ToString();
 
     int count;
 
