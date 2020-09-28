@@ -20,7 +20,9 @@
         <input @bind="searchService.homeFilter.Kereses" @bind:event="oninput" @onfocusin="@(()=>collapse1Visible=true)" />
 
         <Button Color="Color.Primary" @onclick="SearchHely">
+
             Keresés
+
         </Button>
 
     </CollapseHeader>
@@ -30,29 +32,45 @@
         <Row>
 
             <Column ColumnSize="ColumnSize.Is2">
+
                 <Text>Időre szűrés: </Text>
+
             </Column>
 
             <Column ColumnSize="ColumnSize.Is10">
+
                 <DateEdit Placeholder="@ma" @bind-Date="searchService.homeFilter.Mikor"></DateEdit>
+
             </Column>
 
         </Row>
 
+        <hr />
+
         <Row>
 
-            <Check TValue="bool" @bind-Checked="searchService.homeFilter.Elotte">A megadott időpont elöttieket listázza ki</Check>
+            <Column ColumnSize="ColumnSize.Is12">
+
+                <Check TValue="bool" @bind-Checked="searchService.homeFilter.Elotte">A megadott időpont elöttieket listázza ki</Check>
+
+            </Column>
 
         </Row>
+
+        <hr />
 
         <Row>
 
             <Column ColumnSize="ColumnSize.Is2">
+
                 <Text>Mennyiségre keresés</Text>
+
             </Column>
 
             <Column ColumnSize="ColumnSize.Is10">
+
                 <NumericEdit @bind-Value="searchService.homeFilter.Mennyiseg"></NumericEdit>
+
             </Column>
 
         </Row>
@@ -68,41 +86,72 @@
           ReadData="@OnReadData"
           TotalItems="@count" ShowPager="true" PageSize="searchService.PageSize"
           Editable="false" Bordered="true" Hoverable="true" Striped="true" Sortable="true">
-    <DataGridCommandColumn TItem="Hely">
-        <NewCommandTemplate>
-            <Button Color="Color.Primary" Clicked="@context.Clicked" />
-        </NewCommandTemplate>
-        <EditCommandTemplate>
-            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
-                Módosítás
-            </Blazorise.Button>
-        </EditCommandTemplate>
-        <DeleteCommandTemplate>
-            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
-                Törlés
-            </Blazorise.Button>
-        </DeleteCommandTemplate>
-        <SaveCommandTemplate>
-            <Button Color="Color.Primary" Clicked="@context.Clicked">Mentés</Button>
-        </SaveCommandTemplate>
-        <CancelCommandTemplate>
-            <Button Color="Color.Secondary" Clicked="@context.Clicked">Mégse</Button>
-        </CancelCommandTemplate>
-    </DataGridCommandColumn>
 
-    <DataGridColumn TItem="Hely" Field="@nameof(Hely.EszkozID)" Caption="Micsoda" Sortable="true" >
+    <DataGridColumn TItem="Hely" Field="@nameof(Hely.EszkozID)" Caption="Micsoda" Sortable="true">
+
         <DisplayTemplate>
+
             @((context as Hely )?.Eszkoz.Nev)
+
         </DisplayTemplate>
+
     </DataGridColumn>
-    <DataGridColumn TItem="Hely" Field="@nameof(Hely.EszkozHelyID)" Caption="Hol" Sortable="true" >
+
+    <DataGridColumn TItem="Hely" Field="@nameof(Hely.EszkozHelyID)" Caption="Hol" Sortable="true">
+
         <DisplayTemplate>
+
             @((context as Hely )?.EszkozHely.Nev)
+
         </DisplayTemplate>
+
     </DataGridColumn>
 
     <DataGridColumn TItem="Hely" Field="@nameof(Hely.Mennyiseg)" Caption="Mennyit" Sortable="true" />
+
     <DataGridColumn TItem="Hely" Field="@nameof(Hely.Mikortol)" Caption="Mikortól" Sortable="true" />
+
+    <DataGridCommandColumn TItem="Hely">
+
+        <NewCommandTemplate>
+
+            <Button Color="Color.Primary" Clicked="@context.Clicked" />
+
+        </NewCommandTemplate>
+
+        <EditCommandTemplate>
+
+            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
+
+                Módosítás
+
+            </Blazorise.Button>
+
+        </EditCommandTemplate>
+
+        <DeleteCommandTemplate>
+
+            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
+
+                Törlés
+
+            </Blazorise.Button>
+
+        </DeleteCommandTemplate>
+
+        <SaveCommandTemplate>
+
+            <Button Color="Color.Primary" Clicked="@context.Clicked">Mentés</Button>
+
+        </SaveCommandTemplate>
+
+        <CancelCommandTemplate>
+
+            <Button Color="Color.Secondary" Clicked="@context.Clicked">Mégse</Button>
+
+        </CancelCommandTemplate>
+
+    </DataGridCommandColumn>
 
 </DataGrid>
 

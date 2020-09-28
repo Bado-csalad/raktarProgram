@@ -17,37 +17,65 @@
         <input @bind="searchService.atadasFilter.Kereses" @bind:event="oninput" @onfocusin="@(()=>collapse1Visible=true)" />
 
         <Button Color="Color.Primary" @onclick="SearchHely">
+
             Keresés
+
         </Button>
 
     </CollapseHeader>
+
     <CollapseBody>
 
         <Row>
+
             <Column ColumnSize="ColumnSize.Is2">
+
                 <Text>Időre szűrés: </Text>
+
             </Column>
+
             <Column ColumnSize="ColumnSize.Is10">
+
                 <DateEdit Placeholder="@ma" @bind-Date="searchService.beszerezesFilter.Mikor"></DateEdit>
+
             </Column>
+
         </Row>
 
-        <Row>
-            <Check TValue="bool" @bind-Checked="searchService.beszerezesFilter.Elotte">A megadott időpont elöttieket listázza ki</Check>
-        </Row>
+        <hr />
 
         <Row>
+
+            <Column ColumnSize="ColumnSize.Is12">
+
+                <Check TValue="bool" @bind-Checked="searchService.beszerezesFilter.Elotte">A megadott időpont elöttieket listázza ki</Check>
+
+            </Column>
+
+        </Row>
+
+        <hr />
+
+        <Row>
+
             <Column ColumnSize="ColumnSize.Is2">
+
                 <Text>Mennyiségre keresés</Text>
+
             </Column>
+
             <Column ColumnSize="ColumnSize.Is10">
+
                 <NumericEdit @bind-Value="searchService.beszerezesFilter.Mennyiseg"></NumericEdit>
+
             </Column>
+
         </Row>
 
         <CloseButton Clicked="@(()=>collapse1Visible = false)" />
 
     </CollapseBody>
+
 </Collapse>
 
 <DataGrid TItem="Hely"
@@ -56,27 +84,6 @@
           TotalItems="@count" ShowPager="true" PageSize="searchService.PageSize" Editable="true" Bordered="true" Hoverable="true" Striped="true"
           RowUpdated="@OnAfterUpdate"
           RowRemoved="@OnAfterDeleted">
-    <DataGridCommandColumn TItem="Hely">
-        <NewCommandTemplate>
-            <Button hidden />
-        </NewCommandTemplate>
-        <EditCommandTemplate>
-            @if ((context.Item as Hely).Meddig == null)
-            {
-                <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
-                    Módosítás
-                </Blazorise.Button>
-            }
-        </EditCommandTemplate>
-        <DeleteCommandTemplate>
-            @if ((context.Item as Hely).Meddig == null)
-            {
-                <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
-                    Törlés
-                </Blazorise.Button>
-            }
-        </DeleteCommandTemplate>
-    </DataGridCommandColumn>
 
     <DataGridColumn TItem="Hely" Field="@nameof(Hely.EszkozID)" Caption="Micsoda" Editable="true">
         <DisplayTemplate>
@@ -107,6 +114,29 @@
     <DataGridColumn TItem="Hely" Field="@nameof(Hely.Mennyiseg)" Caption="Mennyit" Editable="true" />
 
     <DataGridColumn TItem="Hely" Field="@nameof(Hely.Mikortol)" Caption="Mikortól" Editable="true" />
+
+    <DataGridCommandColumn TItem="Hely">
+        <NewCommandTemplate>
+            <Button hidden />
+        </NewCommandTemplate>
+        <EditCommandTemplate>
+            @if ((context.Item as Hely).Meddig == null)
+            {
+                <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
+                    Módosítás
+                </Blazorise.Button>
+            }
+        </EditCommandTemplate>
+        <DeleteCommandTemplate>
+            @if ((context.Item as Hely).Meddig == null)
+            {
+                <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
+                    Törlés
+                </Blazorise.Button>
+            }
+        </DeleteCommandTemplate>
+    </DataGridCommandColumn>
+
 </DataGrid>
 @code {
     List<Hely> lista;
@@ -169,6 +199,13 @@
             var removedBeszerzes = await repo.HelyModositas(e);
             ts.Complete();
         }
+
+        var response = await repo.ListBeszerzesek(searchService.beszerezesFilter, searchService.PageSize, 1);
+        eszkozHelyLista = await repo.GetXHovaBeszerzesList();
+        eszkozLista = await repo.GetXMitList();
+
+        lista = response.Data;
+        count = response.Total;
 
         StateHasChanged();
     }

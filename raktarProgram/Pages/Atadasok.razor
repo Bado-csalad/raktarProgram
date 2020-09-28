@@ -13,70 +13,125 @@
 
 <h3>Elmúlt tranzakciók</h3>
 <Collapse Visible="@collapse1Visible">
+
     <CollapseHeader>
+
         <Heading Size="HeadingSize.Is5">
+
             <input @bind="searchService.atadasFilter.Kereses" @bind:event="oninput" @onfocusin="@(()=>collapse1Visible=true)" />
+
             <Button Color="Color.Primary" @onclick="SearchHely">
+
                 Keresés
+
             </Button>
+
         </Heading>
+
     </CollapseHeader>
+
     <CollapseBody>
         
         <Text>Időbeli szűrés: </Text>
 
+        <hr /> 
         <Row>
+
             <Column ColumnSize="ColumnSize.Is1">
+
                 <Text>Mettől: </Text>
+
             </Column>
+
             <Column ColumnSize="ColumnSize.Is11">
-                <DateEdit Placeholder="@(legregebbi)" @bind-Date="searchService.atadasFilter.Mettol"></DateEdit>
+
+                <DateEdit Placeholder="@(legregebbi)" @bind-Date="searchService.atadasFilter.Mettol" />
+
             </Column>
+
         </Row>
 
+        <hr />
+
         <Row>
+
             <Column ColumnSize="ColumnSize.Is1">
+
                 <Text>Meddig: </Text>
+
             </Column>
+
             <Column ColumnSize="ColumnSize.Is11">
-                <DateEdit Placeholder="@(ma)" @bind-Date="searchService.atadasFilter.Meddig"></DateEdit>
+
+                <DateEdit Placeholder="@(ma)" @bind-Date="searchService.atadasFilter.Meddig" />
+
             </Column>
+
         </Row>
+
+        <hr />
 
         <Row>
             @if (!searchService.atadasFilter.CsakMa)
             {
-                <Check TValue="bool" @bind-Checked="searchService.atadasFilter.MaIs">Csak azok legyenek benne akik tovább adták</Check>
+                <Column ColumnSize="ColumnSize.Is12">
+
+                    <Check TValue="bool" @bind-Checked="searchService.atadasFilter.MaIs">Csak azok legyenek benne akik tovább adták</Check>
+
+                </Column>
             }
             else
             {
-        <Check Disabled="true" TValue="bool" @bind-Checked="searchService.atadasFilter.MaIs">Csak azok legyenek benne akik tovább adták</Check>
+                <Column ColumnSize="ColumnSize.Is12">
+
+                    <Check Disabled="true" TValue="bool" @bind-Checked="searchService.atadasFilter.MaIs">Csak azok legyenek benne akik tovább adták</Check>
+
+                </Column>
             }
         </Row>
+
+        <hr />
 
         <Row>
             @if (!searchService.atadasFilter.MaIs)
             {
-                <Check TValue="bool" @bind-Checked="searchService.atadasFilter.CsakMa">Csak azok legyenek benne akik nem adták tovább</Check>
+                <Column ColumnSize="ColumnSize.Is12">
+
+                    <Check TValue="bool" @bind-Checked="searchService.atadasFilter.CsakMa">Csak azok legyenek benne akik nem adták tovább</Check>
+
+                </Column>
             }
             else
             {
-                <Check Disabled="true" TValue="bool" @bind-Checked="searchService.atadasFilter.CsakMa">Csak azok legyenek benne akik nem adták tovább</Check>
+                <Column ColumnSize="ColumnSize.Is12">
+
+                    <Check Disabled="true" TValue="bool" @bind-Checked="searchService.atadasFilter.CsakMa">Csak azok legyenek benne akik nem adták tovább</Check>
+
+                </Column>
             }
         </Row>
 
+        <hr />
+
         <Row>
+
             <Column ColumnSize="ColumnSize.Is2">
+
                 <Text>Mennyiségre keresés: </Text>
+
             </Column>
+
             <Column ColumnSize="ColumnSize.Is10">
+
                 <NumericEdit @bind-Value="searchService.atadasFilter.Mennyiseg"></NumericEdit>
+
             </Column>
         </Row>
 
         <CloseButton Clicked="@(()=>collapse1Visible=false)" />
 
     </CollapseBody>
+
 </Collapse>
 
 <DataGrid TItem="Hely"
@@ -84,56 +139,65 @@
           ReadData="@OnReadData"
           TotalItems="@count" ShowPager="true" PageSize="searchService.PageSize" Bordered="true" Hoverable="true" Striped="true"
           RowUpdated="@OnAfterUpdate">
-    <DataGridCommandColumn TItem="Hely">
-        <NewCommandTemplate>
-            <Button hidden />
-        </NewCommandTemplate>
-        <EditCommandTemplate>
-            <Button hidden />
-        </EditCommandTemplate>
-        <DeleteCommandTemplate>
-            <Button hidden />
-        </DeleteCommandTemplate>
-    </DataGridCommandColumn>
 
     <DataGridColumn TItem="Hely" Field="@nameof(Hely.EszkozID)" Caption="Micsoda" Editable="false">
+
         <DisplayTemplate>
+
             @((context as Hely )?.Eszkoz.Nev)
+
         </DisplayTemplate>
+
         <EditTemplate>
+
             <SelectList Data="@eszkozLista"
                         TextField="@((item)=>item.Nev)"
                         ValueField="@((item)=>item.ID)"
                         SelectedValue="@((int)( ( (CellEditContext)context ).CellValue ))"
                         SelectedValueChanged="@(( v ) => ( (CellEditContext)context ).CellValue = int.Parse((string)v))" />
+
         </EditTemplate>
+
     </DataGridColumn>
 
     <DataGridColumn TItem="Hely" Field="@nameof(Hely.EszkozHelyID)" Caption="Honnan/kitől kapta" Editable="false">
+
         <DisplayTemplate>
+
             @((context as Hely )?.EszkozHely.Nev)
+
         </DisplayTemplate>
+
         <EditTemplate>
+
             <SelectList Data="@eszkozHelyLista"
                         TextField="@((item)=>item.Nev)"
                         ValueField="@((item)=>item.ID)"
                         SelectedValue="@((int)( ( (CellEditContext)context ).CellValue ))"
                         SelectedValueChanged="@(( v ) => ( (CellEditContext)context ).CellValue = int.Parse((string)v))" />
+
         </EditTemplate>
+
     </DataGridColumn>
 
 
     <DataGridColumn TItem="Hely" Field="@nameof(Hely.HovaID)" Caption="Ki/Mi kapta" Editable="false">
+
         <DisplayTemplate>
+
             @((context as Hely)?.Hova.Nev)
+
         </DisplayTemplate>
+
         <EditTemplate>
+
             <SelectList Data="@eszkozHelyLista"
                         TextField="@((item)=>item.Nev)"
                         ValueField="@((item)=>item.ID)"
                         SelectedValue="@((int)( ( (CellEditContext)context ).CellValue ))"
                         SelectedValueChanged="@(( v ) => ( (CellEditContext)context ).CellValue = int.Parse((string)v))" />
         </EditTemplate>
+
     </DataGridColumn>
 
     <DataGridColumn TItem="Hely" Field="@nameof(Hely.HovaMennyiseg)" Caption="Mennyit" Editable="false" />
@@ -141,6 +205,7 @@
     <DataGridColumn TItem="Hely" Field="@nameof(Hely.Mikortol)" Caption="Mikor kapta" Editable="false" />
 
     <DataGridColumn TItem="Hely" Field="@nameof(Hely.Meddig)" Caption="Mikor adta tovább" Editable="false">
+
         <DisplayTemplate>
             @if ((context as Hely).Meddig == null)
             {
@@ -151,7 +216,31 @@
                 @((context as Hely).Meddig)
             }
         </DisplayTemplate>
+
     </DataGridColumn>
+
+    <DataGridCommandColumn TItem="Hely">
+
+        <NewCommandTemplate>
+
+            <Button hidden />
+
+        </NewCommandTemplate>
+
+        <EditCommandTemplate>
+
+            <Button hidden />
+
+        </EditCommandTemplate>
+
+        <DeleteCommandTemplate>
+
+            <Button hidden />
+
+        </DeleteCommandTemplate>
+
+    </DataGridCommandColumn>
+
 </DataGrid>
 
 @code {

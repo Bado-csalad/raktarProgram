@@ -23,35 +23,57 @@
           RowInserted="@OnAfterInsert" RowUpdated="@OnAfterUpdate" RowUpdating="@OnBeforeUpdate"
           RowRemoved="@OnAfterRemove"
           Sortable="true">
+
+    <DataGridColumn TItem="EszkozTipus" Field="@nameof(EszkozTipus.Nev)" Caption="Név" Editable="true" />
+
+    <DataGridColumn TItem="EszkozTipus" Field="@nameof(EszkozTipus.Leiras)" Caption="Leírás" Editable="true" />
+
     <DataGridCommandColumn TItem="EszkozTipus">
+
         <NewCommandTemplate>
+
             <Button Color="Color.Primary" Clicked="@context.Clicked">
+
                 Új felvétele
+
             </Button>
+
         </NewCommandTemplate>
+
         <EditCommandTemplate>
 
             <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
+
                 Módosítás
+
             </Blazorise.Button>
 
         </EditCommandTemplate>
+
         <DeleteCommandTemplate>
 
             <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
+
                 Törlés
+
             </Blazorise.Button>
 
         </DeleteCommandTemplate>
+
         <SaveCommandTemplate>
+
             <Button Color="Color.Primary" Clicked="@context.Clicked">Mentés</Button>
+
         </SaveCommandTemplate>
+
         <CancelCommandTemplate>
+
             <Button Color="Color.Secondary" Clicked="@context.Clicked">Mégse</Button>
+
         </CancelCommandTemplate>
+
     </DataGridCommandColumn>
-    <DataGridColumn TItem="EszkozTipus" Field="@nameof(EszkozTipus.Nev)" Caption="Név" Editable="true" />
-    <DataGridColumn TItem="EszkozTipus" Field="@nameof(EszkozTipus.Leiras)" Caption="Leírás" Editable="true" />
+
 </DataGrid>
 
 @code {

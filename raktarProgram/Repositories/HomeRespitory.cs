@@ -46,7 +46,7 @@ namespace raktarProgram.Repositories
             var tarsHely = await this.Hely.Where(c => c.Kodegyutt == hely.Kodegyutt && c.ID != hely.ID).SingleAsync();
             var regiHely = await this.Hely.Where(c => c.ID == hely.ID).SingleAsync();
 
-            if (hely.Mennyiseg <= 0)
+            if (hely.Mennyiseg < 0)
             {
                 return (kevesMennyiseg);
             }

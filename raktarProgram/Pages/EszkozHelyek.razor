@@ -22,52 +22,83 @@
           ReadData="@OnReadData"
           TotalItems="@count" ShowPager="true" PageSize="5" Editable="true" Bordered="true" Hoverable="true" Striped="true" Sortable="true"
           RowUpdated="@OnAfterUpdate" RowUpdating="@OnBeforeUpdate" RowInserted="@OnAfterInsert">
-    <DataGridCommandColumn TItem="EszkozHely">
-        <NewCommandTemplate>
-            <Button Color="Color.Primary" Clicked="@context.Clicked">
-                Új felvétele
-            </Button>
-        </NewCommandTemplate>
-        <EditCommandTemplate>
-
-            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
-                Módosítás
-            </Blazorise.Button>
-
-        </EditCommandTemplate>
-        <DeleteCommandTemplate>
-
-            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
-                Törlés
-            </Blazorise.Button>
-
-        </DeleteCommandTemplate>
-        <SaveCommandTemplate>
-            <Button Color="Color.Primary" Clicked="@context.Clicked">Mentés</Button>
-        </SaveCommandTemplate>
-        <CancelCommandTemplate>
-            <Button Color="Color.Secondary" Clicked="@context.Clicked">Mégse</Button>
-        </CancelCommandTemplate>
-    </DataGridCommandColumn>
 
     <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Nev)" Caption="Név" Editable="true" Sortable="true" />
+
     <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Leiras)" Caption="Leírás" Editable="true" Sortable="true" />
+
     <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Telefon)" Caption="Azonosító" Editable="true" Sortable="true" />
+
     <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Cim)" Caption="Cím" Editable="true" Sortable="true" />
+
     <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.Email)" Caption="Email" Editable="true" Sortable="true" />
+
     <DataGridColumn TItem="EszkozHely" Field="@nameof(EszkozHely.TipusID)" Caption="Tipus" Editable="true" Sortable="true">
+
         <DisplayTemplate>
+
             @((context as EszkozHely )?.Tipus.Nev)
+
         </DisplayTemplate>
+
         <EditTemplate>
+
             <SelectList Data="@tipuslista"
                         TextField="@((item)=>item.Nev)"
                         ValueField="@((item)=>item.ID)"
                         SelectedValue="@((int)( ( (CellEditContext)context ).CellValue ))"
                         SelectedValueChanged="@(( v ) => ( (CellEditContext)context ).CellValue = int.Parse((string)v))" />
+
         </EditTemplate>
 
     </DataGridColumn>
+
+    <DataGridCommandColumn TItem="EszkozHely">
+
+        <NewCommandTemplate>
+
+            <Button Color="Color.Primary" Clicked="@context.Clicked">
+
+                Új felvétele
+
+            </Button>
+
+        </NewCommandTemplate>
+
+        <EditCommandTemplate>
+
+            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
+
+                Módosítás
+
+            </Blazorise.Button>
+
+        </EditCommandTemplate>
+
+        <DeleteCommandTemplate>
+
+            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
+
+                Törlés
+
+            </Blazorise.Button>
+
+        </DeleteCommandTemplate>
+
+        <SaveCommandTemplate>
+
+            <Button Color="Color.Primary" Clicked="@context.Clicked">Mentés</Button>
+
+        </SaveCommandTemplate>
+
+        <CancelCommandTemplate>
+
+            <Button Color="Color.Secondary" Clicked="@context.Clicked">Mégse</Button>
+
+        </CancelCommandTemplate>
+
+    </DataGridCommandColumn>
+
 </DataGrid>
 
 @code {

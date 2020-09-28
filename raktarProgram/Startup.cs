@@ -44,8 +44,8 @@ namespace raktarProgram
             services.AddServerSideBlazor();
 
             services.AddScoped<SearchService>();
-            services.AddDbContext<RaktarContext>(options =>
-               options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<RaktarContext>(options =>               
+               options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
 
             services.AddTransient<IEszkozRepository, EszkozRepository>();
             services.AddTransient<IEszkozHelyRepository, EszkozHelyRepository>();
