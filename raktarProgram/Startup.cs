@@ -51,6 +51,27 @@ namespace raktarProgram
             services.AddDbContext<RaktarContext>(options =>               
                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
 
+            //services.AddAuthentication()
+            //    .AddGoogle(options =>
+            //    {
+            //        IConfigurationSection googleAuthNSection =
+            //            Configuration.GetSection("Authentication:Google");
+
+            //        options.ClientId = googleAuthNSection["ClientId"];
+            //        options.ClientSecret = googleAuthNSection["ClientSecret"];
+            //    })
+            //    .AddMicrosoftAccount(microsoftOptions =>
+            //    {
+            //        microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ClientId"];
+            //        microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
+            //    })
+            //    .AddFacebook(options =>
+            //    {
+            //        options.AppId = Configuration["Authentication:Facebook:AppId"];
+            //        options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+            //        options.AccessDeniedPath = "/AccessDeniedPathInfo";
+            //    });
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("FelhasznaloConnection")));
@@ -64,7 +85,6 @@ namespace raktarProgram
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 
             services.AddTransient<IEmailSender, EmailSender>();
-            services.Configure<AuthMessageSenderOptions>(Configuration);
 
 
             services.AddTransient<IEszkozRepository, EszkozRepository>();
