@@ -1,13 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>df8be12b-cef6-44b7-9cff-3edd3ffeb77d</UserSecretsId>
   </PropertyGroup>
-
   <ItemGroup>
     <Content Remove="Pages\Component.razor" />
   </ItemGroup>
-
+  <ItemGroup>
+    <None Include="Areas\Identity\Pages\Account\LogOut.cshtml" />
+    <None Include="Areas\Identity\Pages\Shared\_LoginPartial.cshtml" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Blazorise" Version="0.9.1.2" />
     <PackageReference Include="Blazorise.Bootstrap" Version="0.9.1.2" />
@@ -18,7 +21,21 @@
     <PackageReference Include="Blazorise.Material" Version="0.9.1.2" />
     <PackageReference Include="bootstrap" Version="4.5.0" />
     <PackageReference Include="MatBlazor" Version="2.6.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.4" />
+    <PackageReference Include="SendGrid" Version="9.21.0" />
   </ItemGroup>
-
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+    <Folder Include="Data\" />
+    <Folder Include="Models\" />
+    <Folder Include="wwwroot\css\" />
+    <Folder Include="wwwroot\images\" />
+  </ItemGroup>
 </Project>

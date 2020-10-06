@@ -16,6 +16,10 @@ using Blazorise;
 using raktarProgram.Services;
 using Blazorise.Material;
 using Blazorise.Icons.Material;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Components.Authorization;
+using raktarProgram.Areas.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace raktarProgram
 {
@@ -47,6 +51,22 @@ namespace raktarProgram
             services.AddDbContext<RaktarContext>(options =>               
                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
 
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("FelhasznaloConnection")));
+
+            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddIdentityCore<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
+
+            services.AddTransient<IEmailSender, EmailSender>();
+            services.Configure<AuthMessageSenderOptions>(Configuration);
+
+
             services.AddTransient<IEszkozRepository, EszkozRepository>();
             services.AddTransient<IEszkozHelyRepository, EszkozHelyRepository>();
             services.AddTransient<IEszkozHelyTipusRepository, EszkozHelyTipusRepository>();
@@ -68,7 +88,11 @@ namespace raktarProgram
 
             app.UseStaticFiles();
 
+
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.ApplicationServices
                 .UseMaterialProviders()
