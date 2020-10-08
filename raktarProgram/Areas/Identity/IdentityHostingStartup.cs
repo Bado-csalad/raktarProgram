@@ -14,8 +14,17 @@ namespace raktarProgram.Areas.Identity
     {
         public void Configure(IWebHostBuilder builder)
         {
-            builder.ConfigureServices((context, services) => {
+            builder.ConfigureServices((context, services) => { 
             });
+
         }
+
     }
 }
+
+/*Roles:
+    1. Owner => csak en, alapból benne az adatbazisban
+    2. Admin => tud jogokat adni, és az alatta lévő jogokat megkapja
+    3. Leader => tud beszeren/atadni/törölni/modosítani
+    4. Visitor => csak megnézni tud
+ */

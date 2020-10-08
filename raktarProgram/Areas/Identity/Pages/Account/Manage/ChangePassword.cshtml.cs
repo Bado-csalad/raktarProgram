@@ -35,18 +35,18 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
         {
             [Required]
             [DataType(DataType.Password)]
-            [Display(Name = "Current password")]
+            [Display(Name = "jelelegi jeslszó")]
             public string OldPassword { get; set; }
 
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "New password")]
+            [Display(Name = "Új jelszó")]
             public string NewPassword { get; set; }
 
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm new password")]
-            [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
+            [Display(Name = "Jelszó megerősítése")]
+            [Compare("NewPassword", ErrorMessage = "Az új jelszó és a megerősítése nem egyezik.")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -55,7 +55,7 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Felhasználói adatokat nem tudtuk betölteni '{_userManager.GetUserId(User)}'.");
             }
 
             var hasPassword = await _userManager.HasPasswordAsync(user);
@@ -77,7 +77,7 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Felhasználói adatokat nem tudtuk betölteni  '{_userManager.GetUserId(User)}'.");
             }
 
             var changePasswordResult = await _userManager.ChangePasswordAsync(user, Input.OldPassword, Input.NewPassword);
@@ -92,7 +92,7 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
 
             await _signInManager.RefreshSignInAsync(user);
             _logger.LogInformation("User changed their password successfully.");
-            StatusMessage = "Your password has been changed.";
+            StatusMessage = "Sikeres jelszó változtatás. ";
 
             return RedirectToPage();
         }

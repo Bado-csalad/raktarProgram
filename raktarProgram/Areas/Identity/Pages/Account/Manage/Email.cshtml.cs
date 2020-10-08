@@ -45,7 +45,7 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
         {
             [Required]
             [EmailAddress]
-            [Display(Name = "New email")]
+            [Display(Name = "Új email")]
             public string NewEmail { get; set; }
         }
 
@@ -67,7 +67,7 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Felhasználói adatokat nem tudtuk betölteni '{_userManager.GetUserId(User)}'.");
             }
 
             await LoadAsync(user);
@@ -79,7 +79,7 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound($"UFelhasználói adatokat nem tudtuk betölteni '{_userManager.GetUserId(User)}'.");
             }
 
             if (!ModelState.IsValid)
@@ -100,14 +100,14 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
                     protocol: Request.Scheme);
                 await _emailSender.SendEmailAsync(
                     Input.NewEmail,
-                    "Confirm your email",
-                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    "Email megerősítése",
+                    $"Erősítsed meg az emailed azzal hogy <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>ide/a> kattintasz.");
 
-                StatusMessage = "Confirmation link to change email sent. Please check your email.";
+                StatusMessage = "Megerősítő email elküldve, nézd meg a postaládád";
                 return RedirectToPage();
             }
 
-            StatusMessage = "Your email is unchanged.";
+            StatusMessage = "Az emailed nem változott";
             return RedirectToPage();
         }
 
@@ -116,7 +116,7 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Felhasználói adatokat nem tudtuk betölteni '{_userManager.GetUserId(User)}'.");
             }
 
             if (!ModelState.IsValid)
@@ -134,12 +134,13 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
                 pageHandler: null,
                 values: new { area = "Identity", userId = userId, code = code },
                 protocol: Request.Scheme);
+
             await _emailSender.SendEmailAsync(
                 email,
-                "Confirm your email",
-                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                "Email megerősítése",
+                 $"Erősítsed meg az emailed azzal hogy <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>ide/a> kattintasz.");
 
-            StatusMessage = "Verification email sent. Please check your email.";
+            StatusMessage = "Megerősítő email elküldve, nézd meg a postaládád";
             return RedirectToPage();
         }
     }

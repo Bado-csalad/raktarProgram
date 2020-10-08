@@ -29,10 +29,10 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Felhasználói adatokat nem tudtuk betölteni '{_userManager.GetUserId(User)}'.");
             }
 
-            _logger.LogInformation("User with ID '{UserId}' asked for their personal data.", _userManager.GetUserId(User));
+            _logger.LogInformation("A felhasználó {userID} lekérte az adatait", _userManager.GetUserId(User));
 
             // Only include personal data for download
             var personalData = new Dictionary<string, string>();

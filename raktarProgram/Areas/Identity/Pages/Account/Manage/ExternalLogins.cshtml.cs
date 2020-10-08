@@ -36,7 +36,7 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID 'user.Id'.");
+                return NotFound($"Felhasználói adatokat nem tudtuk betölteni'user.Id'.");
             }
 
             CurrentLogins = await _userManager.GetLoginsAsync(user);
@@ -52,18 +52,18 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID 'user.Id'.");
+                return NotFound($"Felhasználói adatokat nem tudtuk betölteni 'user.Id'.");
             }
 
             var result = await _userManager.RemoveLoginAsync(user, loginProvider, providerKey);
             if (!result.Succeeded)
             {
-                StatusMessage = "The external login was not removed.";
+                StatusMessage = "Külső fiok sikeresen eltávolítva.";
                 return RedirectToPage();
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "The external login was removed.";
+            StatusMessage = "Külső fiok el lett távolítva";
             return RedirectToPage();
         }
 
@@ -83,26 +83,26 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID 'user.Id'.");
+                return NotFound($"Felhasználói adatokat nem tudtuk betölteni 'user.Id'.");
             }
 
             var info = await _signInManager.GetExternalLoginInfoAsync(user.Id);
             if (info == null)
             {
-                throw new InvalidOperationException($"Unexpected error occurred loading external login info for user with ID '{user.Id}'.");
+                throw new InvalidOperationException($"Isremetelen hiba történt '{user.Id}'.");
             }
 
             var result = await _userManager.AddLoginAsync(user, info);
             if (!result.Succeeded)
             {
-                StatusMessage = "The external login was not added. External logins can only be associated with one account.";
+                StatusMessage = "Külső fiok nem lett hozzá adva, Minden külső fiokot csak egyeszer lehet hozzá adni.";
                 return RedirectToPage();
             }
 
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-            StatusMessage = "The external login was added.";
+            StatusMessage = "Külső fiok hozzá adva.";
             return RedirectToPage();
         }
     }
