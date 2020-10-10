@@ -38,7 +38,7 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
 
             [DataType(DataType.Password)]
             [Display(Name = "Confirm new password")]
-            [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
+            [Compare("NewPassword", ErrorMessage = "Az új jelszó és megerősítése nem egyezik.")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -84,7 +84,7 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your password has been set.";
+            StatusMessage = "jelszó beállítva.";
 
             return RedirectToPage();
         }

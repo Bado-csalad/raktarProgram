@@ -64,7 +64,7 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
             }
 
             await _signInManager.ForgetTwoFactorClientAsync();
-            StatusMessage = "The current browser has been forgotten. When you login again from this browser you will be prompted for your 2fa code.";
+            StatusMessage = "Jelenlegi böngésző elfelejtve. A következő belépésednél meg kell majd adnod a 2Fa-s kódodat.";
             return RedirectToPage();
         }
     }

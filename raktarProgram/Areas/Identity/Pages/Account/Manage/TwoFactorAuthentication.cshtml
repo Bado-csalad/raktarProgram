@@ -13,43 +13,43 @@
     {
         <div class="alert alert-danger">
             <strong>You have no recovery codes left.</strong>
-            <p>You must <a asp-page="./GenerateRecoveryCodes">generate a new set of recovery codes</a> before you can log in with a recovery code.</p>
+            <p>Kell hogy generálj egy új <a asp-page="./GenerateRecoveryCodes">helyreállítási kódot</a> mielött beléphetsz a kód használatával.</p>
         </div>
     }
     else if (Model.RecoveryCodesLeft == 1)
     {
         <div class="alert alert-danger">
-            <strong>You have 1 recovery code left.</strong>
-            <p>You can <a asp-page="./GenerateRecoveryCodes">generate a new set of recovery codes</a>.</p>
+            <strong>Még van egy helyreállítási kódod</strong>
+            <p><a asp-page="./GenerateRecoveryCodes">Új kód generálása.</a></p>
         </div>
     }
     else if (Model.RecoveryCodesLeft <= 3)
     {
         <div class="alert alert-warning">
-            <strong>You have @Model.RecoveryCodesLeft recovery codes left.</strong>
-            <p>You should <a asp-page="./GenerateRecoveryCodes">generate a new set of recovery codes</a>.</p>
+            <strong>Még @Model.RecoveryCodesLeft darab helyreállítási kódod van.</strong>
+            <p><a asp-page="./GenerateRecoveryCodes">Új helyreállítási kód generálása.</a></p>
         </div>
     }
 
     if (Model.IsMachineRemembered)
     {
         <form method="post" style="display: inline-block">
-            <button type="submit" class="btn btn-default">Forget this browser</button>
+            <button type="submit" class="btn btn-default">Böngésző elfelejtése.</button>
         </form>
     }
-    <a asp-page="./Disable2fa" class="btn btn-default">Disable 2FA</a>
-    <a asp-page="./GenerateRecoveryCodes" class="btn btn-default">Reset recovery codes</a>
+    <a asp-page="./Disable2fa" class="btn btn-default">2Fa kikapcsolása</a>
+    <a asp-page="./GenerateRecoveryCodes" class="btn btn-default">Helyreállítási kódok alaphelyzetbe állítása.</a>
 }
 
-<h5>Authenticator app</h5>
+<h5>Hitelesítő alkalmazáspl</h5>
 @if (!Model.HasAuthenticator)
 {
-    <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-default">Add authenticator app</a>
+    <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-default">Hitelesítő alkalmazás hozzá adása.</a>
 }
 else
 {
-    <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-default">Setup authenticator app</a>
-    <a id="reset-authenticator" asp-page="./ResetAuthenticator" class="btn btn-default">Reset authenticator app</a>
+    <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-default">Új hitelesítő alkalmazás beállítása.</a>
+    <a id="reset-authenticator" asp-page="./ResetAuthenticator" class="btn btn-default">Hitelesítő alkalmazások alaphelyzetbe állítása.</a>
 }
 
 @section Scripts {

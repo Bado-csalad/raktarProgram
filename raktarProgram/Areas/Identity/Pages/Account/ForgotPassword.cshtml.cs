@@ -58,8 +58,12 @@ namespace raktarProgram.Areas.Identity.Pages.Account
 
                 await _emailSender.SendEmailAsync(
                     Input.Email,
-                    "Reset Password",
-                    $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    "Jelszó visszaállítása.",
+                    "Szia!/n"
+                    + "Nemrég új jelszót kértél a  412. Kalazanti Szent József cs.cs. raktárkezelő programjában."
+                    + $"Ahhoz hogy új jelszót adjál meg kattint <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>erre</a> a linkre.\n"
+                    + "Amennyiben nem te kértél új jelszót, az emailt nyugodtan hagyd figyelmen kivül."
+                    + "/n/nJó munkát");
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }

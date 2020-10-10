@@ -32,13 +32,14 @@ namespace raktarProgram.Areas.Identity.Pages.Account
             public string Email { get; set; }
 
             [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [Display(Name = "Jelszó")]
+            [StringLength(100, ErrorMessage = "A jelszó hosszának 6 és 100 közé kell esnie.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             public string Password { get; set; }
 
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Display(Name = "jelszó megerősítése")]
+            [Compare("Password", ErrorMessage = "Jelszó én megerősítésének egyeznie kell.")]
             public string ConfirmPassword { get; set; }
 
             public string Code { get; set; }
@@ -48,7 +49,7 @@ namespace raktarProgram.Areas.Identity.Pages.Account
         {
             if (code == null)
             {
-                return BadRequest("A code must be supplied for password reset.");
+                return BadRequest("Meg kell adni az előző kódot is a jelszó alaphelyzetbe állíátáshoz.");
             }
             else
             {

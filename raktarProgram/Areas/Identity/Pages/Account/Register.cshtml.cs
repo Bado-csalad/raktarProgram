@@ -51,14 +51,14 @@ namespace raktarProgram.Areas.Identity.Pages.Account
             public string Email { get; set; }
 
             [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [StringLength(100, ErrorMessage = "A jelszó hosszának 6 és 100 közé kell esnie. ", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "Password")]
+            [Display(Name = "Jelszó")]
             public string Password { get; set; }
 
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Display(Name = "jelszó megerősítése")]
+            [Compare("Password", ErrorMessage = "Jelszó és megerősítése nem egyezik.")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -88,8 +88,11 @@ namespace raktarProgram.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    await _emailSender.SendEmailAsync(Input.Email, "Email megerősítése",
+                        "Szia! \nNemrég regisztráltál a 412. Kalazanti Szent József cs.cs. raktárkezelő programjában"
+                        + $"/nLégyszíves erősítsed meg az email címed erre a linkre kattintva:<a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>email megerősítése</a>."
+                        + "/nHa nem te regisztráltál akkor hagyd figyelmen kívül az emailt."
+                        + "/n/nJó munkát");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
