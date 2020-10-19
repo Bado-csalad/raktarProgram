@@ -24,11 +24,20 @@
                 <span class="oi oi-list-rich" aria-hidden="true"></span> Eszközhelyek
             </NavLink>
         </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="eszkozhelytipusok">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Eszközhelytipusok
-            </NavLink>
-        </li>
+
+        <AuthorizeView Roles="Admin">
+            <Authorized>
+
+
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="eszkozhelytipusok">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Eszközhelytipusok
+                    </NavLink>
+                </li>
+
+            </Authorized>
+        </AuthorizeView>
+
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="beszerzesek">
                 <span class="oi oi-x" aria-hidden="true"></span> Beszerzések

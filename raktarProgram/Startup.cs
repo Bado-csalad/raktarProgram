@@ -51,7 +51,7 @@ namespace raktarProgram
             services.AddDbContext<RaktarContext>(options =>               
                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
 
-            //services.AddAuthentication()
+            services.AddAuthentication();
             //    .AddGoogle(options =>
             //    {
             //        IConfigurationSection googleAuthNSection =
@@ -77,6 +77,7 @@ namespace raktarProgram
                     Configuration.GetConnectionString("FelhasznaloConnection")));
 
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddIdentityCore<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)

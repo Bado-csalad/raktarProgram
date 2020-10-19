@@ -1,14 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using System;
 
-namespace raktarProgram.Data.Migrations
+namespace raktarProgram.Migrations
 {
     public partial class CreateIdentitySchema : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -22,26 +20,6 @@ namespace raktarProgram.Data.Migrations
                 {
                     table.PrimaryKey("PK_AspNetRoles", x => x.Id);
                 });
-
-            #region AddingRoles
-
-            /*Roles:
-                1. Owner => csak en, alapból benne az adatbazisban
-                2. Admin => tud jogokat adni, és az alatta lévő jogokat megkapja
-                3. Leader => tud beszeren/atadni/törölni/modosítani
-                4. Visitor => csak megnézni tud
-             */
-
-
-            //migrationBuilder.InsertData("AspNetRoles", "Id", "Admin");
-            //migrationBuilder.InsertData("AspNetRoles", "Name", "Admin");
-
-            //migrationBuilder.InsertData("AspNetRoles", "Id", "Leader");
-            //migrationBuilder.InsertData("AspNetRoles", "Name", "Vezető");
-
-            //migrationBuilder.InsertData("AspNetRoles", "Id", "Visitor");
-            //migrationBuilder.InsertData("AspNetRoles", "Name", "Látogató");
-            #endregion
 
             migrationBuilder.CreateTable(
                 name: "AspNetUsers",
@@ -73,7 +51,7 @@ namespace raktarProgram.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     RoleId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -94,7 +72,7 @@ namespace raktarProgram.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -212,8 +190,6 @@ namespace raktarProgram.Data.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
-
-
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

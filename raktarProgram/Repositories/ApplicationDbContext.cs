@@ -12,7 +12,6 @@ namespace raktarProgram.Repositories
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-        }
-        
+        }        
     }
 }

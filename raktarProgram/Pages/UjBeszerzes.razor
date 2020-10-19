@@ -5,77 +5,155 @@
 
 <h1>Beszerzés</h1>
 
+<AuthorizeView Roles="Admin,Leader">
 
+    <Authorized>
 
-<Row>
-    <Column ColumnSize="ColumnSize.Is3">
-        <Alert Color="Color.Primary" Visible="true">
-            Mit:
-        </Alert>
-    </Column>
-    <Column ColumnSize="ColumnSize.Is9">
-        <SelectList Data="@xmitLista"
-                    TextField="@((item)=>item.Nev)"
-                    ValueField="@((item)=>item.ID)"
-                    SelectedValueChanged="@selectedEszkozChangedHandler" />
-    </Column>
-</Row>
-<Row>
-    <Column ColumnSize="ColumnSize.Is3">
-        <Alert Color="Color.Primary" Visible="true">
-            Hova:
-        </Alert>
-    </Column>
-    <Column ColumnSize="ColumnSize.Is9">
-        <SelectList Data="@xhovaList"
-                    TextField="@((item)=>item.Nev)"
-                    ValueField="@((item)=>item.ID)"
-                    SelectedValueChanged="@selectedHovaChangedHandler" />
-    </Column>
-</Row>
-<Row>
-    <Column ColumnSize="ColumnSize.Is3">
-        <Alert Color="Color.Primary" Visible="true">
-            Mennyit:
-        </Alert>
-    </Column>
-    <Column ColumnSize="ColumnSize.Is9">
-        <input @bind="mennyit" @bind:event="oninput" />
-    </Column>
-</Row>
-<Row>
-    <Column ColumnSize="ColumnSize.Is3">
-        <Alert Color="Color.Primary" Visible="true">
-            Mikor:
-        </Alert>
-    </Column>
-    <Column ColumnSize="ColumnSize.Is9">
-        <DateEdit @bind-Date="xmikor" />
-    </Column>
-</Row>
-<Row>
-    <Column ColumnSize="ColumnSize.Is3">
-        <Alert Color="Color.Primary" Visible="true">
-            Megjegyzés:
-        </Alert>
-    </Column>
-    <Column ColumnSize="ColumnSize.Is9">
-        <input @bind="megjegyzes" @bind:event="oninput" size="100"/>
-    </Column>
-</Row>
-<button class="btn btn-primary" @onclick="Mentes">
-    Hozzáadás
-</button>
+        <Row>
 
-<Alert @ref="myAlert" Color="Color.Warning" Dismisable="true">
-    <AlertDescription>
-        Figyelem!
-    </AlertDescription>
-    <AlertMessage>
-        @hibauzenet
-    </AlertMessage>
-    <CloseButton Clicked="@(()=>myAlert.Hide())" />
-</Alert>
+            <Column ColumnSize="ColumnSize.Is3">
+
+                <Alert Color="Color.Primary" Visible="true">
+
+                    Mit:
+
+                </Alert>
+
+            </Column>
+
+            <Column ColumnSize="ColumnSize.Is9">
+
+                <SelectList Data="@xmitLista"
+                            TextField="@((item)=>item.Nev)"
+                            ValueField="@((item)=>item.ID)"
+                            SelectedValueChanged="@selectedEszkozChangedHandler" />
+
+            </Column>
+
+        </Row>
+
+        <Row>
+
+            <Column ColumnSize="ColumnSize.Is3">
+
+                <Alert Color="Color.Primary" Visible="true">
+
+                    Hova:
+
+                </Alert>
+
+            </Column>
+
+            <Column ColumnSize="ColumnSize.Is9">
+
+                <SelectList Data="@xhovaList"
+                            TextField="@((item)=>item.Nev)"
+                            ValueField="@((item)=>item.ID)"
+                            SelectedValueChanged="@selectedHovaChangedHandler" />
+
+            </Column>
+
+        </Row>
+
+        <Row>
+
+            <Column ColumnSize="ColumnSize.Is3">
+
+                <Alert Color="Color.Primary" Visible="true">
+
+                    Mennyit:
+
+                </Alert>
+
+            </Column>
+
+            <Column ColumnSize="ColumnSize.Is9">
+
+                <input @bind="mennyit" @bind:event="oninput" />
+
+            </Column>
+
+        </Row>
+
+        <Row>
+
+            <Column ColumnSize="ColumnSize.Is3">
+
+                <Alert Color="Color.Primary" Visible="true">
+
+                    Mikor:
+
+                </Alert>
+
+            </Column>
+
+            <Column ColumnSize="ColumnSize.Is9">
+
+                <DateEdit @bind-Date="xmikor" />
+
+            </Column>
+
+        </Row>
+
+        <Row>
+
+            <Column ColumnSize="ColumnSize.Is3">
+
+                <Alert Color="Color.Primary" Visible="true">
+
+                    Megjegyzés:
+
+                </Alert>
+
+            </Column>
+
+            <Column ColumnSize="ColumnSize.Is9">
+
+                <input @bind="megjegyzes" @bind:event="oninput" size="100" />
+
+            </Column>
+
+        </Row>
+
+        <button class="btn btn-primary" @onclick="Mentes">
+
+            Hozzáadás
+
+        </button>
+
+        <Alert @ref="myAlert" Color="Color.Warning" Dismisable="true">
+
+            <AlertDescription>
+
+                Figyelem!
+
+            </AlertDescription>
+
+            <AlertMessage>
+
+                @hibauzenet
+
+            </AlertMessage>
+
+            <CloseButton Clicked="@(()=>myAlert.Hide())" />
+
+        </Alert>
+
+    </Authorized>
+
+    <NotAuthorized>
+
+        <Text>
+
+            Nem vagy bejelentkezve, vagy nincs jogosultságod hozzáférni a tartalomhoz.
+
+        </Text>
+
+        <LoginDisplay />
+
+    </NotAuthorized>
+
+</AuthorizeView>
 
 @code {
     List<Eszkoz> xmitLista = null;

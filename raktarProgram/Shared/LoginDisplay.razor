@@ -1,12 +1,26 @@
-﻿<AuthorizeView>
+﻿@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+
+<AuthorizeView>
     <Authorized>
-        <a href="Identity/Account/Manage">Hello, @context.User.Identity.Name!</a>
-        <form method="post" action="Identity/Account/LogOut">
-            <button type="submit" class="nav-link btn btn-link">Kijelentkezés</button>
-        </form>
+        <ul class="navbar-nav" >
+            <li class="nav-item" >
+                <a href="/Identity/Account/Manage/Index" id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/" title="Profil megtekintése">Profilod megtekintése (@context.User.Identity.Name)</a>
+            </li>
+        </ul>
     </Authorized>
     <NotAuthorized>
-        <a href="Identity/Account/Register">Regisztrálás</a>
-        <a href="Identity/Account/Login">Bejelentkezés</a>
+        <ul class="navbar-nav" >
+            <li class="nav-item" >
+                <a href="Identity/Account/Register" class="nav-link text-dark" id="register" asp-area="Identity" asp-page="/Account/Register">Regisztrálás</a>
+            </li>
+            <li class="nav-item" >
+                <a href="Identity/Account/Login" class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/Login">Bejelentkezés</a>
+            </li>
+        </ul>
     </NotAuthorized>
 </AuthorizeView>

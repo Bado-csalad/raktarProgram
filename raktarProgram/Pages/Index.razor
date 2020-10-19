@@ -4,13 +4,28 @@
 @inject SearchService searchService
 
 <h3>Raktár</h3>
-<Button Color="Color.Primary">
-    <a href="/ujatadas" style="color:white">Eszköz kiadás/visszatevés</a>
-</Button>
 
-<Button Color="Color.Primary">
-    <a href="/ujbeszerzes" style="color:white">Új beszerzés</a>
-</Button>
+<AuthorizeView Roles="Admin,Leader">
+
+    <Authorized>
+
+        <Button Color="Color.Primary">
+
+            <a href="/ujatadas" style="color:white">Eszköz kiadás/visszatevés</a>
+
+        </Button>
+
+        <Button Color="Color.Primary">
+
+            <a href="/ujbeszerzes" style="color:white">Új beszerzés</a>
+
+        </Button>
+
+    </Authorized>
+
+</AuthorizeView>
+
+
 
 
 <Collapse Visible="@collapse1Visible">
@@ -113,43 +128,23 @@
 
     <DataGridCommandColumn TItem="Hely">
 
-        <NewCommandTemplate>
+        <NewCommandTemplate Context="displayContext">
 
-            <Button Color="Color.Primary" Clicked="@context.Clicked" />
+            <Button hidden />
 
         </NewCommandTemplate>
 
-        <EditCommandTemplate>
+        <EditCommandTemplate Context="displayContext">
 
-            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
-
-                Módosítás
-
-            </Blazorise.Button>
+            <Button hidden />
 
         </EditCommandTemplate>
 
-        <DeleteCommandTemplate>
+        <DeleteCommandTemplate Context="displayContext">
 
-            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
-
-                Törlés
-
-            </Blazorise.Button>
+            <Button hidden />
 
         </DeleteCommandTemplate>
-
-        <SaveCommandTemplate>
-
-            <Button Color="Color.Primary" Clicked="@context.Clicked">Mentés</Button>
-
-        </SaveCommandTemplate>
-
-        <CancelCommandTemplate>
-
-            <Button Color="Color.Secondary" Clicked="@context.Clicked">Mégse</Button>
-
-        </CancelCommandTemplate>
 
     </DataGridCommandColumn>
 

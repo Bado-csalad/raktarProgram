@@ -13,100 +13,122 @@
 @inject SearchService searchService
 
 <h3>Eszközök</h3>
-<input @bind="searchService.eszkozFilter.Kereses" @bind:event="oninput" />
-<button class="btn btn-primary" @onclick="SearchEszkoz">
-    Keresés
-</button>
+<AuthorizeView Roles="Admin,Leader,Visitor">
+    <Authorized>
 
 
-<DataGrid TItem="Eszkoz"
-          Data="@lista"
-          ReadData="@OnReadData"
-          TotalItems="@count" ShowPager="true" PageSize="searchService.PageSize" Editable="true" Bordered="true" Hoverable="true" Striped="true"
-          RowInserted="@OnAfterInsert" RowUpdated="@OnAfterUpdate" RowUpdating="@OnBeforeUpdate"
-          RowRemoved="@OnAfterRemove"
-          Sortable="true">
-
-    <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Nev)" Caption="Név" Editable="true" />
-
-    <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Leiras)" Caption="Leírás" Editable="true" />
-
-    <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Azonosito)" Caption="Azonosító" Editable="true" />
-
-    <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.EszkozTipusID)" Caption="Tipus" Editable="true" Sortable="true">
-
-        <DisplayTemplate>
-
-            @((context as Eszkoz)?.Tipus.Nev)
-
-        </DisplayTemplate>
-
-        <EditTemplate>
-
-            <SelectList Data="@tipuslista"
-                        TextField="@((item)=>item.Nev)"
-                        ValueField="@((item)=>item.ID)"
-                        SelectedValue="@((int)( ( (CellEditContext)context ).CellValue ))"
-                        SelectedValueChanged="@(( v ) => ( (CellEditContext)context ).CellValue = int.Parse((string)v))" />
-
-        </EditTemplate>
-
-    </DataGridColumn>
-
-    <DataGridCommandColumn TItem="Eszkoz">
-
-        <NewCommandTemplate>
-
-            <Button Color="Color.Primary" Clicked="@context.Clicked">
-
-                Új felvétele
-
-            </Button>
-
-        </NewCommandTemplate>
-
-        <EditCommandTemplate>
-
-            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
-
-                Módosítás
-
-            </Blazorise.Button>
-
-        </EditCommandTemplate>
-
-        <DeleteCommandTemplate>
-
-            @if (context.Item.HelyDarab == 0)
-            {
-                
-                <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked">
-
-                    Törlés
-
-                </Blazorise.Button>
+        <input @bind="searchService.eszkozFilter.Kereses" @bind:event="oninput" />
+        <button class="btn btn-primary" @onclick="SearchEszkoz">
+            Keresés
+        </button>
 
 
-            }
+        <DataGrid TItem="Eszkoz"
+                  Data="@lista"
+                  ReadData="@OnReadData"
+                  TotalItems="@count" ShowPager="true" PageSize="searchService.PageSize" Editable="true" Bordered="true" Hoverable="true" Striped="true"
+                  RowInserted="@OnAfterInsert" RowUpdated="@OnAfterUpdate" RowUpdating="@OnBeforeUpdate"
+                  RowRemoved="@OnAfterRemove"
+                  Sortable="true">
 
-        </DeleteCommandTemplate>
+            <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Nev)" Caption="Név" Editable="true" />
 
-        <SaveCommandTemplate>
+            <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Leiras)" Caption="Leírás" Editable="true" />
 
-            <Button Color="Color.Primary" Clicked="@context.Clicked">Mentés</Button>
+            <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.Azonosito)" Caption="Azonosító" Editable="true" />
 
-        </SaveCommandTemplate>
+            <DataGridColumn TItem="Eszkoz" Field="@nameof(Eszkoz.EszkozTipusID)" Caption="Tipus" Editable="true" Sortable="true">
 
-        <CancelCommandTemplate>
+                <DisplayTemplate Context="displayContext">
 
-            <Button Color="Color.Secondary" Clicked="@context.Clicked">Mégse</Button>
+                    @((displayContext as Eszkoz)?.Tipus.Nev)
 
-        </CancelCommandTemplate>
+                </DisplayTemplate>
 
-    </DataGridCommandColumn>
+                <EditTemplate Context="displayContext">
 
-</DataGrid>
+                    <SelectList Data="@tipuslista"
+                                TextField="@((item)=>item.Nev)"
+                                ValueField="@((item)=>item.ID)"
+                                SelectedValue="@((int)( ( (CellEditContext)displayContext ).CellValue ))"
+                                SelectedValueChanged="@(( v ) => ( (CellEditContext)displayContext ).CellValue = int.Parse((string)v))" />
 
+                </EditTemplate>
+
+            </DataGridColumn>
+
+            <AuthorizeView Roles="Admin,Leader">
+
+                <Authorized Context="autContext">
+
+
+                    <DataGridCommandColumn TItem="Eszkoz">
+
+                        <NewCommandTemplate Context="displayContext">
+
+                            <Button Color="Color.Primary" Clicked="@displayContext.Clicked">
+
+                                Új felvétele
+
+                            </Button>
+
+                        </NewCommandTemplate>
+
+                        <EditCommandTemplate Context="displayContext">
+
+                            <Blazorise.Button Color="Color.Primary" Clicked="@displayContext.Clicked">
+
+                                Módosítás
+
+                            </Blazorise.Button>
+
+                        </EditCommandTemplate>
+
+                        <DeleteCommandTemplate Context="displayContext">
+
+                            @if (displayContext.Item.HelyDarab == 0)
+                            {
+
+                                <Blazorise.Button Color="Color.Primary" Clicked="@displayContext.Clicked">
+
+                                    Törlés
+
+                                </Blazorise.Button>
+
+
+                            }
+
+                        </DeleteCommandTemplate>
+
+                        <SaveCommandTemplate Context="displayContext">
+
+                            <Button Color="Color.Primary" Clicked="@displayContext.Clicked">Mentés</Button>
+
+                        </SaveCommandTemplate>
+
+                        <CancelCommandTemplate Context="displayContext">
+
+                            <Button Color="Color.Secondary" Clicked="@displayContext.Clicked">Mégse</Button>
+
+                        </CancelCommandTemplate>
+
+                    </DataGridCommandColumn>
+
+                </Authorized>
+
+            </AuthorizeView>
+
+        </DataGrid>
+
+    </Authorized>
+
+    <NotAuthorized>
+        <Text>
+            Nem vagy bejelentkezve, ezért nem férhetsz hozzá a tartalomhoz.
+        </Text>
+        <LoginDisplay />
+    </NotAuthorized>
+</AuthorizeView>
 @code {
     List<Eszkoz> lista;
 
@@ -175,7 +197,7 @@
     {
         // todo validálni, meg menteni, ha hiba van, akkor e.cancel = true
 
-        using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled)) 
+        using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
         {
 
             var helydarab = await repo.GetHelyCount(e);
