@@ -93,6 +93,7 @@ namespace raktarProgram
             services.AddTransient<IEszkozHelyTipusRepository, EszkozHelyTipusRepository>();
             services.AddTransient<IHomeRespitory, HomeRespitory>();
             services.AddTransient<IEszkozTipusRepository, EszkozTipusRepository>();
+            services.AddTransient<IUserRoleAdministrationRepository, UserRoleAdministrationRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

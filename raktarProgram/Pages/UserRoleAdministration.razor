@@ -1,13 +1,53 @@
 ﻿@page "/UserRoleAdministration"
 
+@using Microsoft.AspNetCore.Identity
+@using raktarProgram.Data.Structs;
+
+@inject IUserRoleAdministrationRepository repo
 <h3>UserRoleAdministration</h3>
 
-<AuthorizeView Roles="Admin">
-    <Authorized>
+@if (users != null)
+{
+    <DataGrid TItem="RoleAndUserStruct"
+              Data="@users"
+              TotalItems="@count"
+              ReadData="@OnReadData"
+              ShowPager="true">
 
-    </Authorized>
-</AuthorizeView>
+        <DataGridColumn TItem="RoleAndUserStruct" Field="@nameof(RoleAndUserStruct.User)" Caption="Emailcím">
+            <DisplayTemplate Context="displayContext">
+                @((displayContext as RoleAndUserStruct?)?.User.Email)
+            </DisplayTemplate>
+        </DataGridColumn>
 
+        <DataGridColumn TItem="RoleAndUserStruct" Field="@(nameof(RoleAndUserStruct.Role))" Caption="Role">
+            <DisplayTemplate Context="displayContext">
+                @((displayContext as RoleAndUserStruct?)?.Role.RoleId)
+            </DisplayTemplate>
+        </DataGridColumn>
+
+    </DataGrid>
+}
+else
+{
+    <DataGrid TItem="string"
+              Data="@strin" 
+              ReadData="@OnReadData" />
+    <h1>Loading...</h1>
+}
 @code {
+    List<RoleAndUserStruct> users;
+
+    string[] strin = { "alma", "korte" };
+    int count;
+
+    async Task OnReadData(/*DataGridReadDataEventArgs<RoleAndUserStruct> e*/)
+    {
+        var response = await repo.ListUserRoles();
+        users = response.Data;
+        count = response.Total;
+
+        StateHasChanged();
+    }
 
 }
