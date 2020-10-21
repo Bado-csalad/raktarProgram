@@ -49,9 +49,9 @@ namespace raktarProgram.Areas.Identity.Pages.Account
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                 EmailConfirmationUrl = Url.Page(
-                    "/Account/ConfirmEmail",
+                    "/Account/ConfirmEmailChange?userId=" + userId + "&code=" + code + "&returnUrl=°2F",
                     pageHandler: null,
-                    values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
+                    values: null,
                     protocol: Request.Scheme);
             }
 

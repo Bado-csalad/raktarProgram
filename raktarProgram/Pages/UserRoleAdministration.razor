@@ -2,43 +2,97 @@
 
 @using Microsoft.AspNetCore.Identity
 @using raktarProgram.Data.Structs;
+@using Blazorise.Components
 
 @inject IUserRoleAdministrationRepository repo
 <h3>UserRoleAdministration</h3>
 
-@if (users != null)
-{
-    <DataGrid TItem="RoleAndUserStruct"
-              Data="@users"
-              TotalItems="@count"
-              ReadData="@OnReadData"
-              ShowPager="true">
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        <DataGrid TItem="RoleAndUserStruct"
+                  Data="@users"
+                  TotalItems="@count"
+                  ReadData="@OnReadData"
+                   ShowPager="true" PageSize="5" Editable="true" Bordered="true" Hoverable="true" Striped="true" Sortable="true"
+                  RowUpdated="@OnAfterUpdate" Context="dataContext">
 
-        <DataGridColumn TItem="RoleAndUserStruct" Field="@nameof(RoleAndUserStruct.User)" Caption="Emailcím">
-            <DisplayTemplate Context="displayContext">
-                @((displayContext as RoleAndUserStruct?)?.User.Email)
-            </DisplayTemplate>
-        </DataGridColumn>
+            <DataGridColumn TItem="RoleAndUserStruct" Field="@nameof(RoleAndUserStruct.User)" Caption="Emailcím" Editable="false">
+                <DisplayTemplate Context="displayContext">
+                    @((displayContext as RoleAndUserStruct)?.User.Email)
+                </DisplayTemplate>
+                <EditTemplate Context="displayContext">
+                </EditTemplate>
+            </DataGridColumn>
 
-        <DataGridColumn TItem="RoleAndUserStruct" Field="@(nameof(RoleAndUserStruct.Role))" Caption="Role">
-            <DisplayTemplate Context="displayContext">
-                @((displayContext as RoleAndUserStruct?)?.Role.RoleId)
-            </DisplayTemplate>
-        </DataGridColumn>
+            <DataGridColumn TItem="RoleAndUserStruct" Field="@(nameof(RoleAndUserStruct.RoleId))" Caption="Role" Editable="true">
+                <DisplayTemplate Context="displayContext">
+                    @((displayContext as RoleAndUserStruct)?.Role.RoleId)
+                </DisplayTemplate>
 
-    </DataGrid>
-}
-else
-{
-    <DataGrid TItem="string"
-              Data="@strin" 
-              ReadData="@OnReadData" />
-    <h1>Loading...</h1>
-}
+                <EditTemplate Context="displayContext">
+                    <SelectList Data="@roles"
+                                TextField="@((item)=>item.Name)"
+                                ValueField="@((item)=>item.Id)"
+                                SelectedValue="@((string)( ( (CellEditContext)displayContext ).CellValue ))"
+                                SelectedValueChanged="@(( v ) => ( (CellEditContext)displayContext ).CellValue = v.ToString())" />
+                </EditTemplate>
+            </DataGridColumn>
+
+            <DataGridCommandColumn TItem="RoleAndUserStruct">
+
+                
+                <EditCommandTemplate Context="displayContext">
+
+                    <Blazorise.Button Color="Color.Primary" Clicked="@displayContext.Clicked">
+
+                        Módosítás
+
+                    </Blazorise.Button>
+
+                </EditCommandTemplate>
+
+                <NewCommandTemplate Context="displayContext">
+                    
+                    <Button hidden />
+
+                </NewCommandTemplate>
+
+                <DeleteCommandTemplate Context="displaContext">
+
+                    <Button hidden />
+
+                </DeleteCommandTemplate>
+
+                <SaveCommandTemplate Context="displayContext">
+
+                    <Button Clicked="displayContext.Clicked" >
+                        
+                        Mentés
+
+                    </Button>
+
+                </SaveCommandTemplate>
+
+                <CancelCommandTemplate Context="displayContext">
+
+                    <Button Clicked="displayContext.Clicked" >
+
+                        Elvetés
+
+                    </Button>
+
+                </CancelCommandTemplate>
+            </DataGridCommandColumn>
+        </DataGrid>
+    </Authorized>
+</AuthorizeView>
+
+
 @code {
     List<RoleAndUserStruct> users;
 
-    string[] strin = { "alma", "korte" };
+    List<IdentityRole> roles;
+
     int count;
 
     async Task OnReadData(/*DataGridReadDataEventArgs<RoleAndUserStruct> e*/)
@@ -47,7 +101,32 @@ else
         users = response.Data;
         count = response.Total;
 
+        var rsp = await repo.ListRoles();
+        roles = rsp.Data;
+
         StateHasChanged();
+    }
+
+    async Task OnAfterUpdate(SavedRowItem<RoleAndUserStruct, Dictionary<string, object>> e)
+    {
+
+        using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        {
+            var mentettRow = await repo.RoleModositas(e.Item);
+            ts.Complete();
+        }
+
+        var response = await repo.ListUserRoles();
+        users = response.Data;
+        count = response.Total;
+
+        var rsp = await repo.ListRoles();
+        roles = rsp.Data;
+
+        // ez nemtom kell-e ide...
+        // always call StateHasChanged!
+        StateHasChanged();
+
     }
 
 }

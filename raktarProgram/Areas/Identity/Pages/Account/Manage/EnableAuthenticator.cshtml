@@ -22,13 +22,12 @@
         </li>
         <li>
             <p>Scanneld be a QR kódodt vagy írd be ezt a kódot <kbd>@Model.SharedKey</kbd> az azonosító alkalmazásodba. Szóközök és kis-nagybetűk nem számítanak</p>
-            <div class="alert alert-info">Learn how to <a href="https://go.microsoft.com/fwlink/?Linkid=852423">enable QR code generation</a>.</div>
             <div id="qrCode"></div>
             <div id="qrCodeData" data-url="@Html.Raw(@Model.AuthenticatorUri)"></div>
         </li>
         <li>
             <p>
-                Miután bescannelted a QR codőt vagy beírtad a jelszót, az azonosító alkalmazásod egy egyedi kulcsot biztosít neked, az írd be alulra.
+                Miután bescannelted a QR codot vagy beírtad a jelszót, az azonosító alkalmazásod egy egyedi kulcsot biztosít neked, az írd be alulra.
             </p>
             <div class="row">
                 <div class="col-md-6">
@@ -48,5 +47,15 @@
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script type="text/javascript" src="~/lib/qrcode.js"></script>
+    <script type="text/javascript">
+        new QRCode(document.getElementById("qrCode"),
+            {
+                text: "@Html.Raw(Model.AuthenticatorUri)",
+                width: 150,
+                height: 150
+            });
+    </script>
 }

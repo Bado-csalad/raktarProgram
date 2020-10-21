@@ -3,21 +3,29 @@ using System;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Configuration;
+using System.Diagnostics;
 
 namespace raktarProgram.Data.Structs
 {
-    public struct RoleAndUserStruct
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
+    public class RoleAndUserStruct
     {
         public IdentityUserRole<string> Role;
         public IdentityUser User;
+        public string RoleId;
 
         public RoleAndUserStruct(IdentityUserRole<string> role, IdentityUser user)
         {
             Role = role;
             User = user;
+            if(role != null)
+            { 
+                RoleId = role.RoleId ;
+            }
+
         }
-         
-        public override bool Equals(object? obj)
+
+        public override bool Equals(object obj)
         {
             return obj is RoleAndUserStruct other &&
                    EqualityComparer<IdentityUserRole<string>>.Default.Equals(Role, other.Role) &&
@@ -55,6 +63,11 @@ namespace raktarProgram.Data.Structs
         public static implicit operator RoleAndUserStruct((IdentityUserRole<string> Role, IdentityUser User) value)
         {
             return new RoleAndUserStruct(value.Role, value.User);
+        }
+
+        private string GetDebuggerDisplay()
+        {
+            return ToString();
         }
     }
 }

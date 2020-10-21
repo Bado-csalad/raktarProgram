@@ -19,7 +19,9 @@ namespace raktarProgram.Interfaces
         IQueryable<IdentityUserRole<string>> UserRoles { get; }
         IQueryable<IdentityUserToken<string>> UserTokens { get; }
 
+        Task<ListResult<IdentityRole>> ListRoles();
         Task<ListResult<RoleAndUserStruct>> ListUserRoles();
         Task<ListResult<IdentityUser>> ListUsers();
+        Task<RoleAndUserStruct> RoleModositas(RoleAndUserStruct roleAndUser);
     }
 }

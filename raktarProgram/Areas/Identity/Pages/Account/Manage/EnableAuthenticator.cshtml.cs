@@ -88,7 +88,7 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
 
             if (!is2faTokenValid)
             {
-                ModelState.AddModelError("Input.Code", "Hibáa azonosító kód");
+                ModelState.AddModelError("Input.Code", "Hibás azonosító kód");
                 await LoadSharedKeyAndQrCodeUriAsync(user);
                 return Page();
             }
