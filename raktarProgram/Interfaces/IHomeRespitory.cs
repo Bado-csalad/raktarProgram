@@ -8,7 +8,7 @@ using raktarProgram.Helpers;
 
 namespace raktarProgram.Interfaces
 {
-    public interface IHomeRespitory
+    public interface IHomeRepository
     {
         IQueryable<EszkozHely> EszkozHely { get; }
         IQueryable<EszkozHelyTipus> EszkozHelyTipus { get; }

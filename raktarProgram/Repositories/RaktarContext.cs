@@ -4,10 +4,12 @@ using raktarProgram.Data;
 using System.Data.Common;
 using System.Linq;
 using System;
+using System.Security.Principal;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace raktarProgram.Repositories
 {
-    public class RaktarContext : DbContext
+    public class RaktarContext : IdentityDbContext
     {
         public RaktarContext(DbContextOptions<RaktarContext> options) : base(options)
         {
@@ -23,6 +25,8 @@ namespace raktarProgram.Repositories
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             {
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;

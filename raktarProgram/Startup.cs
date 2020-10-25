@@ -51,37 +51,36 @@ namespace raktarProgram
             services.AddDbContext<RaktarContext>(options =>               
                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
 
-            services.AddAuthentication();
-            //    .AddGoogle(options =>
-            //    {
-            //        IConfigurationSection googleAuthNSection =
-            //            Configuration.GetSection("Authentication:Google");
+            services.AddAuthentication()
+               .AddGoogle(options =>
+               {
+                    IConfigurationSection googleAuthNSection =
+                        Configuration.GetSection("Authentication:Google");
+                                       options.ClientId = googleAuthNSection["ClientId"];
+                    options.ClientSecret = googleAuthNSection["ClientSecret"];
+                })
+                .AddMicrosoftAccount(microsoftOptions =>
+                {
+                    microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ClientId"];
+                    microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
+                })
+                .AddFacebook(options =>
+                {
+                    options.AppId = Configuration["Authentication:Facebook:AppId"];
+                    options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+                    options.AccessDeniedPath = "/AccessDeniedPathInfo";
+                });
 
-            //        options.ClientId = googleAuthNSection["ClientId"];
-            //        options.ClientSecret = googleAuthNSection["ClientSecret"];
-            //    })
-            //    .AddMicrosoftAccount(microsoftOptions =>
-            //    {
-            //        microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ClientId"];
-            //        microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
-            //    })
-            //    .AddFacebook(options =>
-            //    {
-            //        options.AppId = Configuration["Authentication:Facebook:AppId"];
-            //        options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
-            //        options.AccessDeniedPath = "/AccessDeniedPathInfo";
-            //    });
-
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("FelhasznaloConnection")));
+            //services.AddDbContext<ApplicationDbContext>(options =>
+            //    options.UseSqlServer(
+            //        Configuration.GetConnectionString("FelhasznaloConnection")));
 
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<RaktarContext>();
 
             services.AddIdentityCore<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<RaktarContext>();
 
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 
@@ -91,7 +90,7 @@ namespace raktarProgram
             services.AddTransient<IEszkozRepository, EszkozRepository>();
             services.AddTransient<IEszkozHelyRepository, EszkozHelyRepository>();
             services.AddTransient<IEszkozHelyTipusRepository, EszkozHelyTipusRepository>();
-            services.AddTransient<IHomeRespitory, HomeRespitory>();
+            services.AddTransient<IHomeRepository, HomeRepository>();
             services.AddTransient<IEszkozTipusRepository, EszkozTipusRepository>();
             services.AddTransient<IUserRoleAdministrationRepository, UserRoleAdministrationRepository>();
         }

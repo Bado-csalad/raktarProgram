@@ -1,10 +1,10 @@
 ﻿@page "/"
 
-@inject IHomeRespitory repo
+@inject IHomeRepository repo
 @inject SearchService searchService
+@using Microsoft.AspNetCore.Mvc.ViewFeatures
 
 <h3>Raktár</h3>
-
 <AuthorizeView Roles="Admin,Leader">
 
     <Authorized>
@@ -155,7 +155,6 @@
     bool collapse1Visible = false;
     List<Hely> lista;
     string ma = DateTime.Now.ToString();
-
     int count;
 
     private async Task SearchHely(MouseEventArgs e)

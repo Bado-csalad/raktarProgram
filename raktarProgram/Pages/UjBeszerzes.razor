@@ -1,6 +1,6 @@
 ﻿@page "/ujbeszerzes"
 @using Blazorise.Components
-@inject IHomeRespitory repo
+@inject IHomeRepository repo
 @inject NavigationManager NavigationManager
 
 <h1>Beszerzés</h1>
@@ -201,7 +201,7 @@
         {
 
             var eredmeny = await repo.Xbeszerzes(xmit, xhova, xmikor, mennyit, megjegyzes);
-            if (eredmeny != raktarProgram.Repositories.HomeRespitory.sikeresFelvetel)
+            if (eredmeny != raktarProgram.Repositories.HomeRepository.sikeresFelvetel)
             {
                 hibauzenet = eredmeny;
                 myAlert.Show();

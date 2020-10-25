@@ -21,8 +21,8 @@ namespace raktarProgram.Repositories
 {
     public class UserRoleAdministrationRepository : IUserRoleAdministrationRepository
     {
-        private ApplicationDbContext context;
-        public UserRoleAdministrationRepository(ApplicationDbContext ctx)
+        private RaktarContext context;
+        public UserRoleAdministrationRepository(RaktarContext ctx)
         {
             context = ctx;
         }

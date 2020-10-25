@@ -1,4 +1,11 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Mvc.ViewFeatures
+
+<head>
+
+    <link rel="stylesheet" href="~/Identity/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Identity/css/site.css" />
+</head>
 
 <div class="sidebar">
     <NavMenu />
@@ -7,13 +14,8 @@
 <div class="main">
     <nav class="navbar navbar-expand-sm navbar-light navbar-toggleable-sm bg-white border-bottom box-shadow mb-3">
         <div class="container">
-            <a class="navbar-brand" href="/">raktarProgram</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-
+            <a class="navbar-brand" href="/"></a>
+            <div class="navbar d-sm-inline-flex flex-sm-row-reverse">
                 <LoginDisplay />
 
             </div>
@@ -25,3 +27,4 @@
     </div>
 
 </div>
+

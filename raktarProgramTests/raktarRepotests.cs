@@ -24,7 +24,7 @@ namespace raktarProgramTests
             
       
             RaktarContext rc = new RaktarContext(dbb.Options);
-            HomeRespitory hr = new HomeRespitory(rc);
+            HomeRepository hr = new HomeRepository(rc);
 
             var xx = await hr.GetXMitList();
         }
@@ -37,7 +37,7 @@ namespace raktarProgramTests
 
 
             RaktarContext rc = new RaktarContext(dbb.Options);
-            HomeRespitory hr = new HomeRespitory(rc);
+            HomeRepository hr = new HomeRepository(rc);
 
             var xx = await hr.ListBeszerzesek(null, 100, 1);
 
@@ -55,7 +55,7 @@ namespace raktarProgramTests
 
 
             RaktarContext rc = new RaktarContext(dbb.Options);
-            HomeRespitory hr = new HomeRespitory(rc);
+            HomeRepository hr = new HomeRepository(rc);
 
             using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -67,7 +67,7 @@ namespace raktarProgramTests
                     0, 
                     null);
 
-                Assert.AreEqual(HomeRespitory.nincsXmit, xx);
+                Assert.AreEqual(HomeRepository.nincsXmit, xx);
             }
         }
 
@@ -79,7 +79,7 @@ namespace raktarProgramTests
 
 
             RaktarContext rc = new RaktarContext(dbb.Options);
-            HomeRespitory hr = new HomeRespitory(rc);
+            HomeRepository hr = new HomeRepository(rc);
             
             var eszkoz = (await hr.GetXMitList()).First();
 
@@ -93,7 +93,7 @@ namespace raktarProgramTests
                     0,
                     null);
 
-                Assert.AreEqual(HomeRespitory.nincsXKitol, xx);
+                Assert.AreEqual(HomeRepository.nincsXKitol, xx);
             }
         }
 
@@ -105,7 +105,7 @@ namespace raktarProgramTests
 
 
             RaktarContext rc = new RaktarContext(dbb.Options);
-            HomeRespitory hr = new HomeRespitory(rc);
+            HomeRepository hr = new HomeRepository(rc);
 
             var eszkoz = (await hr.GetXMitList()).First();
             var kitol = (await hr.GetXKitolList(eszkoz.ID)).First();
@@ -120,7 +120,7 @@ namespace raktarProgramTests
                     0,
                     null);
 
-                Assert.AreEqual(HomeRespitory.nincsXHova, xx);
+                Assert.AreEqual(HomeRepository.nincsXHova, xx);
             }
         }
 
@@ -132,7 +132,7 @@ namespace raktarProgramTests
 
 
             RaktarContext rc = new RaktarContext(dbb.Options);
-            HomeRespitory hr = new HomeRespitory(rc);
+            HomeRepository hr = new HomeRepository(rc);
 
             var eszkoz = (await hr.GetXMitList()).First();
             var kitol = (await hr.GetXKitolList(eszkoz.ID)).First();
@@ -148,7 +148,7 @@ namespace raktarProgramTests
                     5000,
                     null);
 
-                Assert.AreEqual(HomeRespitory.rosszMennyiseg, xx);
+                Assert.AreEqual(HomeRepository.rosszMennyiseg, xx);
             }
         }
 
@@ -160,7 +160,7 @@ namespace raktarProgramTests
 
 
             RaktarContext rc = new RaktarContext(dbb.Options);
-            HomeRespitory hr = new HomeRespitory(rc);
+            HomeRepository hr = new HomeRepository(rc);
 
             var eszkoz = (await hr.GetXMitList()).First();
             var kitol = (await hr.GetXKitolList(eszkoz.ID)).First();
@@ -177,7 +177,7 @@ namespace raktarProgramTests
                     mennyiseg,
                     null);
 
-                Assert.AreEqual(HomeRespitory.sikeresFelvetel, xx);
+                Assert.AreEqual(HomeRepository.sikeresFelvetel, xx);
             }
         }
     }

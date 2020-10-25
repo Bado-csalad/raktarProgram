@@ -6,13 +6,14 @@
 @using raktarProgram.Interfaces
 @using Blazorise.DataGrid
 @using System.Transactions
+@using Microsoft.AspNetCore.Mvc.ViewFeatures
 
 
-@inject IHomeRespitory repo
+@inject IHomeRepository repo
 @inject SearchService searchService
 
 <h3>Elmúlt tranzakciók</h3>
-<AuthorizeView Roles="Leader,Admin" >
+<AuthorizeView Roles="Leader,Admin">
 
     <Authorized>
         @*Kereso*@

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Transactions;
+using Microsoft.AspNetCore.Identity;
 using raktarProgram.Data;
 
 namespace raktarProgram.Repositories
@@ -10,15 +11,59 @@ namespace raktarProgram.Repositories
         public static void Initialize(RaktarContext context)
         {
 
-            //context.Database.EnsureDeleted();
+            context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
+
+            if (!context.Roles.Any(c => c.Id == "admin"))
+            {
+                var rolea = new IdentityRole() { Id = "admin", Name = "Admin", NormalizedName = "ADMIN" };
+                var rolel = new IdentityRole() { Id = "leader", Name = "Leader", NormalizedName = "LEADER" };
+                var rolev = new IdentityRole() { Id = "visitor", Name = "Visitor", NormalizedName = "VISITOR" };
+
+                var hasher = new PasswordHasher<IdentityUser>();
+
+                var user = new IdentityUser
+                {
+                    Id = "1",
+                    Email = "bado.mate@outlook.com",
+                    UserName = "bado.mate@outlook.com",
+                    EmailConfirmed = true
+                };
+
+                user.NormalizedEmail = user.Email.ToUpper();
+                user.NormalizedUserName = user.UserName.ToUpper();
+                user.PasswordHash = hasher.HashPassword(user, "temporarypass");
+
+                var iur = new IdentityUserRole<string>
+                {
+                    RoleId = "admin",
+                    UserId = "1"
+                };
+
+                using (TransactionScope ts = new TransactionScope())
+                {
+                    var identityRole = new IdentityRole[]
+                    { rolea, rolel, rolev };
+
+                    context.Roles.AddRange(identityRole);
+                    context.SaveChanges();
+
+                    context.Users.Add(user);
+                    context.SaveChanges();
+
+                    context.UserRoles.Add(iur);
+                    context.SaveChanges();
+
+                    ts.Complete();
+                }
+            }
 
             if (!context.EszkozHelyTipus.Any())
             {
                 using (TransactionScope ts = new TransactionScope())
                 {
                     Params p = new Params();
-                    p.Kodegyutt  = 1;
+                    p.Kodegyutt = 1;
                     context.Params.Add(p);
                     context.SaveChanges();
 
@@ -33,7 +78,7 @@ namespace raktarProgram.Repositories
                     context.SaveChanges();
 
                     var besz1 = new EszkozHely { Nev = "beszerzes1", Leiras = "ezbeszerzes1", Tipus = eh3, Torolt = false, aktiv = true };
-                   
+
                     var rak1 = new EszkozHely { Nev = "raktar1", Leiras = "ezraktar1", Tipus = eh1, Torolt = false, aktiv = true };
                     var rak2 = new EszkozHely { Nev = "raktar2", Leiras = "ezraktar2", Tipus = eh1, Torolt = false, aktiv = true };
                     var jozsi = new EszkozHely { Nev = "jozsieszh", Leiras = "ezjozsieszh", Tipus = eh2, Torolt = false, aktiv = true };
@@ -66,7 +111,7 @@ namespace raktarProgram.Repositories
                         fureszek
                     };
 
-                    context.EszkozTipus.AddRange(tipus); 
+                    context.EszkozTipus.AddRange(tipus);
 
                     var eszkoz = new Eszkoz[]
                     {
@@ -108,172 +153,184 @@ namespace raktarProgram.Repositories
                     var felh = context.Felhasznalo.First();
 
 
-                    context.Hely.Add(                   
-                        new Hely {
-                                Eszkoz = context.Eszkoz.First(c=> c.Azonosito  == "baltfeazon"),
-                                Felhasznalo = felh,
-                                EszkozHely = besz1,
-                                Mikortol = new DateTime(2020,01,23), // mindig kötelező
-                                Meddig = new DateTime(2020,01,23), 
-                                Mennyiseg = -1,
-                                Kodegyutt = p.Kodegyutt,
-                                Megjegyzes = "fekete balta beszerzés, raktár1-be  1 tétel",
-                                Irany = Hely.Ki
-                                });
+                    context.Hely.Add(
+                        new Hely
+                        {
+                            Eszkoz = context.Eszkoz.First(c => c.Azonosito == "baltfeazon"),
+                            Felhasznalo = felh,
+                            EszkozHely = besz1,
+                            Mikortol = new DateTime(2020, 01, 23), // mindig kötelező
+                            Meddig = new DateTime(2020, 01, 23),
+                            Mennyiseg = -1,
+                            Kodegyutt = p.Kodegyutt,
+                            Megjegyzes = "fekete balta beszerzés, raktár1-be  1 tétel",
+                            Irany = Hely.Ki
+                        });
                     context.SaveChanges();
                     context.Hely.Add(
-                        new Hely {
-                                Eszkoz = context.Eszkoz.First(c=> c.Azonosito  == "baltfeazon"),
-                                Felhasznalo = felh,
-                                EszkozHely = rak1,
-                                Mikortol = new DateTime(2020,01,23),
-                                Meddig = null, // ha irany = BE --> nem szabad tölteni Meddig-et, de egy kapcsolódó későbbi kivét beállítja a kivét dátumára
-                                Mennyiseg = 1,
-                                Kodegyutt = p.Kodegyutt++,
-                                Megjegyzes = "fekete balta beszerzés, raktár1-be 1 tétel",
-                                Irany = Hely.Be
-                                });
+                        new Hely
+                        {
+                            Eszkoz = context.Eszkoz.First(c => c.Azonosito == "baltfeazon"),
+                            Felhasznalo = felh,
+                            EszkozHely = rak1,
+                            Mikortol = new DateTime(2020, 01, 23),
+                            Meddig = null, // ha irany = BE --> nem szabad tölteni Meddig-et, de egy kapcsolódó későbbi kivét beállítja a kivét dátumára
+                            Mennyiseg = 1,
+                            Kodegyutt = p.Kodegyutt++,
+                            Megjegyzes = "fekete balta beszerzés, raktár1-be 1 tétel",
+                            Irany = Hely.Be
+                        });
                     context.SaveChanges();
 
                     context.Hely.Add(
-                        new Hely {
-                                Eszkoz = context.Eszkoz.First(c=> c.Azonosito  == "baltpiazon"),
-                                Felhasznalo = felh,
-                                EszkozHely = besz1,
-                                Mikortol = new DateTime(2020,01,23), 
-                                Meddig = new DateTime(2020,01,23), 
-                                Mennyiseg = -2,
-                                Kodegyutt = p.Kodegyutt,
-                                Megjegyzes = "piros balta beszerzés, raktár1-be 2 tétel",
-                                Irany = Hely.Ki
-                                });
+                        new Hely
+                        {
+                            Eszkoz = context.Eszkoz.First(c => c.Azonosito == "baltpiazon"),
+                            Felhasznalo = felh,
+                            EszkozHely = besz1,
+                            Mikortol = new DateTime(2020, 01, 23),
+                            Meddig = new DateTime(2020, 01, 23),
+                            Mennyiseg = -2,
+                            Kodegyutt = p.Kodegyutt,
+                            Megjegyzes = "piros balta beszerzés, raktár1-be 2 tétel",
+                            Irany = Hely.Ki
+                        });
                     context.SaveChanges();
                     context.Hely.Add(
-                        new Hely {
-                                Eszkoz = context.Eszkoz.First(c=> c.Azonosito  == "baltpiazon"),
-                                Felhasznalo = felh,
-                                EszkozHely = rak1,
-                                Mikortol = new DateTime(2020,01,23),
-                                Meddig = new DateTime(2020,03,05), 
-                                Mennyiseg = 2,
-                                Kodegyutt = p.Kodegyutt++,
-                                Megjegyzes = "piros balta beszerzés, raktár1-be 2 tétel",
-                                Irany = Hely.Be
-                                });
+                        new Hely
+                        {
+                            Eszkoz = context.Eszkoz.First(c => c.Azonosito == "baltpiazon"),
+                            Felhasznalo = felh,
+                            EszkozHely = rak1,
+                            Mikortol = new DateTime(2020, 01, 23),
+                            Meddig = new DateTime(2020, 03, 05),
+                            Mennyiseg = 2,
+                            Kodegyutt = p.Kodegyutt++,
+                            Megjegyzes = "piros balta beszerzés, raktár1-be 2 tétel",
+                            Irany = Hely.Be
+                        });
                     context.SaveChanges();
 
                     context.Hely.Add(
-                        new Hely {
-                                Eszkoz = context.Eszkoz.First(c=> c.Azonosito  == "safeazon"),
-                                Felhasznalo = felh,
-                                EszkozHely = besz1,
-                                Mikortol = new DateTime(2020,01,23), 
-                                Meddig = new DateTime(2020,01,23), 
-                                Mennyiseg = -3,
-                                Kodegyutt = p.Kodegyutt,
-                                Megjegyzes = "fekete sátor beszerzés, raktár1-be 3 tétel",
-                                Irany = Hely.Ki
-                                });
+                        new Hely
+                        {
+                            Eszkoz = context.Eszkoz.First(c => c.Azonosito == "safeazon"),
+                            Felhasznalo = felh,
+                            EszkozHely = besz1,
+                            Mikortol = new DateTime(2020, 01, 23),
+                            Meddig = new DateTime(2020, 01, 23),
+                            Mennyiseg = -3,
+                            Kodegyutt = p.Kodegyutt,
+                            Megjegyzes = "fekete sátor beszerzés, raktár1-be 3 tétel",
+                            Irany = Hely.Ki
+                        });
                     context.SaveChanges();
                     context.Hely.Add(
-                        new Hely {
-                                Eszkoz = context.Eszkoz.First(c=> c.Azonosito  == "safeazon"),
-                                Felhasznalo = felh,
-                                EszkozHely = rak1,
-                                Mikortol = new DateTime(2020,01,23),
-                                Meddig = new DateTime(2020,02,23), 
-                                Mennyiseg = 3,
-                                Kodegyutt = p.Kodegyutt++,
-                                Megjegyzes = "fekete sátor beszerzés, raktár1-be  3 tétel",
-                                Irany = Hely.Be
-                                });
+                        new Hely
+                        {
+                            Eszkoz = context.Eszkoz.First(c => c.Azonosito == "safeazon"),
+                            Felhasznalo = felh,
+                            EszkozHely = rak1,
+                            Mikortol = new DateTime(2020, 01, 23),
+                            Meddig = new DateTime(2020, 02, 23),
+                            Mennyiseg = 3,
+                            Kodegyutt = p.Kodegyutt++,
+                            Megjegyzes = "fekete sátor beszerzés, raktár1-be  3 tétel",
+                            Irany = Hely.Be
+                        });
                     context.SaveChanges();
 
                     context.Hely.Add(
-                        new Hely {
-                                Eszkoz = context.Eszkoz.First(c=> c.Azonosito  == "safeazon"),
-                                Felhasznalo = felh,
-                                EszkozHely = rak1,
-                                Mikortol = new DateTime(2020,02,23), 
-                                Meddig = new DateTime(2020,04,12), 
-                                Mennyiseg = 1,
-                                Kodegyutt = p.Kodegyutt,
-                                Megjegyzes = "pista elvitt a raktar1-ből 2 fekete sátrat",
-                                Irany = Hely.Ki,
-                                Hova = pista,
-                                HovaMennyiseg = 2
-                                });
+                        new Hely
+                        {
+                            Eszkoz = context.Eszkoz.First(c => c.Azonosito == "safeazon"),
+                            Felhasznalo = felh,
+                            EszkozHely = rak1,
+                            Mikortol = new DateTime(2020, 02, 23),
+                            Meddig = new DateTime(2020, 04, 12),
+                            Mennyiseg = 1,
+                            Kodegyutt = p.Kodegyutt,
+                            Megjegyzes = "pista elvitt a raktar1-ből 2 fekete sátrat",
+                            Irany = Hely.Ki,
+                            Hova = pista,
+                            HovaMennyiseg = 2
+                        });
                     context.SaveChanges();
                     context.Hely.Add(
-                        new Hely {
-                                Eszkoz = context.Eszkoz.First(c=> c.Azonosito  == "safeazon"),
-                                Felhasznalo = felh,
-                                EszkozHely = pista,
-                                Mikortol = new DateTime(2020,02,23),
-                                Meddig = new DateTime(2020,04,12), 
-                                Mennyiseg = 2,
-                                Kodegyutt = p.Kodegyutt++,
-                                Megjegyzes = "pista elvitt a raktar1-ből 2 fekete sátrat",
-                                Irany = Hely.Be
-                                });
+                        new Hely
+                        {
+                            Eszkoz = context.Eszkoz.First(c => c.Azonosito == "safeazon"),
+                            Felhasznalo = felh,
+                            EszkozHely = pista,
+                            Mikortol = new DateTime(2020, 02, 23),
+                            Meddig = new DateTime(2020, 04, 12),
+                            Mennyiseg = 2,
+                            Kodegyutt = p.Kodegyutt++,
+                            Megjegyzes = "pista elvitt a raktar1-ből 2 fekete sátrat",
+                            Irany = Hely.Be
+                        });
                     context.SaveChanges();
 
                     context.Hely.Add(
-                        new Hely {
-                                Eszkoz = context.Eszkoz.First(c=> c.Azonosito  == "baltpiazon"),
-                                Felhasznalo = felh,
-                                EszkozHely = rak1,
-                                Mikortol = new DateTime(2020,03,05),
-                                Meddig = null,
-                                Mennyiseg = 1,
-                                Kodegyutt = p.Kodegyutt,
-                                Megjegyzes = "józsi elvitt a raktar1-ből 1 piros baltát",
-                                Irany = Hely.Ki,
-                                Hova = jozsi,
-                                HovaMennyiseg = 1
-                                });
+                        new Hely
+                        {
+                            Eszkoz = context.Eszkoz.First(c => c.Azonosito == "baltpiazon"),
+                            Felhasznalo = felh,
+                            EszkozHely = rak1,
+                            Mikortol = new DateTime(2020, 03, 05),
+                            Meddig = null,
+                            Mennyiseg = 1,
+                            Kodegyutt = p.Kodegyutt,
+                            Megjegyzes = "józsi elvitt a raktar1-ből 1 piros baltát",
+                            Irany = Hely.Ki,
+                            Hova = jozsi,
+                            HovaMennyiseg = 1
+                        });
                     context.SaveChanges();
-                    context.Hely.Add(                   
-                        new Hely {
-                                Eszkoz = context.Eszkoz.First(c=> c.Azonosito  == "baltpiazon"),
-                                Felhasznalo = felh,
-                                EszkozHely = jozsi,
-                                Mikortol = new DateTime(2020,03,05),
-                                Meddig = null,
-                                Mennyiseg = 1,
-                                Kodegyutt = p.Kodegyutt++,
-                                Megjegyzes = "józsi elvitt a raktar1-ből 1 piros baltát",
-                                Irany = Hely.Be
-                                });
+                    context.Hely.Add(
+                        new Hely
+                        {
+                            Eszkoz = context.Eszkoz.First(c => c.Azonosito == "baltpiazon"),
+                            Felhasznalo = felh,
+                            EszkozHely = jozsi,
+                            Mikortol = new DateTime(2020, 03, 05),
+                            Meddig = null,
+                            Mennyiseg = 1,
+                            Kodegyutt = p.Kodegyutt++,
+                            Megjegyzes = "józsi elvitt a raktar1-ből 1 piros baltát",
+                            Irany = Hely.Be
+                        });
                     context.SaveChanges();
 
                     context.Hely.Add(
-                        new Hely {
-                                Eszkoz = context.Eszkoz.First(c=> c.Azonosito  == "safeazon"),
-                                Felhasznalo = felh,
-                                EszkozHely = pista,
-                                Mikortol = new DateTime(2020,04,12),
-                                Meddig = null,
-                                Mennyiseg = 1,
-                                Kodegyutt = p.Kodegyutt,
-                                Megjegyzes = "pista visszahozott a raktar1-be 1 fekete sátrat",
-                                Irany = Hely.Ki,
-                                Hova = rak1,
-                                HovaMennyiseg = 1
-                                });
+                        new Hely
+                        {
+                            Eszkoz = context.Eszkoz.First(c => c.Azonosito == "safeazon"),
+                            Felhasznalo = felh,
+                            EszkozHely = pista,
+                            Mikortol = new DateTime(2020, 04, 12),
+                            Meddig = null,
+                            Mennyiseg = 1,
+                            Kodegyutt = p.Kodegyutt,
+                            Megjegyzes = "pista visszahozott a raktar1-be 1 fekete sátrat",
+                            Irany = Hely.Ki,
+                            Hova = rak1,
+                            HovaMennyiseg = 1
+                        });
                     context.SaveChanges();
-                    context.Hely.Add(                   
-                        new Hely {
-                                Eszkoz = context.Eszkoz.First(c=> c.Azonosito  == "safeazon"),
-                                Felhasznalo = felh,
-                                EszkozHely = rak1,
-                                Mikortol = new DateTime(2020,04,12),
-                                Meddig = null,
-                                Mennyiseg = 2,
-                                Kodegyutt = p.Kodegyutt++,
-                                Megjegyzes = "pista visszahozott a raktar1-be 1 fekete sátrat",
-                                Irany = Hely.Be
-                                });
+                    context.Hely.Add(
+                        new Hely
+                        {
+                            Eszkoz = context.Eszkoz.First(c => c.Azonosito == "safeazon"),
+                            Felhasznalo = felh,
+                            EszkozHely = rak1,
+                            Mikortol = new DateTime(2020, 04, 12),
+                            Meddig = null,
+                            Mennyiseg = 2,
+                            Kodegyutt = p.Kodegyutt++,
+                            Megjegyzes = "pista visszahozott a raktar1-be 1 fekete sátrat",
+                            Irany = Hely.Be
+                        });
                     context.SaveChanges();
 
                     ts.Complete();

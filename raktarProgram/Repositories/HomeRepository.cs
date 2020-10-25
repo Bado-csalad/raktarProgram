@@ -13,7 +13,7 @@ using System.Security.Cryptography;
 
 namespace raktarProgram.Repositories
 {
-    public class HomeRespitory : IHomeRespitory
+    public class HomeRepository : IHomeRepository
     {
         #region Hibauzenetek
         public const string nincsXmit = "Válaszd ki, hogy mit szeretnél átadni!";
@@ -26,7 +26,7 @@ namespace raktarProgram.Repositories
         #endregion
 
         private RaktarContext context;
-        public HomeRespitory(RaktarContext ctx)
+        public HomeRepository(RaktarContext ctx)
         {
             context = ctx;
         }
