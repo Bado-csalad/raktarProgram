@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using raktarProgram.Data.Filters;
 using raktarProgram.Data.Structs;
 using raktarProgram.Helpers;
 using raktarProgram.Repositories;
@@ -20,7 +21,7 @@ namespace raktarProgram.Interfaces
         IQueryable<IdentityUserToken<string>> UserTokens { get; }
 
         Task<ListResult<IdentityRole>> ListRoles();
-        Task<ListResult<RoleAndUserStruct>> ListUserRoles();
+        Task<ListResult<RoleAndUserStruct>> ListUserRoles(UserRoleAdministrationFilter filter, int pageSize, int pageNum);
         Task<ListResult<IdentityUser>> ListUsers();
         Task<RoleAndUserStruct> RoleModositas(RoleAndUserStruct roleAndUser);
     }

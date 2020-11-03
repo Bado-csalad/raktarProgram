@@ -16,6 +16,7 @@ using System.Security.Permissions;
 using Microsoft.AspNetCore.Server.IIS.Core;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using raktarProgram.Data.Structs;
+using System.ComponentModel;
 
 namespace raktarProgram.Repositories
 {
@@ -50,7 +51,7 @@ namespace raktarProgram.Repositories
             return res;
         }
 
-        public async Task<ListResult<RoleAndUserStruct>> ListUserRoles()
+        public async Task<ListResult<RoleAndUserStruct>> ListUserRoles(UserRoleAdministrationFilter filter, int pageSize, int pageNum)
         {
             List<RoleAndUserStruct> list = new List<RoleAndUserStruct>();
             
@@ -61,12 +62,66 @@ namespace raktarProgram.Repositories
                 (p, e) => new RoleAndUserStruct(p, e))
                     .ToListAsync();
 
+            if (filter != null)
+            {
+                if (!string.IsNullOrEmpty(filter.Kereses))
+                {
+                    list = list.Where(x => x.User.Email.Contains(filter.Kereses)).ToList();
+                }
+                if (filter.Admin == false)
+                {
+                    list = list.Where(x => x.Role.RoleId != "admin").ToList();
+                }
+                if (filter.Leader == false)
+                {
+                    list = list.Where(x => x.Role.RoleId != "leader").ToList();
+                }
+                if (filter.Visitor == false)
+                {
+                    list = list.Where(x => x.Role.RoleId != "visitor").ToList();
+                }
+
+                if (filter.Sorrend != null && filter.Sorrend.Count() > 0)
+                {
+                    foreach (var c in filter.Sorrend)
+                    {
+                        if (c.Item1 == "User")
+                        {
+                            if(c.Item2 == "A")
+                            {
+                                list = list.OrderBy(x => x.User.Email).ToList();
+                            }
+                            if (c.Item2 == "D")
+                            {
+                                list = list.OrderByDescending(x => x.User.Email).ToList();
+                            }
+
+                        }
+
+                        if(c.Item1 == "RoleId")
+                        {
+                            if (c.Item2 == "A")
+                            {
+                                list = list.OrderBy(x => x.Role.RoleId).ToList();
+                            }
+                            if (c.Item2 == "D")
+                            {
+                                list = list.OrderByDescending(x => x.Role.RoleId).ToList();
+                            }
+                        }
+                    }
+                }
+            }
+
             ListResult<RoleAndUserStruct> res = new ListResult<RoleAndUserStruct>();
 
             res.Total = list.Count();
 
 
-            res.Data = list;
+            res.Data = list
+                       .Skip((pageNum - 1) * pageSize)
+                       .Take(pageSize)
+                       .ToList();
             return res;
 
         }
@@ -75,6 +130,7 @@ namespace raktarProgram.Repositories
         {
             List<IdentityRole> list = new List<IdentityRole>();
             list = await this.Roles.ToListAsync();
+
 
             ListResult<IdentityRole> res = new ListResult<IdentityRole>();
 

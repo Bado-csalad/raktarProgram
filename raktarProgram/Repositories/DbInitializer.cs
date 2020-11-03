@@ -11,8 +11,8 @@ namespace raktarProgram.Repositories
         public static void Initialize(RaktarContext context)
         {
 
-            context.Database.EnsureDeleted();
-            context.Database.EnsureCreated();
+            //context.Database.EnsureDeleted();
+            //context.Database.EnsureCreated();
 
             if (!context.Roles.Any(c => c.Id == "admin"))
             {

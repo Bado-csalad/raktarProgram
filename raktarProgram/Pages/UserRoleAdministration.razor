@@ -5,15 +5,164 @@
 @using Blazorise.Components
 
 @inject IUserRoleAdministrationRepository repo
+@inject SearchService searchService
 <h3>UserRoleAdministration</h3>
 
 <AuthorizeView Roles="Admin">
     <Authorized>
+
+        @*Kereso*@
+        <Collapse Visible="@collapse1Visible">
+
+            <CollapseHeader>
+
+                <Heading Size="HeadingSize.Is5">
+
+                    <input @bind="searchService.userRoleAdministrationFilter.Kereses" @bind:event="oninput" @onfocusin="@(()=>collapse1Visible=true)" />
+
+                    <Button Color="Color.Primary" @onclick="SearchRole">
+
+                        Keresés
+
+                    </Button>
+
+                </Heading>
+
+            </CollapseHeader>
+
+            <CollapseBody>
+
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+
+                        <Text>Ezek a szerepkörök legyenek benne:</Text>
+
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12">
+
+                        <Check TValue="bool" @bind-Checked="searchService.userRoleAdministrationFilter.Admin">Admin</Check>
+
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12">
+
+                        <Check TValue="bool" @bind-Checked="searchService.userRoleAdministrationFilter.Leader">Leader</Check>
+
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12">
+
+                        <Check TValue="bool" @bind-Checked="searchService.userRoleAdministrationFilter.Visitor">Visitor</Check>
+
+                    </Column>
+                </Row>
+                @*<Text>Időbeli szűrés: </Text>
+
+                <hr />
+                <Row>
+
+                    <Column ColumnSize="ColumnSize.Is1">
+
+                        <Text>Mettől: </Text>
+
+                    </Column>
+
+                    <Column ColumnSize="ColumnSize.Is11">
+
+                        <DateEdit Placeholder="@(legregebbi)" @bind-Date="searchService.atadasFilter.Mettol" />
+
+                    </Column>
+
+                </Row>
+
+                <hr />
+
+                <Row>
+
+                    <Column ColumnSize="ColumnSize.Is1">
+
+                        <Text>Meddig: </Text>
+
+                    </Column>
+
+                    <Column ColumnSize="ColumnSize.Is11">
+
+                        <DateEdit Placeholder="@(ma)" @bind-Date="searchService.atadasFilter.Meddig" />
+
+                    </Column>
+
+                </Row>
+
+                <hr />
+
+                <Row>
+                    @if (!searchService.atadasFilter.CsakMa)
+                    {
+                        <Column ColumnSize="ColumnSize.Is12">
+
+                            <Check TValue="bool" @bind-Checked="searchService.atadasFilter.MaIs">Csak azok legyenek benne akik tovább adták</Check>
+
+                        </Column>
+                    }
+                    else
+                    {
+                        <Column ColumnSize="ColumnSize.Is12">
+
+                            <Check Disabled="true" TValue="bool" @bind-Checked="searchService.atadasFilter.MaIs">Csak azok legyenek benne akik tovább adták</Check>
+
+                        </Column>
+                    }
+                </Row>
+
+                <hr />
+
+                <Row>
+                    @if (!searchService.atadasFilter.MaIs)
+                    {
+                        <Column ColumnSize="ColumnSize.Is12">
+
+                            <Check TValue="bool" @bind-Checked="searchService.atadasFilter.CsakMa">Csak azok legyenek benne akik nem adták tovább</Check>
+
+                        </Column>
+                    }
+                    else
+                    {
+                        <Column ColumnSize="ColumnSize.Is12">
+
+                            <Check Disabled="true" TValue="bool" @bind-Checked="searchService.atadasFilter.CsakMa">Csak azok legyenek benne akik nem adták tovább</Check>
+
+                        </Column>
+                    }
+                </Row>
+
+                <hr />
+
+                <Row>
+
+                    <Column ColumnSize="ColumnSize.Is2">
+
+                        <Text>Mennyiségre keresés: </Text>
+
+                    </Column>
+
+                    <Column ColumnSize="ColumnSize.Is10">
+
+                        <NumericEdit @bind-Value="searchService.atadasFilter.Mennyiseg"></NumericEdit>
+
+                    </Column>
+                </Row>*@
+
+
+
+                <CloseButton Clicked="@(()=>collapse1Visible=false)" />
+
+            </CollapseBody>
+
+        </Collapse>
+
         <DataGrid TItem="RoleAndUserStruct"
                   Data="@users"
                   TotalItems="@count"
                   ReadData="@OnReadData"
-                   ShowPager="true" PageSize="5" Editable="true" Bordered="true" Hoverable="true" Striped="true" Sortable="true"
+                  ShowPager="true" PageSize="5" Editable="true" Bordered="true" Hoverable="true" Striped="true" Sortable="true"
                   RowUpdated="@OnAfterUpdate" Context="dataContext">
 
             <DataGridColumn TItem="RoleAndUserStruct" Field="@nameof(RoleAndUserStruct.User)" Caption="Emailcím" Editable="false">
@@ -40,7 +189,7 @@
 
             <DataGridCommandColumn TItem="RoleAndUserStruct">
 
-                
+
                 <EditCommandTemplate Context="displayContext">
 
                     <Blazorise.Button Color="Color.Primary" Clicked="@displayContext.Clicked">
@@ -52,7 +201,7 @@
                 </EditCommandTemplate>
 
                 <NewCommandTemplate Context="displayContext">
-                    
+
                     <Button hidden />
 
                 </NewCommandTemplate>
@@ -65,8 +214,8 @@
 
                 <SaveCommandTemplate Context="displayContext">
 
-                    <Button Clicked="displayContext.Clicked" >
-                        
+                    <Button Clicked="displayContext.Clicked">
+
                         Mentés
 
                     </Button>
@@ -75,7 +224,7 @@
 
                 <CancelCommandTemplate Context="displayContext">
 
-                    <Button Clicked="displayContext.Clicked" >
+                    <Button Clicked="displayContext.Clicked">
 
                         Elvetés
 
@@ -92,12 +241,42 @@
     List<RoleAndUserStruct> users;
 
     List<IdentityRole> roles;
-
+    bool collapse1Visible;
+    //SearchRole
     int count;
+    bool firstRender = true;
 
-    async Task OnReadData(/*DataGridReadDataEventArgs<RoleAndUserStruct> e*/)
+    private async Task SearchRole(MouseEventArgs e)
     {
-        var response = await repo.ListUserRoles();
+        searchService.userRoleAdministrationFilter.Sorrend.Clear();
+
+        var response = await repo.ListUserRoles(searchService.userRoleAdministrationFilter, searchService.PageSize, 1);
+        Task.WaitAll();
+        users = response.Data;
+        count = response.Total;
+        StateHasChanged();
+    }
+
+    async Task OnReadData(DataGridReadDataEventArgs<RoleAndUserStruct> e)
+    {
+        var request = new
+        {
+            Sort = e.Columns
+               .Where(_ => _.Direction != SortDirection.None)
+               .Select(_ => new { mezo = _.Field, order = _.Direction == SortDirection.Ascending ? "A" : "D" })  // *** Need a property to OrderBy here ***
+        };
+
+        searchService.userRoleAdministrationFilter.Sorrend = request.Sort.Select(c => new Tuple<string, string>(c.mezo, c.order)).ToList();
+
+        if (firstRender)
+        {
+            searchService.userRoleAdministrationFilter.Admin = true;
+            searchService.userRoleAdministrationFilter.Leader = true;
+            searchService.userRoleAdministrationFilter.Visitor = true;
+            firstRender = false;
+        }
+
+        var response = await repo.ListUserRoles(searchService.userRoleAdministrationFilter, searchService.PageSize, 1);
         users = response.Data;
         count = response.Total;
 
@@ -116,7 +295,7 @@
             ts.Complete();
         }
 
-        var response = await repo.ListUserRoles();
+        var response = await repo.ListUserRoles(searchService.userRoleAdministrationFilter, searchService.PageSize, 1);
         users = response.Data;
         count = response.Total;
 

@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using raktarProgram.Data.Structs;
+using raktarProgram.Interfaces;
 
 namespace raktarProgram.Areas.Identity.Pages.Account
 {
@@ -23,17 +25,19 @@ namespace raktarProgram.Areas.Identity.Pages.Account
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IUserRoleAdministrationRepository _repo;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender, IUserRoleAdministrationRepository repo)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _repo = repo;
         }
 
         [BindProperty]
@@ -74,11 +78,18 @@ namespace raktarProgram.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser { UserName = Input.Email, Email = Input.Email };
+                var user = new IdentityUser { UserName = Input.Email, Email = Input.Email, EmailConfirmed = true };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password."); //NemTomHanemRaktarProgram2004!
+                    _logger.LogInformation("User created a new account with password."); 
+
+                    RoleAndUserStruct newUser = new RoleAndUserStruct(null, user)
+                    {
+                        RoleId = "visitor"
+                    };
+                    var p = await _repo.RoleModositas(newUser);
+
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -88,11 +99,11 @@ namespace raktarProgram.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Email megerősítése",
-                        "Szia! \nNemrég regisztráltál a 412. Kalazanti Szent József cs.cs. raktárkezelő programjában"
-                        + $"/nLégyszíves erősítsed meg az email címed erre a linkre kattintva:<a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>email megerősítése</a>."
-                        + "/nHa nem te regisztráltál akkor hagyd figyelmen kívül az emailt."
-                        + "/n/nJó munkát");
+                    //await _emailSender.SendEmailAsync(Input.Email, "Email megerősítése",
+                    //    "Szia! \nNemrég regisztráltál a 412. Kalazanti Szent József cs.cs. raktárkezelő programjában"
+                    //    + $"/nLégyszíves erősítsed meg az email címed erre a linkre kattintva:<a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>email megerősítése</a>."
+                    //    + "/nHa nem te regisztráltál akkor hagyd figyelmen kívül az emailt."
+                    //    + "/n/nJó munkát");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
