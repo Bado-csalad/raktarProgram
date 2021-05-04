@@ -1,6 +1,7 @@
 ﻿@page "/ujatadas"
 @using Blazorise.Components
 @using System.Threading.Tasks
+@using Blazored.Typeahead
 @inject IHomeRepository repo
 @inject NavigationManager NavigationManager
 
@@ -24,7 +25,7 @@
             </Column>
 
             <Column ColumnSize="ColumnSize.Is9">
-                
+
                 @*
                     <Autocomplete Data="@xmitLista"
                                   TextField="@((item)=>item.Nev)"
@@ -32,14 +33,34 @@
                                   Placeholder="Kezdj el gépelni..."
                                   SelectedValue="@selectedEszkoz"
                                   SelectedValueChanged="@selectedEszkozChangedHandler"
-                                  Filter="AutocompleteFilter.StartsWith" />
-                    *@
+                                  Filter="AutocompleteFilter.StartsWith" />*@
 
-                <SelectList Data="@xmitLista"
-                            TextField="@((item)=>item.Nev)"
-                            ValueField="@((item)=>item.ID)"
-                            SelectedValueChanged="@selectedEszkozChangedHandler" />
 
+                @*<SelectList Data="@xmitLista"
+                    TextField="@((item)=>item.Nev)"
+                    ValueField="@((item)=>item.ID)"
+                    SelectedValueChanged="@selectedEszkozChangedHandler" />*@
+
+                <BlazoredTypeahead SearchMethod="SearchEszkoz"
+                                   TValue="Eszkoz"
+                                   TItem="Eszkoz"
+                                   Value="xmit"
+                                   ValueChanged="selectedEszkozChangedHandler"
+                                   ValueExpression="@(() => xmit)"
+                                   placeholder="Kezdj el gépelni..."
+                                   Context="item"
+                                   MinimumLength="0">
+                    <SelectedTemplate>
+                        @item.Nev
+                    </SelectedTemplate>
+                    <ResultTemplate>
+                        @item.Nev (@item.Leiras)
+                    </ResultTemplate>
+                    <NotFoundTemplate>
+                        Nincs találat
+                    </NotFoundTemplate>
+
+                </BlazoredTypeahead>
             </Column>
 
         </Row>
@@ -58,10 +79,31 @@
 
             <Column ColumnSize="ColumnSize.Is9">
 
-                <SelectList Data="@xkitolList"
-                            TextField="@((item)=>item.EszkozhelyNev)"
-                            ValueField="@((item)=>item.ID)"
-                            SelectedValueChanged="@selectedHelyChangedHandler" />
+                <BlazoredTypeahead SearchMethod="SearchHely"
+                                   TValue="Hely"
+                                   TItem="Hely"
+                                   Value="xkitol"
+                                   ValueChanged="selectedHelyChangedHandler"
+                                   ValueExpression="@(() => xkitol)"
+                                   placeholder="Kezdj el gépelni..."
+                                   Context="item"
+                                   MinimumLength="0">
+
+                    <SelectedTemplate>
+                        @item.EszkozHely.Nev
+                    </SelectedTemplate>
+                    <ResultTemplate>
+                        @item.EszkozHely.Nev (@item.EszkozHely.Leiras)
+                    </ResultTemplate>
+                    <NotFoundTemplate>
+                        Nincs találat
+                    </NotFoundTemplate>
+
+                </BlazoredTypeahead>
+                @*<SelectList Data="@xkitolList"
+                    TextField="@((item)=>item.EszkozhelyNev)"
+                    ValueField="@((item)=>item.ID)"
+                    SelectedValueChanged="@selectedHelyChangedHandler" />*@
 
             </Column>
 
@@ -80,11 +122,31 @@
             </Column>
 
             <Column ColumnSize="ColumnSize.Is9">
+                <BlazoredTypeahead SearchMethod="SearchHova"
+                                   TValue="EszkozHely"
+                                   TItem="EszkozHely"
+                                   Value="xhova"
+                                   ValueChanged="selectedHovaChangedHandler"
+                                   ValueExpression="@(() => xhova)"
+                                   placeholder="Kezdj el gépelni..."
+                                   Context="item"
+                                   MinimumLength="0">
 
-                <SelectList Data="@xhovaList"
-                            TextField="@((item)=>item.Nev)"
-                            ValueField="@((item)=>item.ID)"
-                            SelectedValueChanged="@selectedHovaChangedHandler" />
+                    <SelectedTemplate>
+                        @item.Nev
+                    </SelectedTemplate>
+                    <ResultTemplate>
+                        @item.Nev (@item.Leiras)
+                    </ResultTemplate>
+                    <NotFoundTemplate>
+                        Nincs találat
+                    </NotFoundTemplate>
+
+                </BlazoredTypeahead>
+                @*<SelectList Data="@xhovaList"
+        TextField="@((item)=>item.Nev)"
+        ValueField="@((item)=>item.ID)"
+        SelectedValueChanged="@selectedHovaChangedHandler" />*@
 
             </Column>
 
@@ -194,6 +256,8 @@
     List<Hely> xkitolList = null;
     List<EszkozHely> xhovaList = null;
     Eszkoz xmit;
+    Eszkoz xmit_value;
+
     Hely xkitol;
     EszkozHely xhova;
     int mennyit;
@@ -202,8 +266,14 @@
     Alert myAlert;
     string hibauzenet;
     Eszkoz selectedEszkoz;
+    Hely selectedHely;
+    EszkozHely selectedHova;
 
-
+    protected override void OnInitialized()
+    {
+        OnAfterRenderAsync(true);
+        base.OnInitialized();
+    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -215,27 +285,58 @@
         }
     }
 
-    async Task selectedEszkozChangedHandler(object newEszkoz)
+    private async Task<IEnumerable<Eszkoz>> SearchEszkoz(string searchText)
     {
-        xmit = this.xmitLista.First(c => c.ID == Convert.ToInt32(newEszkoz));
+        if (xmitLista[0].Nev == null)
+        {
+            xmitLista.RemoveAt(0);
+        }
+
+        return xmitLista.Where(x => x.Nev.ToLower().Contains(searchText.ToLower())).ToList();
+    }
+
+    private async Task<IEnumerable<Hely>> SearchHely(string searchText)
+    {
+        if (xkitolList[0].EszkozHely == null)
+        {
+            xkitolList.RemoveAt(0);
+        }
+
+        return xkitolList.Where(x => x.EszkozHely.Nev.ToLower().Contains(searchText.ToLower())).ToList();
+    }
+
+    private async Task<IEnumerable<EszkozHely>> SearchHova(string searchText)
+    {
+        if (xhovaList[0].Nev == null)
+        {
+            xhovaList.RemoveAt(0);
+        }
+
+        return xhovaList.Where(x => x.Nev.ToLower().Contains(searchText.ToLower())).ToList();
+    }
+
+    private async Task selectedEszkozChangedHandler(Eszkoz newEszkoz)
+    {
+        xmit = this.xmitLista.First(c => c.ID == newEszkoz.ID);
         selectedEszkoz = xmit;
         this.xkitolList = await this.repo.GetXKitolList(xmit.ID);
         this.xkitolList.Insert(0, new Hely());
         StateHasChanged();
     }
 
-    async Task selectedHelyChangedHandler(object newHely)
+    async Task selectedHelyChangedHandler(Hely newHely)
     {
-        xkitol = this.xkitolList.First(c => c.ID == Convert.ToInt32(newHely));
-
+        xkitol = this.xkitolList.First(c => c.ID == newHely.ID);
+        selectedHely = newHely;
         this.xhovaList = await this.repo.GetXHovaList(xkitol.EszkozHelyID);
         this.xhovaList.Insert(0, new EszkozHely());
         StateHasChanged();
     }
 
-    async Task selectedHovaChangedHandler(object newHova)
+    async Task selectedHovaChangedHandler(EszkozHely newHova)
     {
-        xhova = this.xhovaList.First(c => c.ID == Convert.ToInt32(newHova));
+        xhova = this.xhovaList.First(c => c.ID == newHova.ID);
+        selectedHova = newHova;
         StateHasChanged();
     }
 

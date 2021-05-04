@@ -138,6 +138,8 @@
 
     int count;
 
+    bool shouldWait = false;
+
     private async Task SearchEszkoz(MouseEventArgs e)
     {
         // this can be call to anything, in this case we're calling a fictional api
@@ -154,25 +156,29 @@
 
     async Task OnReadData(DataGridReadDataEventArgs<Eszkoz> e)
     {
-        var request = new
+        if (!shouldWait)
         {
-            Sort = e.Columns
-                .Where(_ => _.Direction != SortDirection.None)
-                .Select(_ => new { mezo = _.Field, order = _.Direction == SortDirection.Ascending ? "A" : "D" })  // *** Need a property to OrderBy here ***
-        };
-        searchService.eszkozFilter.Sorrend = request.Sort.Select(c => new Tuple<string, string>(c.mezo, c.order)).ToList();
+            var request = new
+            {
+                Sort = e.Columns
+                    .Where(_ => _.Direction != SortDirection.None)
+                    .Select(_ => new { mezo = _.Field, order = _.Direction == SortDirection.Ascending ? "A" : "D" })  // *** Need a property to OrderBy here ***
+            };
+            searchService.eszkozFilter.Sorrend = request.Sort.Select(c => new Tuple<string, string>(c.mezo, c.order)).ToList();
 
-        // this can be call to anything, in this case we're calling a fictional api
-        var response = await repo.ListEszkoz(searchService.eszkozFilter, e.PageSize, e.Page);
+            // this can be call to anything, in this case we're calling a fictional api
+            shouldWait = true;
+            var response = await repo.ListEszkoz(searchService.eszkozFilter, e.PageSize, e.Page);
 
-        var tipusok = await tipusrepo.ListEszkozTipus(null, 5, 1);
-        tipuslista = tipusok.Data;
+            var tipusok = await tipusrepo.ListEszkozTipus(null, 5, 1);
+            tipuslista = tipusok.Data;
 
-        lista = response.Data; // an actual data for the current page
-        count = response.Total; // this is used to tell datagrid how many items are available so that pagination will work
-
-        // always call StateHasChanged!
-        StateHasChanged();
+            lista = response.Data; // an actual data for the current page
+            count = response.Total; // this is used to tell datagrid how many items are available so that pagination will work
+            shouldWait = false;
+            // always call StateHasChanged!
+            StateHasChanged();
+        }
     }
 
     private async Task KeresesChanged(string kereses)

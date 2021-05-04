@@ -135,6 +135,7 @@
     List<EszkozHelyTipus> tipuslista;
 
     int count;
+    bool shouldWait = false;
     private async Task SearchEszkozHely(MouseEventArgs e)
     {
         // this can be call to anything, in this case we're calling a fictional api
@@ -166,22 +167,25 @@
 
     async Task OnReadData(DataGridReadDataEventArgs<EszkozHely> e)
     {
-        var request = new
+        if (!shouldWait)
         {
-            Sort = e.Columns
-                .Where(_ => _.Direction != SortDirection.None)
-                .Select(_ => new { mezo = _.Field, order = _.Direction == SortDirection.Ascending ? "A" : "D" })  // *** Need a property to OrderBy here ***
-        };
-        searchService.eszkozHelyFilter.Sorrend = request.Sort.Select(c => new Tuple<string, string>(c.mezo, c.order)).ToList();
+            var request = new
+            {
+                Sort = e.Columns
+                    .Where(_ => _.Direction != SortDirection.None)
+                    .Select(_ => new { mezo = _.Field, order = _.Direction == SortDirection.Ascending ? "A" : "D" })  // *** Need a property to OrderBy here ***
+            };
+            searchService.eszkozHelyFilter.Sorrend = request.Sort.Select(c => new Tuple<string, string>(c.mezo, c.order)).ToList();
+            shouldWait = true;
+            var response = await repo.ListEszkozHely(searchService.eszkozHelyFilter, e.PageSize, e.Page);
 
-        var response = await repo.ListEszkozHely(searchService.eszkozHelyFilter, e.PageSize, e.Page);
-
-        var tipusok = await tipusrepo.ListEszkozHelyTipus(null, 5, 1);
-        tipuslista = tipusok.Data;
-        lista = response.Data;
-        count = response.Total;
-
-        StateHasChanged();
+            var tipusok = await tipusrepo.ListEszkozHelyTipus(null, 5, 1);
+            tipuslista = tipusok.Data;
+            lista = response.Data;
+            count = response.Total;
+            shouldWait = false;
+            StateHasChanged();
+        }
     }
 
     void OnBeforeUpdate(CancellableRowChange<EszkozHely> e)

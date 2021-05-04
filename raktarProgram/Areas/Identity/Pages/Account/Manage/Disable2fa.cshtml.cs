@@ -5,21 +5,21 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace raktarProgram.Areas.Identity.Pages.Account.Manage
 {
     public class Disable2faModel : PageModel
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly ILogger<Disable2faModel> _logger;
+        private readonly ILogger logger;
 
         public Disable2faModel(
             UserManager<IdentityUser> userManager,
-            ILogger<Disable2faModel> logger)
+            ILogger logger)
         {
             _userManager = userManager;
-            _logger = logger;
+            this.logger = logger;
         }
 
         [TempData]
@@ -30,6 +30,7 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
+                logger.Warning("{userId} felhasználót nem lehetett betöltenim Disable2Fa--OnGet", _userManager.GetUserId(User));
                 return NotFound($"Felhasználói adatokat nem tudtuk betölteni '{_userManager.GetUserId(User)}'.");
             }
 
@@ -46,16 +47,18 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
+                logger.Warning("{userId} felhasználót nem lehetett betöltenim Disable2Fa--OnPost", _userManager.GetUserId(User));
                 return NotFound($"Felhasználói adatokat nem tudtuk betölteni '{_userManager.GetUserId(User)}'.");
             }
 
             var disable2faResult = await _userManager.SetTwoFactorEnabledAsync(user, false);
             if (!disable2faResult.Succeeded)
             {
+                logger.Error("{userId} nem tudta kikapcsolni, ismeretlen hiba Disable2Fa--OnPost", _userManager.GetUserId(User));
                 throw new InvalidOperationException($"Egy előre nem láthatő hiba történt a 2FA kikapcsolásánál '{_userManager.GetUserId(User)}'.");
             }
 
-            _logger.LogInformation("2Fa sikeresen kikapcsolva", _userManager.GetUserId(User));
+            logger.Information("2Fa sikeresen kikapcsolva", _userManager.GetUserId(User));
             StatusMessage = "2FA sikeresen kikapcsolva, ahhoz";
             return RedirectToPage("./TwoFactorAuthentication");
         }

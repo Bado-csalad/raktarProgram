@@ -96,6 +96,7 @@
     string Kereses = null;
 
     int count;
+    bool shouldWait = false;
 
     private async Task SearchEszkozTipus(MouseEventArgs e)
     {
@@ -108,20 +109,23 @@
 
     async Task OnReadData(DataGridReadDataEventArgs<EszkozTipus> e)
     {
-        var request = new
+        if (!shouldWait)
         {
-            Sort = e.Columns
-                .Where(_ => _.Direction != SortDirection.None)
-                .Select(_ => new { mezo = _.Field, order = _.Direction == SortDirection.Ascending ? "A" : "D" })
-        };
-        searchService.eszkozTipusFilter.Sorrend = request.Sort.Select(c => new Tuple<string, string>(c.mezo, c.order)).ToList();
+            var request = new
+            {
+                Sort = e.Columns
+                    .Where(_ => _.Direction != SortDirection.None)
+                    .Select(_ => new { mezo = _.Field, order = _.Direction == SortDirection.Ascending ? "A" : "D" })
+            };
+            searchService.eszkozTipusFilter.Sorrend = request.Sort.Select(c => new Tuple<string, string>(c.mezo, c.order)).ToList();
+            shouldWait = true;
+            var response = await repo.ListEszkozTipus(searchService.eszkozTipusFilter, e.PageSize, e.Page);
+            shouldWait = false;
+            lista = response.Data;
+            count = response.Total;
 
-        var response = await repo.ListEszkozTipus(searchService.eszkozTipusFilter, e.PageSize, e.Page);
-
-        lista = response.Data;
-        count = response.Total;
-
-        StateHasChanged();
+            StateHasChanged();
+        }
     }
 
     private async Task KeresesChanged(string kereses)

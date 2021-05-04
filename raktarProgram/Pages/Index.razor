@@ -3,6 +3,7 @@
 @inject IHomeRepository repo
 @inject SearchService searchService
 @using Microsoft.AspNetCore.Mvc.ViewFeatures
+@using raktarProgram.Helpers;
 
 <h3>Raktár</h3>
 <AuthorizeView Roles="Admin,Leader">
@@ -156,7 +157,7 @@
     List<Hely> lista;
     string ma = DateTime.Now.ToString();
     int count;
-
+    bool shouldWait = false;
     private async Task SearchHely(MouseEventArgs e)
     {
         // this can be call to anything, in this case we're calling a fictional api
@@ -171,20 +172,24 @@
 
     async Task OnReadData(DataGridReadDataEventArgs<Hely> e)
     {
-        var request = new
+        if (!shouldWait)
         {
-            Sort = e.Columns
+            var request = new
+            {
+                Sort = e.Columns
                .Where(_ => _.Direction != SortDirection.None)
                .Select(_ => new { mezo = _.Field, order = _.Direction == SortDirection.Ascending ? "A" : "D" })  // *** Need a property to OrderBy here ***
-        };
-        searchService.homeFilter.Sorrend = request.Sort.Select(c => new Tuple<string, string>(c.mezo, c.order)).ToList();
+            };
+            searchService.homeFilter.Sorrend = request.Sort.Select(c => new Tuple<string, string>(c.mezo, c.order)).ToList();
+            shouldWait = true;
+            var response = await repo.ListHome(searchService.homeFilter, searchService.PageSize, e.Page);
 
-        var response = await repo.ListHome(searchService.homeFilter, searchService.PageSize, e.Page);
-
-        lista = response.Data;
-        count = response.Total;
-
-        StateHasChanged();
+            while (response == null) ;
+            lista = response.Data;
+            count = response.Total;
+            shouldWait = false;
+            StateHasChanged();
+        }
     }
 
     void OnBeforeUpdate(CancellableRowChange<Eszkoz> e)

@@ -6,19 +6,20 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
+using Serilog;
+
 namespace raktarProgram.Areas.Identity.Pages.Account.Manage
 {
     public class ChangePasswordModel : PageModel
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly ILogger<ChangePasswordModel> _logger;
+        private readonly ILogger _logger;
 
         public ChangePasswordModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
-            ILogger<ChangePasswordModel> logger)
+            ILogger logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -35,7 +36,7 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
         {
             [Required]
             [DataType(DataType.Password)]
-            [Display(Name = "jelelegi jeslszó")]
+            [Display(Name = "jelenlegi jelszó")]
             public string OldPassword { get; set; }
 
             [Required]
@@ -55,6 +56,7 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
+                _logger.Warning("{user} - adatait nem lehetett betölteni- jelszó változtatás, OnGet", _userManager.GetUserId(User));
                 return NotFound($"Felhasználói adatokat nem tudtuk betölteni '{_userManager.GetUserId(User)}'.");
             }
 
@@ -77,6 +79,8 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
+                _logger.Warning("{user} - adatait nem lehetett betölteni, jelszó változtatás, OnPost", _userManager.GetUserId(User));
+
                 return NotFound($"Felhasználói adatokat nem tudtuk betölteni  '{_userManager.GetUserId(User)}'.");
             }
 
@@ -91,7 +95,8 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            _logger.LogInformation("User changed their password successfully.");
+            _logger.Information("{felhasznalo} - Felhasználó sikeresen jelszót változtatott", _userManager.GetUserId(User));
+            /*_logger.LogInformation("User changed their password successfully.");*/
             StatusMessage = "Sikeres jelszó változtatás. ";
 
             return RedirectToPage();

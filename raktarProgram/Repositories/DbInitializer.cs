@@ -12,7 +12,7 @@ namespace raktarProgram.Repositories
         {
 
             //context.Database.EnsureDeleted();
-            //context.Database.EnsureCreated();
+            context.Database.EnsureCreated();
 
             if (!context.Roles.Any(c => c.Id == "admin"))
             {
@@ -22,7 +22,7 @@ namespace raktarProgram.Repositories
 
                 var hasher = new PasswordHasher<IdentityUser>();
 
-                var user = new IdentityUser
+                var admin = new IdentityUser
                 {
                     Id = "1",
                     Email = "bado.mate@outlook.com",
@@ -30,9 +30,33 @@ namespace raktarProgram.Repositories
                     EmailConfirmed = true
                 };
 
-                user.NormalizedEmail = user.Email.ToUpper();
-                user.NormalizedUserName = user.UserName.ToUpper();
-                user.PasswordHash = hasher.HashPassword(user, "temporarypass");
+                var visitor = new IdentityUser
+                {
+                    Id = "2",
+                    Email = "visitor@raktarprogam.com",
+                    UserName = "visitor",
+                    EmailConfirmed = true
+                };
+
+                var leader = new IdentityUser
+                {
+                    Id = "3",
+                    Email = "leader@raktarprogram.com",
+                    UserName = "leader",
+                    EmailConfirmed = true
+                };
+
+                admin.NormalizedEmail = admin.Email.ToUpper();
+                visitor.NormalizedEmail = visitor.Email.ToUpper();
+                leader.NormalizedEmail = leader.Email.ToUpper();
+
+                admin.NormalizedUserName = admin.UserName.ToUpper();
+                visitor.NormalizedUserName = visitor.UserName.ToUpper();
+                leader.NormalizedUserName = leader.UserName.ToUpper();
+
+                admin.PasswordHash = hasher.HashPassword(admin, "temporarypass");
+                visitor.PasswordHash = hasher.HashPassword(visitor, "temporarypass");
+                leader.PasswordHash = hasher.HashPassword(leader, "temporarypass");
 
                 var iur = new IdentityUserRole<string>
                 {
@@ -40,18 +64,37 @@ namespace raktarProgram.Repositories
                     UserId = "1"
                 };
 
+                var visUr = new IdentityUserRole<string>
+                {
+                    RoleId = "visitor",
+                    UserId = "2"
+                };
+
+                var leadUr = new IdentityUserRole<string>
+                {
+                    RoleId = "leader",
+                    UserId = "3"
+                };
+
+
                 using (TransactionScope ts = new TransactionScope())
                 {
                     var identityRole = new IdentityRole[]
-                    { rolea, rolel, rolev };
+                        { rolea, rolel, rolev };
+
+                    var profiles = new IdentityUser[]
+                        {admin, visitor, leader};
+
+                    var userRoles = new IdentityUserRole<string>[]
+                    { iur, visUr, leadUr};
 
                     context.Roles.AddRange(identityRole);
                     context.SaveChanges();
 
-                    context.Users.Add(user);
+                    context.Users.AddRange(profiles);
                     context.SaveChanges();
 
-                    context.UserRoles.Add(iur);
+                    context.UserRoles.AddRange(userRoles);
                     context.SaveChanges();
 
                     ts.Complete();

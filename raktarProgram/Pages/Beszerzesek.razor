@@ -201,7 +201,7 @@
     public string ma = DateTime.Now.ToString();
 
     int count;
-
+    bool shouldWait = false;
     private async Task SearchHely(MouseEventArgs e)
     {
         var response = await repo.ListBeszerzesek(searchService.beszerezesFilter, searchService.PageSize, 1);
@@ -214,21 +214,25 @@
 
     async Task OnReadData(DataGridReadDataEventArgs<Hely> e)
     {
-        var request = new
+        if (!shouldWait)
         {
-            Sort = e.Columns
-                .Where(_ => _.Direction != SortDirection.None)
-                .Select(_ => new { mezo = _.Field, order = _.Direction == SortDirection.Ascending ? "A" : "D" })  // *** Need a property to OrderBy here ***
-        };
-        searchService.beszerezesFilter.Sorrend = request.Sort.Select(c => new Tuple<string, string>(c.mezo, c.order)).ToList();
+            var request = new
+            {
+                Sort = e.Columns
+                    .Where(_ => _.Direction != SortDirection.None)
+                    .Select(_ => new { mezo = _.Field, order = _.Direction == SortDirection.Ascending ? "A" : "D" })  // *** Need a property to OrderBy here ***
+            };
 
-        var response = await repo.ListBeszerzesek(searchService.beszerezesFilter, searchService.PageSize, e.Page);
-        eszkozHelyLista = await repo.GetXHovaBeszerzesList();
-        eszkozLista = await repo.GetXMitList();
-        lista = response.Data;
-        count = response.Total;
-
-        StateHasChanged();
+            searchService.beszerezesFilter.Sorrend = request.Sort.Select(c => new Tuple<string, string>(c.mezo, c.order)).ToList();
+            shouldWait = true;
+            var response = await repo.ListBeszerzesek(searchService.beszerezesFilter, searchService.PageSize, e.Page);
+            eszkozHelyLista = await repo.GetXHovaBeszerzesList();
+            eszkozLista = await repo.GetXMitList();
+            lista = response.Data;
+            count = response.Total;
+            shouldWait = false;
+            StateHasChanged();
+        }
     }
 
     async Task OnAfterUpdate(SavedRowItem<Hely, Dictionary<string, object>> e)

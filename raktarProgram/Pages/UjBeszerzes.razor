@@ -23,10 +23,20 @@
 
             <Column ColumnSize="ColumnSize.Is9">
 
-                <SelectList Data="@xmitLista"
-                            TextField="@((item)=>item.Nev)"
-                            ValueField="@((item)=>item.ID)"
-                            SelectedValueChanged="@selectedEszkozChangedHandler" />
+                <BlazoredTypeahead SearchMethod="selectedEszkozChangedHandler"
+                                   @bind-Value="xmit"
+                                   Context="item"
+                                   placeholder="Kezdj el gépelni...">
+                    <SelectedTemplate>
+                        @item.Nev
+                    </SelectedTemplate>
+                    <ResultTemplate>
+                        @item.Nev (@item.Leiras)
+                    </ResultTemplate>
+                    <NotFoundTemplate>
+                        Nincs találat
+                    </NotFoundTemplate>
+                </BlazoredTypeahead>
 
             </Column>
 
@@ -46,10 +56,20 @@
 
             <Column ColumnSize="ColumnSize.Is9">
 
-                <SelectList Data="@xhovaList"
-                            TextField="@((item)=>item.Nev)"
-                            ValueField="@((item)=>item.ID)"
-                            SelectedValueChanged="@selectedHovaChangedHandler" />
+                <BlazoredTypeahead SearchMethod="selectedHovaChangedHandler"
+                                   @bind-Value="xhova"
+                                   Context="item"
+                                   placeholder="Kezdj el gépelni...">
+                    <SelectedTemplate>
+                        @item.Nev
+                    </SelectedTemplate>
+                    <ResultTemplate>
+                        @item.Nev (@item.Leiras)
+                    </ResultTemplate>
+                    <NotFoundTemplate>
+                        Nincs találat
+                    </NotFoundTemplate>
+                </BlazoredTypeahead>
 
             </Column>
 
@@ -178,19 +198,25 @@
         }
     }
 
-    async Task selectedEszkozChangedHandler(object newEszkoz)
+    private async Task<IEnumerable<Eszkoz>> selectedEszkozChangedHandler(string searchText)
     {
-        xmit = this.xmitLista.First(c => c.ID == Convert.ToInt32(newEszkoz));
+        if(xmitLista[0].Nev == null)
+        {
+            xmitLista.RemoveAt(0);
+        }
 
-
-        StateHasChanged();
+        return xmitLista.Where(x => x.Nev.ToLower().Contains(searchText.ToLower())).ToList();
     }
 
 
-    async Task selectedHovaChangedHandler(object newHova)
+    private async Task<IEnumerable<EszkozHely>> selectedHovaChangedHandler(string searchText)
     {
-        xhova = this.xhovaList.First(c => c.ID == Convert.ToInt32(newHova));
-        StateHasChanged();
+        if (xhovaList[0].Nev == null)
+        {
+            xhovaList.RemoveAt(0);
+        }
+
+        return xhovaList.Where(x => x.Nev.ToLower().Contains(searchText.ToLower())).ToList();
     }
 
     private async Task Mentes(MouseEventArgs e)

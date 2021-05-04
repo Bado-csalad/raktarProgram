@@ -237,6 +237,28 @@ namespace raktarProgram.Repositories
                                 lista = lista.OrderByDescending(c => c.Mikortol);
                             }
                         }
+                        if(c.Item1 == "HovaID")
+                        {
+                            if (c.Item2 == "A")
+                            {
+                                lista = lista.OrderBy(c => c.Hova.Nev);
+                            }
+                            else
+                            {
+                                lista = lista.OrderByDescending(c => c.Hova.Nev);
+                            }
+                        }
+                        if(c.Item1 == "Meddig")
+                        {
+                            if (c.Item2 == "A")
+                            {
+                                lista = lista.OrderBy(c => c.Meddig);
+                            }
+                            else
+                            {
+                                lista = lista.OrderByDescending(c => c.Meddig);
+                            }
+                        }
                     }
                 }
                 else
@@ -246,7 +268,6 @@ namespace raktarProgram.Repositories
             }
 
             ListResult<Hely> res = new ListResult<Hely>();
-
             res.Total = await lista.CountAsync();
 
             lista = lista
@@ -254,7 +275,6 @@ namespace raktarProgram.Repositories
                         .Take(pageSize)
                         .Include(t => t.Eszkoz)
                         .Include(t => t.EszkozHely);
-
             res.Data = await lista
                         .ToListAsync();
 
@@ -376,8 +396,7 @@ namespace raktarProgram.Repositories
                         .Include(t => t.Eszkoz)
                         .Include(t => t.EszkozHely);
 
-            res.Data = await lista
-                        .ToListAsync();
+            res.Data = await lista.ToListAsync();
 
             return res;
         }

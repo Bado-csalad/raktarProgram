@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Components.Authorization;
 using raktarProgram.Areas.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Serilog;
+
 
 namespace raktarProgram
 {
@@ -50,6 +52,7 @@ namespace raktarProgram
             services.AddScoped<SearchService>();
             services.AddDbContext<RaktarContext>(options =>               
                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
+            services.AddLogging(); 
 
             services.AddAuthentication()
                .AddGoogle(options =>
@@ -71,10 +74,6 @@ namespace raktarProgram
                     options.AccessDeniedPath = "/AccessDeniedPathInfo";
                 });
 
-            //services.AddDbContext<ApplicationDbContext>(options =>
-            //    options.UseSqlServer(
-            //        Configuration.GetConnectionString("FelhasznaloConnection")));
-
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<RaktarContext>();
@@ -86,7 +85,7 @@ namespace raktarProgram
 
             services.AddTransient<IEmailSender, EmailSender>();
 
-
+            services.AddSingleton(Log.Logger);
             services.AddTransient<IEszkozRepository, EszkozRepository>();
             services.AddTransient<IEszkozHelyRepository, EszkozHelyRepository>();
             services.AddTransient<IEszkozHelyTipusRepository, EszkozHelyTipusRepository>();

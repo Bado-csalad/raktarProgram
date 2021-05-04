@@ -84,7 +84,7 @@
     List<EszkozHelyTipus> lista;
 
     int count;
-
+    bool shouldWait = false;
     private async Task SearchEszkozHelyTipus(MouseEventArgs e)
     {
         var response = await repo.ListEszkozHelyTipus(searchService.eszkozHelyTipusFilter, searchService.PageSize, 1);
@@ -97,20 +97,23 @@
 
     async Task OnReadData(DataGridReadDataEventArgs<EszkozHelyTipus> e)
     {
-        var request = new
+        if (!shouldWait)
         {
-            Sort = e.Columns
-                .Where(_ => _.Direction != SortDirection.None)
-                .Select(_ => new { mezo = _.Field, order = _.Direction == SortDirection.Ascending ? "A" : "D" })  // *** Need a property to OrderBy here ***
-        };
-        searchService.eszkozHelyTipusFilter.Sorrend = request.Sort.Select(c => new Tuple<string, string>(c.mezo, c.order)).ToList();
+            var request = new
+            {
+                Sort = e.Columns
+                    .Where(_ => _.Direction != SortDirection.None)
+                    .Select(_ => new { mezo = _.Field, order = _.Direction == SortDirection.Ascending ? "A" : "D" })  // *** Need a property to OrderBy here ***
+            };
+            searchService.eszkozHelyTipusFilter.Sorrend = request.Sort.Select(c => new Tuple<string, string>(c.mezo, c.order)).ToList();
+            shouldWait = true;
+            var response = await repo.ListEszkozHelyTipus(searchService.eszkozHelyTipusFilter, e.PageSize, e.Page);
 
-        var response = await repo.ListEszkozHelyTipus(searchService.eszkozHelyTipusFilter, e.PageSize, e.Page);
-
-        lista = response.Data;
-        count = response.Total;
-
-        StateHasChanged();
+            lista = response.Data;
+            count = response.Total;
+            shouldWait = false;
+            StateHasChanged();
+        }
     }
 
 

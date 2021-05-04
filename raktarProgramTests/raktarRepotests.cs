@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NuGet.Frameworks;
 using raktarProgram.Data;
@@ -14,15 +15,22 @@ namespace raktarProgramTests
     [TestClass]
     public class raktarRepotests
     {
-        private string connstrin = "Server=(localdb)\\mssqllocaldb;Database=Raktarprog;Trusted_Connection=True;MultipleActiveResultSets=true";
+
+        string connstrin;
+        private raktarRepotests(IConfiguration configuration)
+        {
+            connstrin = configuration["raktarProgamAPI"];
+        }
+
+
 
         [TestMethod]
         public async Task TestMethod1()
         {
             var dbb = new DbContextOptionsBuilder<RaktarContext>();
             dbb.UseSqlServer(connstrin);
-            
-      
+
+
             RaktarContext rc = new RaktarContext(dbb.Options);
             HomeRepository hr = new HomeRepository(rc);
 
@@ -60,11 +68,11 @@ namespace raktarProgramTests
             using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 var xx = await hr.Xmentes(
-                    null, 
-                    null, 
-                    null, 
-                    DateTime.Now, 
-                    0, 
+                    null,
+                    null,
+                    null,
+                    DateTime.Now,
+                    0,
                     null);
 
                 Assert.AreEqual(HomeRepository.nincsXmit, xx);
@@ -80,7 +88,7 @@ namespace raktarProgramTests
 
             RaktarContext rc = new RaktarContext(dbb.Options);
             HomeRepository hr = new HomeRepository(rc);
-            
+
             var eszkoz = (await hr.GetXMitList()).First();
 
             using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))

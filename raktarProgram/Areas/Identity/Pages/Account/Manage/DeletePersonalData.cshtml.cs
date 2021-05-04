@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace raktarProgram.Areas.Identity.Pages.Account.Manage
 {
@@ -12,16 +12,16 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly ILogger<DeletePersonalDataModel> _logger;
+        private readonly ILogger logger;
 
         public DeletePersonalDataModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
-            ILogger<DeletePersonalDataModel> logger)
+            ILogger logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _logger = logger;
+            this.logger = logger;
         }
 
         [BindProperty]
@@ -41,6 +41,8 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
+                logger.Warning("{user} - adatait nem lehetett betölteni, DeletePersonalData --OnGet", _userManager.GetUserId(User));
+
                 return NotFound($"Felhasználói adatokat nem tudtuk betölteni '{_userManager.GetUserId(User)}'.");
             }
 
@@ -53,6 +55,7 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
+                logger.Warning("{user} - adatait nem lehetett betölteni, DeletePersonalData --OnPost", _userManager.GetUserId(User));
                 return NotFound($"Felhasználói adatokat nem tudtuk betölteni D '{_userManager.GetUserId(User)}'.");
             }
 
@@ -70,12 +73,13 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
             var userId = await _userManager.GetUserIdAsync(user);
             if (!result.Succeeded)
             {
+                logger.Warning("{user} - adatait nem lehetett törölni, DeletePersonalData --OnGet", _userManager.GetUserId(User));
                 throw new InvalidOperationException($"Felhasználói adatokat nem tudtuk betölteni '{userId}'.");
             }
 
             await _signInManager.SignOutAsync();
 
-            _logger.LogInformation("A felhasználó '{UserId}' törölve lett", userId);
+            logger.Information("{user} törölve lett", _userManager.GetUserId(User));
 
             return Redirect("~/");
         }

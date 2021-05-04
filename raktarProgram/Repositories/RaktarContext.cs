@@ -6,6 +6,7 @@ using System.Linq;
 using System;
 using System.Security.Principal;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using raktarProgram.Data.Logger;
 
 namespace raktarProgram.Repositories
 {
@@ -22,6 +23,7 @@ namespace raktarProgram.Repositories
         public DbSet<Felhasznalo> Felhasznalo { get; set; }
         public DbSet<Hely> Hely { get; set; }
         public DbSet<EszkozTipus> EszkozTipus { get; set; }
+        public DbSet<Logger> Logger { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -39,6 +41,7 @@ namespace raktarProgram.Repositories
             modelBuilder.Entity<Hely>().ToTable("Helyek");
             modelBuilder.Entity<Params>().ToTable("Params");
             modelBuilder.Entity<EszkozTipus>().ToTable("EszkozTipusok");
+            modelBuilder.Entity<Logger>().ToTable("Log");
         }
     }
 
