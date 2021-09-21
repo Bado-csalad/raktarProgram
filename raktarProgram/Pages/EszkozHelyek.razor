@@ -138,16 +138,19 @@
     bool shouldWait = false;
     private async Task SearchEszkozHely(MouseEventArgs e)
     {
-        // this can be call to anything, in this case we're calling a fictional api
-        var response = await repo.ListEszkozHely(searchService.eszkozHelyFilter, searchService.PageSize, 1);
+        if (!shouldWait)
+        {
+            shouldWait = true;
+            // this can be call to anything, in this case we're calling a fictional api
+            var response = await repo.ListEszkozHely(searchService.eszkozHelyFilter, searchService.PageSize, 1);
 
 
-        lista = response.Data; // an actual data for the current page
-        count = response.Total; // this is used to tell datagrid how many items are available so that pagination will work
-
-        // always call StateHasChanged!
-        StateHasChanged();
-
+            lista = response.Data; // an actual data for the current page
+            count = response.Total; // this is used to tell datagrid how many items are available so that pagination will work
+            shouldWait = false;
+            // always call StateHasChanged!
+            StateHasChanged();
+        }
     }
 
     async Task OnAfterInsert(SavedRowItem<EszkozHely, Dictionary<string, object>> e)

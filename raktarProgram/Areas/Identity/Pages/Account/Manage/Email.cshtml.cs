@@ -79,7 +79,7 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"UFelhasználói adatokat nem tudtuk betölteni '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Felhasználói adatokat nem tudtuk betölteni '{_userManager.GetUserId(User)}'.");
             }
 
             if (!ModelState.IsValid)
@@ -98,10 +98,11 @@ namespace raktarProgram.Areas.Identity.Pages.Account.Manage
                     pageHandler: null,
                     values: new { userId = userId, email = Input.NewEmail, code = code },
                     protocol: Request.Scheme);
+                string encoded = HtmlEncoder.Default.Encode(callbackUrl);
                 await _emailSender.SendEmailAsync(
                     Input.NewEmail,
                     "Email megerősítése",
-                    $"Erősítsed meg az emailed azzal hogy <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>ide/a> kattintasz.");
+                    $"Erősítsed meg az emailed azzal hogy <a href='{encoded}'>ide/a> kattintasz.");
 
                 StatusMessage = "Megerősítő email elküldve, nézd meg a postaládád";
                 return RedirectToPage();

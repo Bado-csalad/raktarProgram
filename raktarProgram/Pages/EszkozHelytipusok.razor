@@ -87,12 +87,16 @@
     bool shouldWait = false;
     private async Task SearchEszkozHelyTipus(MouseEventArgs e)
     {
-        var response = await repo.ListEszkozHelyTipus(searchService.eszkozHelyTipusFilter, searchService.PageSize, 1);
+        if (!shouldWait)
+        {
+            shouldWait = true;
+            var response = await repo.ListEszkozHelyTipus(searchService.eszkozHelyTipusFilter, searchService.PageSize, 1);
 
-        lista = response.Data;
-        count = response.Total;
-
-        StateHasChanged();
+            lista = response.Data;
+            count = response.Total;
+            shouldWait = false;
+            StateHasChanged();
+        }
     }
 
     async Task OnReadData(DataGridReadDataEventArgs<EszkozHelyTipus> e)

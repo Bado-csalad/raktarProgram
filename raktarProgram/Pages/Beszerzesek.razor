@@ -204,12 +204,16 @@
     bool shouldWait = false;
     private async Task SearchHely(MouseEventArgs e)
     {
-        var response = await repo.ListBeszerzesek(searchService.beszerezesFilter, searchService.PageSize, 1);
+        if (!shouldWait)
+        {
+            shouldWait = true;
+            var response = await repo.ListBeszerzesek(searchService.beszerezesFilter, searchService.PageSize, 1);
+            shouldWait = false;
+            lista = response.Data;
+            count = response.Total;
 
-        lista = response.Data;
-        count = response.Total;
-
-        StateHasChanged();
+            StateHasChanged();
+        }
     }
 
     async Task OnReadData(DataGridReadDataEventArgs<Hely> e)

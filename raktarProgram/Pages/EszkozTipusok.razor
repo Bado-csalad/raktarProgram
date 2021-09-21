@@ -100,10 +100,14 @@
 
     private async Task SearchEszkozTipus(MouseEventArgs e)
     {
-        var response = await repo.ListEszkozTipus(searchService.eszkozTipusFilter, searchService.PageSize, 1);
+        if (!shouldWait)
+        {
+            shouldWait = true;
+            var response = await repo.ListEszkozTipus(searchService.eszkozTipusFilter, searchService.PageSize, 1);
+            shouldWait = false;
 
-
-        lista = response.Data;
+            lista = response.Data;
+        }
 
     }
 

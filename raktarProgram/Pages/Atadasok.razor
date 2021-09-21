@@ -290,31 +290,35 @@
     private async Task SearchHely(MouseEventArgs e)
     {
 
-
-        searchService.atadasFilter.Sorrend.Clear();
-
-        if (searchService.atadasFilter.MaIs)
+        if (!shouldWait)
         {
-            searchService.atadasFilter.CsakMa = false;
-            Task.WaitAll();
-        }
-        else if (searchService.atadasFilter.CsakMa)
-        {
-            searchService.atadasFilter.MaIs = false;
-            Task.WaitAll();
-        }
-        else
-        {
-            searchService.atadasFilter.CsakMa = false;
-            searchService.atadasFilter.MaIs = false;
-            Task.WaitAll();
-        }
+            shouldWait = true;
+            searchService.atadasFilter.Sorrend.Clear();
 
-        var response = await repo.ListAtadasok(searchService.atadasFilter, searchService.PageSize, 1);
-        Task.WaitAll();
-        lista = response.Data;
-        count = response.Total;
-        StateHasChanged();
+            if (searchService.atadasFilter.MaIs)
+            {
+                searchService.atadasFilter.CsakMa = false;
+                Task.WaitAll();
+            }
+            else if (searchService.atadasFilter.CsakMa)
+            {
+                searchService.atadasFilter.MaIs = false;
+                Task.WaitAll();
+            }
+            else
+            {
+                searchService.atadasFilter.CsakMa = false;
+                searchService.atadasFilter.MaIs = false;
+                Task.WaitAll();
+            }
+
+            var response = await repo.ListAtadasok(searchService.atadasFilter, searchService.PageSize, 1);
+            Task.WaitAll();
+            lista = response.Data;
+            count = response.Total;
+            shouldWait = false;
+            StateHasChanged();
+        }
     }
 
     async Task OnReadData(DataGridReadDataEventArgs<Hely> e)

@@ -21,6 +21,11 @@ using Microsoft.AspNetCore.Components.Authorization;
 using raktarProgram.Areas.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Serilog;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Gmail.v1;
+using Google.Apis.Gmail.v1.Data;
+using Google.Apis.Services;
+using Google.Apis.Util.Store;
 
 
 namespace raktarProgram
@@ -73,7 +78,6 @@ namespace raktarProgram
                     options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
                     options.AccessDeniedPath = "/AccessDeniedPathInfo";
                 });
-
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<RaktarContext>();

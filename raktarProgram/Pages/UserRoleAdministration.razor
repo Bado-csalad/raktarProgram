@@ -152,13 +152,18 @@
     bool shouldWait = false;
     private async Task SearchRole(MouseEventArgs e)
     {
-        searchService.userRoleAdministrationFilter.Sorrend.Clear();
+        if (!shouldWait)
+        {
+            shouldWait = true;
+            searchService.userRoleAdministrationFilter.Sorrend.Clear();
 
-        var response = await repo.ListUserRoles(searchService.userRoleAdministrationFilter, searchService.PageSize, 1);
-        Task.WaitAll();
-        users = response.Data;
-        count = response.Total;
-        StateHasChanged();
+            var response = await repo.ListUserRoles(searchService.userRoleAdministrationFilter, searchService.PageSize, 1);
+            Task.WaitAll();
+            users = response.Data;
+            count = response.Total;
+            shouldWait = false;
+            StateHasChanged();
+        }
     }
 
     async Task OnReadData(DataGridReadDataEventArgs<RoleAndUserStruct> e)
@@ -196,24 +201,26 @@
 
     async Task OnAfterUpdate(SavedRowItem<RoleAndUserStruct, Dictionary<string, object>> e)
     {
-
-        using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        if (!shouldWait)
         {
-            var mentettRow = await repo.RoleModositas(e.Item);
-            ts.Complete();
+            shouldWait = true;
+            using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                var mentettRow = await repo.RoleModositas(e.Item);
+                ts.Complete();
+            }
+
+            var response = await repo.ListUserRoles(searchService.userRoleAdministrationFilter, searchService.PageSize, 1);
+            users = response.Data;
+            count = response.Total;
+
+            var rsp = await repo.ListRoles();
+            roles = rsp.Data;
+            shouldWait = false;
+            // ez nemtom kell-e ide...
+            // always call StateHasChanged!
+            StateHasChanged();
         }
-
-        var response = await repo.ListUserRoles(searchService.userRoleAdministrationFilter, searchService.PageSize, 1);
-        users = response.Data;
-        count = response.Total;
-
-        var rsp = await repo.ListRoles();
-        roles = rsp.Data;
-
-        // ez nemtom kell-e ide...
-        // always call StateHasChanged!
-        StateHasChanged();
-
     }
 
 }
