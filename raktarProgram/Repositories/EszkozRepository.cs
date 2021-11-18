@@ -23,6 +23,7 @@ namespace raktarProgram.Repositories
         {
             data.Aktiv = true;
             data.Torolt = false;
+            
             context.Add(data);
             await context.SaveChangesAsync();
             return data;

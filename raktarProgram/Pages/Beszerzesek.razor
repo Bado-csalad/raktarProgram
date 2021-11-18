@@ -145,7 +145,7 @@
 
                 <EditCommandTemplate Context="displayContext">
 
-                    @if ((displayContext.Item as Hely).Meddig == null)
+                    @if ((displayContext.Item as Hely).Meddig is null)
                     {
 
                         <Blazorise.Button Color="Color.Primary" Clicked="@displayContext.Clicked">

@@ -150,7 +150,7 @@
         using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
         {
             e.Torolt = true;
-            var mentettEszkozTipus = await repo.EszkozTipusModositas(e);
+            var mentettEszkozTipus = await repo.EszkozTipusTorles(e.ID);
             ts.Complete();
         }
 

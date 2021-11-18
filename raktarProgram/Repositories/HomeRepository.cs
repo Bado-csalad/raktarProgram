@@ -412,6 +412,16 @@ namespace raktarProgram.Repositories
             return lista;
         }
 
+        public async Task<List<Eszkoz>> GetXMitBeszerzesList()
+        {
+            var lista = await this.Eszkoz
+            .Distinct()
+            .OrderBy(c => c.Nev)
+            .ToListAsync();
+
+            return lista;
+        }
+
         public async Task<List<Hely>> GetXKitolList(int eszkozID)
         {
             var lista = await this.Hely

@@ -24,6 +24,7 @@ namespace raktarProgram.Repositories
         public DbSet<Hely> Hely { get; set; }
         public DbSet<EszkozTipus> EszkozTipus { get; set; }
         public DbSet<Logger> Logger { get; set; }
+        public DbSet<EszkozHelyzet> EszkozHelyzet { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,6 +35,7 @@ namespace raktarProgram.Repositories
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
             }
 
+            modelBuilder.Entity<EszkozHelyzet>().ToTable("EszkozHelyzet");
             modelBuilder.Entity<EszkozHely>().ToTable("EszkozHelyek");
             modelBuilder.Entity<EszkozHelyTipus>().ToTable("EszkozHelyTipusok");
             modelBuilder.Entity<Eszkoz>().ToTable("Eszkozok");

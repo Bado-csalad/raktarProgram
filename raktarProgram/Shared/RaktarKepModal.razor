@@ -1,0 +1,25 @@
+﻿
+
+<div align="center">
+    <img style="width:90%; margin-left: auto; margin-right: auto;" src="/images/raktar_foto.png" border="0" usemap="#map" />
+
+    <map name="map">
+        <area shape="poly" coords="27,109,394,59,442,60,730,211,728,341,449,293,398,286,31,301" href="stuff/b11" />
+        <area shape="poly" coords="738,213,847,274,847,360,740,347" href="stuff/b12" />
+        <area shape="poly" coords="855,279,911,308,915,377,857,365" href="stuff/b13" />
+        <area shape="poly" coords="28,325,394,308,445,314,733,358,734,492,447,530,399,535,31,524" href="stuff/b21" />
+        <area shape="poly" coords="741,363,851,376,843,468,742,483" href="stuff/b22" />
+        <area shape="poly" coords="855,378,913,389,904,454,851,467" href="stuff/b23" />
+        <area shape="poly" coords="27,540,414,558,730,508,727,641,432,786,40,736" href="stuff/b31" />
+        <area shape="poly" coords="737,503,848,485,843,569,737,631" href="stuff/b32" />
+        <area shape="poly" coords="850,483,913,466,906,537,852,565" href="stuff/b33" />
+    </map>
+</div>
+@code {
+
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
+
+    async Task Close() => await BlazoredModal.CloseAsync(ModalResult.Ok(true));
+    async Task Cancel() => await BlazoredModal.CancelAsync();
+
+}

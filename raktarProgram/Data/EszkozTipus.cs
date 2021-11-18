@@ -13,7 +13,7 @@ namespace raktarProgram.Data
         public string Nev { get; set;  }
         public bool? Torolt { get; set; }
         public string Leiras { get; set; }
-
+        public int? UseTimes { get; set; }
         public ICollection<Eszkoz> Eszkozok { get; set; }
     }
 }

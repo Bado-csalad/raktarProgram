@@ -190,7 +190,7 @@
     {
         if (firstRender)
         {
-            this.xmitLista = await this.repo.GetXMitList();
+            this.xmitLista = await this.repo.GetXMitBeszerzesList();
             this.xmitLista.Insert(0, new Eszkoz());
             this.xhovaList = await this.repo.GetXHovaBeszerzesList();
             this.xhovaList.Insert(0, new EszkozHely());

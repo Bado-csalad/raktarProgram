@@ -15,6 +15,7 @@ namespace raktarProgram.Data
         public bool? Aktiv { get; set; }
         [ForeignKey("EszkozTipusID")]
         public EszkozTipus Tipus { get; set; }
+        public EszkozHelyzet Helyzet { get; set; }
         public int EszkozTipusID { get; set; }
         public ICollection<Hely> Helyek { get; set; }
         [NotMapped]

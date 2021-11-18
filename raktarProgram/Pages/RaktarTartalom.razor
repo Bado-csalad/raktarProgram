@@ -1,0 +1,30 @@
+﻿@page "/raktarTartalom"
+
+<h1>Raktár Tartalom</h1>
+<p>Az alábbi gomb megnyomásával, egy felugró ablak fog megjelenni amin a fő raktárunkról látható egy kép</p>
+<p>A képen ha a bizonyos részekre kattint, látható az adott részen tárolt eszközök listája</p>
+<button @onclick="@ShowModal" class="btn btn-primary">Raktár fotó megnézése</button>
+
+@code {
+    [CascadingParameter] public IModalService Modal { get; set; }
+
+    void ShowModal()
+    {
+
+        Modal.Show<RaktarKepModal>();
+    }
+
+    public bool DeleteDialogOpen { get; set; }
+
+    private async Task OnDeleteDialogClose(bool accepted)
+    {
+        DeleteDialogOpen = false;
+        StateHasChanged();
+    }
+
+    private void OpenDeleteDialog()
+    {
+        DeleteDialogOpen = true;
+        StateHasChanged();
+    }
+}

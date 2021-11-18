@@ -47,7 +47,7 @@ namespace raktarProgram.Repositories
 
         public async Task<ListResult<EszkozTipus>> ListEszkozTipus(EszkozTipusFilter filter, int pageSize, int pageNum)
         {
-            var lista = this.EszkozTipus;
+            var lista = this.EszkozTipus.Where(x => x.Torolt != true);
 
             if(filter != null)
             {
@@ -87,7 +87,6 @@ namespace raktarProgram.Repositories
                     }
                 }
             }
-
 
             ListResult<EszkozTipus> res = new ListResult<EszkozTipus>();
 

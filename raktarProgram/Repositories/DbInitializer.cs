@@ -16,6 +16,7 @@ namespace raktarProgram.Repositories
 
             if (!context.Roles.Any(c => c.Id == "admin"))
             {
+
                 var rolea = new IdentityRole() { Id = "admin", Name = "Admin", NormalizedName = "ADMIN" };
                 var rolel = new IdentityRole() { Id = "leader", Name = "Leader", NormalizedName = "LEADER" };
                 var rolev = new IdentityRole() { Id = "visitor", Name = "Visitor", NormalizedName = "VISITOR" };
@@ -155,21 +156,34 @@ namespace raktarProgram.Repositories
                     };
 
                     context.EszkozTipus.AddRange(tipus);
+                    var b11 = new EszkozHelyzet { RovidNev = "b11", Leiras = "Bal oldal, felülről második sor első rekesz" };
+                    var b12 = new EszkozHelyzet { RovidNev = "b12", Leiras = "Bal oldal, felső sor második rekesz" };
+                    var b21 = new EszkozHelyzet { RovidNev = "b21", Leiras = "Bal oldal, felülről második sor első rekesz" };
+                    var b22 = new EszkozHelyzet { RovidNev = "b22", Leiras = "Bal oldal, felülről második sor második rekesz" };
 
+                    var helyzetek = new EszkozHelyzet[]
+                    {
+                        b11,
+                        b12,
+                        b21,
+                        b22
+                    };
+
+                    context.EszkozHelyzet.AddRange(helyzetek);
                     var eszkoz = new Eszkoz[]
                     {
-                    new Eszkoz { Nev = "baltafekete", Leiras = " ez egy fekete balta", Azonosito = "baltfeazon", Torolt = false, Aktiv = true, Tipus = baltak },
-                    new Eszkoz { Nev = "baltapiros", Leiras = " ez egy piros balta", Azonosito = "baltpiazon", Torolt = false, Aktiv = true, Tipus = baltak},
-                    new Eszkoz { Nev = "baltakek", Leiras = " ez egy kek balta", Azonosito = "baltkeazon", Torolt = false, Aktiv = true, Tipus = baltak},
-                    new Eszkoz { Nev = "satorfekete", Leiras = " ez egy fekete sator", Azonosito = "safeazon", Torolt = false, Aktiv = true, Tipus = satrak},
-                    new Eszkoz { Nev = "satorpiros", Leiras = " ez egy piros sator", Azonosito = "sapiazon", Torolt = false, Aktiv = true, Tipus = satrak},
-                    new Eszkoz { Nev = "satorkek", Leiras = " ez egy kek sator", Azonosito = "sakeazon", Torolt = false, Aktiv = true, Tipus = satrak},
-                    new Eszkoz { Nev = "asofekete", Leiras = " ez egy fekete aso", Azonosito = "asfeazon", Torolt = false, Aktiv = true, Tipus = asok},
-                    new Eszkoz { Nev = "asopiros", Leiras = " ez egy piros aso", Azonosito = "aspiazon", Torolt = false, Aktiv = true, Tipus = asok},
-                    new Eszkoz { Nev = "asokek", Leiras = " ez egy kek aso", Azonosito = "askeazon", Torolt = false, Aktiv = true, Tipus = asok},
-                    new Eszkoz { Nev = "fureszfekete", Leiras = " ez egy fekete furesz", Azonosito = "fufeazon", Torolt = false, Aktiv = true, Tipus = fureszek},
-                    new Eszkoz { Nev = "fureszpiros", Leiras = " ez egy piros furesz", Azonosito = "fupiazon", Torolt = false, Aktiv = true, Tipus = fureszek},
-                    new Eszkoz { Nev = "fureszkek", Leiras = " ez egy kek furesz", Azonosito = "fukeazon", Torolt = false, Aktiv = true, Tipus = fureszek},
+                    new Eszkoz { Nev = "baltafekete", Leiras = " ez egy fekete balta", Azonosito = "baltfeazon", Torolt = false, Aktiv = true, Tipus = baltak, Helyzet = b11},
+                    new Eszkoz { Nev = "baltapiros", Leiras = " ez egy piros balta", Azonosito = "baltpiazon", Torolt = false, Aktiv = true, Tipus = baltak, Helyzet = b22},
+                    new Eszkoz { Nev = "baltakek", Leiras = " ez egy kek balta", Azonosito = "baltkeazon", Torolt = false, Aktiv = true, Tipus = baltak, Helyzet = b11},
+                    new Eszkoz { Nev = "satorfekete", Leiras = " ez egy fekete sator", Azonosito = "safeazon", Torolt = false, Aktiv = true, Tipus = satrak, Helyzet = b12},
+                    new Eszkoz { Nev = "satorpiros", Leiras = " ez egy piros sator", Azonosito = "sapiazon", Torolt = false, Aktiv = true, Tipus = satrak, Helyzet = b11 },
+                    new Eszkoz { Nev = "satorkek", Leiras = " ez egy kek sator", Azonosito = "sakeazon", Torolt = false, Aktiv = true, Tipus = satrak, Helyzet = b21 },
+                    new Eszkoz { Nev = "asofekete", Leiras = " ez egy fekete aso", Azonosito = "asfeazon", Torolt = false, Aktiv = true, Tipus = asok, Helyzet = b21 },
+                    new Eszkoz { Nev = "asopiros", Leiras = " ez egy piros aso", Azonosito = "aspiazon", Torolt = false, Aktiv = true, Tipus = asok, Helyzet = b11},
+                    new Eszkoz { Nev = "asokek", Leiras = " ez egy kek aso", Azonosito = "askeazon", Torolt = false, Aktiv = true, Tipus = asok, Helyzet = b22},
+                    new Eszkoz { Nev = "fureszfekete", Leiras = " ez egy fekete furesz", Azonosito = "fufeazon", Torolt = false, Aktiv = true, Tipus = fureszek, Helyzet = b22},
+                    new Eszkoz { Nev = "fureszpiros", Leiras = " ez egy piros furesz", Azonosito = "fupiazon", Torolt = false, Aktiv = true, Tipus = fureszek, Helyzet = b21},
+                    new Eszkoz { Nev = "fureszkek", Leiras = " ez egy kek furesz", Azonosito = "fukeazon", Torolt = false, Aktiv = true, Tipus = fureszek, Helyzet = b12},
                     };
 
                     context.Eszkoz.AddRange(eszkoz);

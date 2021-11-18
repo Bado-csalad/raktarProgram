@@ -21,6 +21,8 @@ namespace raktarProgram.Interfaces
         Task<List<Eszkoz>> GetXMitList();
         Task<List<Hely>> GetXKitolList(int eszkozID);
 
+        Task<List<Eszkoz>> GetXMitBeszerzesList();
+
         Task<List<EszkozHely>> GetXHovaList(int eszkohelyID);
         Task<string> Xmentes(Eszkoz xmit, Hely xkitol, EszkozHely xhova, DateTime xmikor, int xmennyiseg, string xmegj);
         Task<string> Xbeszerzes(Eszkoz xmit, EszkozHely xhova, DateTime xmikor, int xmennyiseg, string xmegj);

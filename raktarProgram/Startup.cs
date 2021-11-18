@@ -1,14 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using raktarProgram.Data;
 using raktarProgram.Interfaces;
 using raktarProgram.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -21,12 +15,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using raktarProgram.Areas.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Serilog;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Gmail.v1;
-using Google.Apis.Gmail.v1.Data;
-using Google.Apis.Services;
-using Google.Apis.Util.Store;
-
+using Blazored.Modal;
 
 namespace raktarProgram
 {
@@ -88,8 +77,10 @@ namespace raktarProgram
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 
             services.AddTransient<IEmailSender, EmailSender>();
+            services.AddBlazoredModal();
 
             services.AddSingleton(Log.Logger);
+            services.AddTransient<IRaktarTartalomList, RaktarTartalomList>();
             services.AddTransient<IEszkozRepository, EszkozRepository>();
             services.AddTransient<IEszkozHelyRepository, EszkozHelyRepository>();
             services.AddTransient<IEszkozHelyTipusRepository, EszkozHelyTipusRepository>();
